@@ -1,21 +1,8 @@
 $(document).ready(function () {
-    let productSaleStatusVal;
     let productSortVal;
     let searchFieldVal;
     let currentPage = 1;
-    let pageSizeVal = 5;
-    // productSaleStatus 버튼 클릭 시
-    $('.productSaleStatus').click(function () {
-        // 모든 버튼 스타일 초기화
-        $('.productSaleStatus').removeClass('clicked');
-
-        // 현재 클릭된 버튼 스타일 변경
-        $(this).addClass('clicked');
-
-        productSaleStatusVal = $(this).val();
-
-        sendAxiosRequest();
-    });
+    let pageSizeVal = 9;
 
     // productSaleStatus 버튼 클릭 시
     $('.productSort').click(function () {
@@ -27,83 +14,47 @@ $(document).ready(function () {
 
         productSortVal = $(this).val();
 
-        sendAxiosRequest();
+        sendAxiosRequest_mainPage();
     });
 
     // 검색 버튼 클릭 시
     $('#searchBtn').click(function () {
         searchFieldVal = $('#searchField').val();
-        sendAxiosRequest();
+        sendAxiosRequest_mainPage();
         // $('#searchField').val('');
-    });
-
-    // pageSize 선택 시
-    $('select[name="howmany"]').change(function () {
-        pageSizeVal = $(this).val(); // 선택한 값 가져오기
-        sendAxiosRequest();
     });
 
     // 이전 페이지 버튼
     $(document).on('click', '.prevBtn', () => {
         currentPage -= 1;
-        sendAxiosRequest();
+        sendAxiosRequest_mainPage();
     });
 
     // 페이지 번호 버튼
     $(document).on('click', '.numberBtn', (e) => {
         currentPage = parseInt($(e.currentTarget).attr("value"));
-        sendAxiosRequest();
+        sendAxiosRequest_mainPage();
     });
 
     // 다음 페이지 버튼
     $(document).on('click', '.nextBtn', () => {
         currentPage += 1;
-        sendAxiosRequest();
+        sendAxiosRequest_mainPage();
     });
 
-    // 수정 버튼
-    $(document).on("click", ".editBtn", (e) => {
-        const btn = $(e.currentTarget);
-        const productId = btn.val();
-        const editUrl = `/admin/editProduct/${productId}`;
-        window.location.href = editUrl;
-    });
-
-    // 모두 체크
-    $(document).ready(function() {
-        $("#allCheck").click(function() {
-            const isChecked = $(this).prop("checked");
-            $("input[type='checkbox'][name='chkStatus']").prop("checked", isChecked);
-        });
-    });
-
-    // 엑셀 다운로드 버튼 클릭 이벤트
-    $(document).on("click", "#excelDownloadBtn", () => {
-        const data = $(".product-table").html();
-        const blob = new Blob([data], {type: "application/vnd.ms-excel"});
-        const link = document.createElement("a");
-        link.href = window.URL.createObjectURL(blob);
-        link.download = "판매상품내역.xlsx";
-        link.click();
-    });
-
-
-    function sendAxiosRequest() {
-        console.log(productSaleStatusVal);
+    function sendAxiosRequest_mainPage() {
         console.log(productSortVal);
         console.log(searchFieldVal);
         console.log(pageSizeVal);
         console.log("커페"+currentPage);
         axios({
             method: 'post',
-            url: '/admin/productAxios',
+            url: '/mainPageAxios',
             data: {
-                "productSaleStatus": productSaleStatusVal,
                 "productSort": productSortVal,
                 "searchField": searchFieldVal,
                 "startPage": currentPage,
                 "pageSize": pageSizeVal
-
             },
             dataType: "JSON",
             headers: {
@@ -116,35 +67,58 @@ $(document).ready(function () {
             console.log('피리:' + pageInfo);
             console.log('피리1:' + pList);
             // .product-table 클래스 내부의 tbody 내부 내용 교체
-            const tableRows = pList.map((product) => {
+            const UlRows = pList.map((product) => {
+                const productLink = $("<a>")
+                    .attr("href", "/user/detail?productId=" + product.PRODUCT_ID)
+                    .append($("<img>").attr("src", product.IMAGE_URL).attr("alt", "상품사진"))
+                    .append($("<div>").addClass("icons")
+                        .append(
+                            $("<a>")
+                                .attr("id", "productLike")
+                                .attr("data-product-id", product.PRODUCT_ID)
+                                .append(
+                                    $("<span>")
+                                        .addClass("material-symbols-outlined")
+                                        .addClass(product.LIKE_ID == null ? "" : "red__heart")
+                                        .text("favorite")
+                                )
+                        )
+                        .append($("<span>").addClass("material-symbols-outlined").text("shopping_cart"))
+                    );
 
-                $(".margin .bold").text(pageInfo.total);
+                const productTitle = $("<div>")
+                    .addClass("title")
+                    .append($("<span>").text(product.PRODUCT_NAME));
 
-                let stopBtn = $(`<button class="stopSaleBtn" value="${product.PRODUCT_ID}">중지</button>`);
-                let updateTime = "";
+                const productPrice = $("<div>").addClass("price").text(product.PRODUCT_PRICE + "원");
 
-                if (product.PRODUCT_SALE_STATUS === "판매중지") {
-                    stopBtn = $("");
-                    updateTime = $(`<span class="updateTime">${new Date(product.PRODUCT_UPDATED_AT).toLocaleDateString("ko-KR", { year: 'numeric', month: '2-digit', day: '2-digit' }).replaceAll(". ", ".").substring(0, 10)}</span>`);
-                }
+                const txtDiv = $("<div>").addClass("txt")
+                    .append(productTitle)
+                    .append(productPrice);
 
-                return $("<tr>")
-                    .append($("<td>").html(`<input type="checkbox" name="chkStatus" value="${product.PRODUCT_ID}">`))
-                    .append($("<td>").text(product.PRODUCT_ID))
-                    .append($("<td>").addClass("product_Status").text(product.PRODUCT_SALE_STATUS))
-                    .append($("<td>").text(product.CATEGORY_NAME))
-                    .append($("<td>").text(product.PRODUCT_NAME))
-                    .append($("<td>").text((product.PRODUCT_PRICE * (1 - (product.PRODUCT_DISCOUNT / 100))).toLocaleString("ko-KR", { maximumFractionDigits: 0 }) + "원"))
-                    .append($("<td>").text(product.PRODUCT_DISCOUNT > 0 ? `${product.PRODUCT_DISCOUNT}%` : "-"))
-                    .append($("<td>").attr("name", "찜수").text("-"))
-                    .append($("<td>").attr("name", "결제횟수").text("-"))
-                    .append($("<td>").attr("name", "리뷰수").text("-"))
-                    .append($("<td>").text(new Date(product.PRODUCT_CREATED_AT).toLocaleDateString("ko-KR", { year: 'numeric', month: '2-digit', day: '2-digit' }).replaceAll(". ", ".").substring(0, 10)))
-                    .append($("<td>").html(`<button class="editBtn" value="${product.PRODUCT_ID}">수정</button>`))
-                    .append($("<td>").append(stopBtn).append(updateTime))
-                    .append($("</tr>"))
+                return $("<li>")
+                    .append(productLink)
+                    .append(txtDiv);
             });
-            $("#axiosBody").empty().append(tableRows);
+            // const UlRows = pList.map((product) => {
+            //     return $("<li>")
+            //         .append($("<a>").attr("href", "/user/detail?productId=" + product.PRODUCT_ID)
+            //             .append($("<img>").attr("src", product.IMAGE_URL).attr("alt", "상품사진"))
+            //             .append($("<div>").addClass("icons")
+            //
+            //                 .append($("<span>").addClass("material-symbols-outlined").text("favorite"))
+            //                 .append($("<span>").addClass("material-symbols-outlined").text("shopping_cart"))
+            //             )
+            //             .append($("<div>").addClass("txt")
+            //                 .append($("<div>").addClass("title")
+            //                     .append($("<span>").text(product.PRODUCT_NAME))
+            //                 )
+            //                 .append($("<div>").addClass("price").text(product.PRODUCT_PRICE+"원"))
+            //             )
+            //         )
+            //         .append($("</li>"));
+            // });
+            $("#axiosBody").empty().append(UlRows);
 
             // .pagination 클래스 태그 내부 내용 교체
             const paginationDiv = $('.pagination');
@@ -196,163 +170,67 @@ $(document).ready(function () {
     }
 });
 
-/**
- * 판매 중지 버튼 클릭 이벤트
- */
-// 판매 중지 버튼 클릭 이벤트
+$(document).ready(function () {
+    // 버튼 클릭 이벤트 처리
+    $(".productSort").click(function () {
+        // 모든 버튼에서 active 클래스 제거
+        $(".productSort").removeClass("active");
+        // 클릭한 버튼에 active 클래스 추가
+        $(this).addClass("active");
 
-// $(document).on("click", ".stopSaleBtn", function (e) {
-//     let productId;
-//     const btn = $(e.currentTarget);
-//         const row = btn.closest('tr');
-//         productId = row.find('input[type="checkbox"]').val();
-//
-//     axios({
-//         method: "post",
-//         url: "/admin/saleStop",
-//         data: {
-//             productId: productId,
-//             status: "판매중지"
-//         },
-//         dataType: "json",
-//         headers: {'Content-Type': 'application/json'}
-//     }).then(res => {
-//         const updatedTime = res.data
-//         btn.hide();
-//         const timeSpan = btn.closest('td').find(".updateTime");
-//         const formattedTime = formatDate(updatedTime.PRODUCT_UPDATED_AT);
-//         timeSpan.text(formattedTime);
-//         timeSpan.show();
-//
-//         const productStatus = btn.closest('tr').find('.productStatus');
-//         productStatus.text("판매중지");
-//
-//         localStorage.setItem(productId, "판매중지");
-//         localStorage.setItem(`updatedTime-${productId}`, formattedTime);
-//     })
-// });
-
-// 판매 중지 버튼 클릭 이벤트
-$(document).on("click", ".stopSaleBtn", (e) => {
-    const btn = $(e.currentTarget);
-    const productId = btn.val();
-
-    axios({
-        method: "post",
-        url: "/admin/saleStop",
-        data: {
-            productId: productId,
-            status: "판매중지"
-        },
-        dataType: "json",
-        headers: {'Content-Type': 'application/json'}
-    }).then(res => {
-        const updatedTime = res.data
-        btn.hide();
-        const timeSpan = btn.closest('td').find(".updateTime");
-        const formattedTime = formatDate(updatedTime);
-        timeSpan.text(formattedTime);
-        timeSpan.show();
-
-        const productStatus = btn.closest('tr').find('.product_Status');
-        productStatus.text("판매중지");
-
-        localStorage.setItem(productId, "판매중지");
-        localStorage.setItem(`updatedTime-${productId}`, formattedTime);
-    })
+        // 여기에 버튼을 클릭했을 때의 추가 동작을 작성할 수 있습니다.
+        // 예를 들어, 필터링된 상품 리스트를 업데이트하거나 다른 동작을 수행할 수 있습니다.
+    });
 });
 
-$(() => {
-    // 상품 가격 천자리 구분 기호 표시
-    $(".productPrice").each((i, e) => {
-        const price = $(e).text();
-        $(e).text(price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+$(document).ready(function() {
+    let productLikeId, productCartId;
+    // 상품 좋아요 버튼 클릭 시
+    $('a#productLike').click(function() {
+        productLikeId = $(this).data('product-id');
+        console.log('상품 ID (좋아요): ' + productLikeId);
+        sendAxiosRequest_mainPage();
     });
 
-    // 새로 고침 시에도 판매 중지 열의 시간 표시
-    $(".stopSaleBtn").each((i, e) => {
-        const btn = $(e);
-        const productId = btn.val();
-        const status = localStorage.getItem(productId);
+    // 상품 장바구니 버튼 클릭 시
+    $('a#productCart').click(function() {
+        productCartId = $(this).data('product-id');
+        console.log('상품 ID (장바구니): ' + productCartId);
+        sendAxiosRequest_mainPage();
+    });
 
-        if (status === "판매중지") {
-            btn.hide();
-            const timeSpan = btn.next(".updateTime");
-            const storedDate = localStorage.getItem(`updatedTime-${productId}`);
-            if (storedDate) {
-                timeSpan.text(storedDate);
+    function sendAxiosRequest_mainPage() {
+        axios({
+            method: 'post',
+            url: '/productLikeAxios',
+            data: {
+                "productLikeId": productLikeId,
+                "productCartId": productCartId
+            },
+            dataType: "JSON",
+            headers: {
+                'Content-Type': 'application/json'
             }
-            timeSpan.show();
-        }
-    });
+        }).then(res => {
+            if(res.data===1){
+                $('#productLike').find('span').removeClass('material-symbols-outlined').addClass('material-icons red__heart');
+
+            } else if(res.data===2) {
+                $('#productLike').find('span').removeClass('material-icons red__heart').addClass('material-symbols-outlined');
+            } else if(res.data===-1){
+                alert('로그인이 필요한 서비스 입니다.');
+                location.href='user/login';
+            }
+
+        });
+    }
 });
-
-function formatDate(date) {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-/**
- * 클릭된 체크박스 productId값 넘기는 코드
- */
 $(document).ready(function() {
-    $('#selectedSaleStopBtn').click(function() {
-        const userConfirmed = confirm("선택한 상품을 판매 중지하시겠습니까?");
 
-        if (userConfirmed) {
-            const selectedStopValues = [];
-            $('input[name="chkStatus"]:checked').each(function() {
-                selectedStopValues.push($(this).val());
-            });
-
-            console.log("셀렉벨륭:" + selectedStopValues);
-
-            axios({
-                method: "post",
-                url: "/admin/selectedSaleStop",
-                data: {
-                    "selectedProductId" : selectedStopValues
-                },
-                dataType: "json",
-                headers: {'Content-Type': 'application/json'}
-            }).then(res => {
-                console.log(res.data);
-                if(res.data == 1) {
-                    location.href = "product";
-                }
-            });
-        }
+    // 장바구니 버튼 클릭 시
+    $('#productCart').click(function() {
+        var productId = $(this).attr('th:value');
+        console.log('상품 ID: ' + productId);
     });
 });
 
-$(document).ready(function() {
-    $('#selectedDeleteProductBtn').click(function() {
-        const userConfirmed = confirm("선택한 상품을 삭제하시겠습니까?");
-
-        if (userConfirmed) {
-            const selectedDeleteValues = [];
-            $('input[name="chkStatus"]:checked').each(function() {
-                selectedDeleteValues.push($(this).val());
-            });
-
-            console.log("셀딜릭벨륭:" + selectedDeleteValues);
-
-            axios({
-                method: "post",
-                url: "/admin/selectedDelete",
-                data: {
-                    "selectedProductId" : selectedDeleteValues
-                },
-                dataType: "json",
-                headers: {'Content-Type': 'application/json'}
-            }).then(res => {
-                if (res.data == 1) {
-                    location.href = "product";
-                }
-            });
-        }
-    });
-});

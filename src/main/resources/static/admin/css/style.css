@@ -86,6 +86,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+
 }
 #admin_product .inner .box02 .status .buttons button,
 #admin_product .inner .box02 .sort .buttons button,
@@ -95,12 +96,21 @@
   border: 1px solid #333;
   cursor: pointer;
 }
-#admin_product .inner .box02 .status .buttons button:first-child,
-#admin_product .inner .box02 .sort .buttons button:first-child,
-#admin_product .inner .box02 .search .buttons button:first-child {
+
+
+/*#admin_product .inner .box02 .status .buttons button:first-child,*/
+/*#admin_product .inner .box02 .sort .buttons button:first-child,*/
+/*#admin_product .inner .box02 .search .buttons button:first-child {*/
+/*  background-color: #333;*/
+/*  color: #fff;*/
+/*}*/
+
+/* 클릭된 버튼 스타일 */
+.buttons button.clicked {
   background-color: #333;
   color: #fff;
 }
+
 #admin_product .inner .box02 .status input,
 #admin_product .inner .box02 .sort input,
 #admin_product .inner .box02 .search input {
@@ -2944,3 +2954,176 @@ header .inner .main-menu .item:hover .item__name {
 }
 
 /*# sourceMappingURL=style.css.map */
+
+.txt04 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7) fixed;
+  z-index: 9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.txt04 .inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0px;
+}
+.txt04 .inner h4 {
+  width: 500px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 20px 200px;
+  font: 800 18px/2 "Nanum Gothic";
+}
+.txt04 .inner h5 {
+  width: 500px;
+  height: 200px;
+  background-color: #fff;
+  text-align: center;
+  padding: 45px;
+  font: 500 18px/2 "Nanum Gothic";
+}
+.txt04 .inner h5 a {
+  display: block;
+  border: none;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+  border-top: none;
+  width: 120px;
+  color: #fff;
+  padding: 5px 0px;
+  margin: 0 auto;
+  margin-top: 30px;
+  font: 500 16px/2 "Nanum Gothic";
+}
+
+.txt05 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7) fixed;
+  z-index: 9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.txt05 .inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.txt05 .inner h4 {
+  width: 500px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 20px 200px;
+  font: 800 18px/2 "Nanum Gothic";
+}
+.txt05 .inner h5 {
+  width: 500px;
+  height: 200px;
+  background-color: #fff;
+  text-align: center;
+  padding: 45px;
+  font: 500 18px/2 "Nanum Gothic";
+}
+.txt05 .inner h5 a {
+  display: block;
+  border: none;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+  border-top: none;
+  width: 120px;
+  color: #fff;
+  padding: 5px 0px;
+  margin: 0 auto;
+  margin-top: 30px;
+  font: 500 16px/2 "Nanum Gothic";
+}
+
+.txt06 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7) fixed;
+  z-index: 9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.txt06 .inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.txt06 .inner h4 {
+  width: 500px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 20px 200px;
+  font: 800 18px/2 "Nanum Gothic";
+}
+.txt06 .inner h5 {
+  width: 500px;
+  height: 200px;
+  background-color: #fff;
+  text-align: center;
+  padding: 45px;
+  font: 500 18px/2 "Nanum Gothic";
+}
+.txt06 .inner h5 a {
+  display: block;
+  border: none;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+  border-top: none;
+  width: 120px;
+  color: #fff;
+  padding: 5px 0px;
+  margin: 0 auto;
+  margin-top: 30px;
+  font: 500 16px/2 "Nanum Gothic";
+}
+
+.confirmButton, .confirmButton1{
+  width: 80px;
+  height: 30px;
+  background-color: black;
+  color: #fff;
+  border: none;
+  font: bold 15px/1 "Nanum Gothic";
+  letter-spacing: 1px;
+  padding: 5px 5px;
+  cursor: pointer;
+}
+
+.cancelBtn{
+  width: 80px;
+  height: 30px;
+  background-color: #fff;
+  color: black;
+  border: none;
+  font: bold 15px/1 "Nanum Gothic";
+  letter-spacing: 1px;
+  padding: 5px 5px;
+  cursor: pointer;
+}
+
+.txt05 .inner .button-container {
+  display: flex;
+  gap: 10px;
+}

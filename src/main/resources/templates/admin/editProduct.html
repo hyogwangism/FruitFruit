@@ -16,48 +16,50 @@
     <section id="admin_product02">
         <div class="inner">
             <div class="title">
-                <h2>상품등록</h2>
+                <h2>상품수정</h2>
             </div>
 
 
             <div class="admin_product02__wrap">
                 <label for="productName" class="productName">
                     <p> <span>*</span> 상품명</p>
-                    <input type="textbox" name="productName" placeholder="상품명을 입력해주세요." id="productName">
+                    <input type="textbox" name="productName" id="productName" th:value="${pInfo.PRODUCT_NAME}">
                 </label>
 
                 <label for="productSort">
                     <p> <span>*</span> 분류</p>
                     <select name="productSort" id="productSort">
                         <p>분류</p>
-                        <option value="봄과일">봄과일</option>
-                        <option value="여름과일">여름과일</option>
-                        <option value="가을과일">가을과일</option>
-                        <option value="겨울과일">겨울과일</option>
+                        <option value="봄과일" th:selected="${pInfo.CATEGORY_NAME == '봄과일'}">봄과일</option>
+                        <option value="여름과일" th:selected="${pInfo.CATEGORY_NAME == '여름과일'}">여름과일</option>
+                        <option value="가을과일" th:selected="${pInfo.CATEGORY_NAME == '가을과일'}">가을과일</option>
+                        <option value="겨울과일" th:selected="${pInfo.CATEGORY_NAME == '겨울과일'}">겨울과일</option>
                     </select>
                 </label>
 
+                <input type="hidden" name="productId" id="productId" th:value="${productId}">
+
                 <label for="productPrice">
                     <p> <span>*</span> 상품금액</p>
-                    <input type="textbox" name="productPrice" placeholder="0" id="productPrice">
+                    <input type="textbox" name="productPrice" id="productPrice" th:value="${pInfo.PRODUCT_PRICE}">
                     원
                 </label>
 
                 <label for="productDiscount">
                     <p> 상품할인율 </p>
-                    <input type="textbox" name="productDiscount" placeholder="0" id="productDiscount">
+                    <input type="textbox" name="productDiscount" id="productDiscount" th:value="${pInfo.PRODUCT_DISCOUNT}">
                     %
                 </label>
 
                 <label for="totalPrice" class="totalPrice">
                     <p> 할인적용 후 금액 </p>
-                    <input type="textbox" name="totalPrice" placeholder="0" id="totalPrice">
+                    <input type="textbox" name="totalPrice" id="totalPrice" th:value="${(pInfo.PRODUCT_PRICE * (100 - pInfo.PRODUCT_DISCOUNT)) div 100}">
                     원
                 </label>
 
                 <label for="productInventory">
                     <p> <span>*</span> 재고수량 </p>
-                    <input type="textbox" name="productInventory" placeholder="0" id="productInventory">
+                    <input type="textbox" name="productInventory" id="productInventory" th:value="${pInfo.PRODUCT_INVENTORY}">
                     개
                 </label>
 
@@ -65,20 +67,20 @@
                     <p> <span>*</span> 상품이미지 </p>
                     <div>+ 추가</div>
                     <input type="file" name="productPicture" id="productPicture" accept="image/*">
-                    <img id="imagePreview" src="#" alt="미리보기 이미지">
+                    <img id="imagePreview" th:src="${pPictureInfo[0].IMAGE_URL}" alt="미리보기 이미지">
                 </label>
 
                 <input type="file" id="dataBoardEditorImg" style="display: none;">
                 <label for="productDescription" class="description">
                     <p> <span>*</span> 상품 상세정보 </p>
-                    <input name="productDescription" id="productDescription">
+                     <input name="productDescription" id="productDescription" >
                 </label>
 
             </div>
 
             <div class="buttons">
                 <button id="productCancelBtn">취소하기</button>
-                <button id="productSubmitBtn">등록하기</button>
+                <button id="editProductSubmitBtn">등록하기</button>
             </div>
         </div>
         <!--모달창-->
@@ -115,7 +117,7 @@
 
     </section>
 
-    <script src="/admin/js/tinymce.js" type="text/javascript"></script>
+    <script src="/admin/js/editProduct.js" type="text/javascript"></script>
 </body>
 
 </html>

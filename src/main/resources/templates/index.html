@@ -2,21 +2,7 @@
 <html lang="ko">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>프룻프룻 쇼핑몰</title>
-
-    <!--Open Graph-->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="프룻프룻 Shopping Mall" />
-    <meta property="og:title" content="프룻프룻 Shopping Mall" />
-    <meta property="og:description" content="프룻프룻 Shopping Mall 입니다." />
-    <meta property="og:image" content="/user/img/openGraph.png" />
-    <meta property="og:url" content="https://prpr-shopping-mall.co.kr" />
-
-    <!--파비콘-->
-    <link rel="icon" href="/user/favicon.ico" />
-
+    <th:block th:insert="~{includes/head}"></th:block>
     <th:block th:insert="~{includes/library}"></th:block>
     <th:block th:insert="~{includes/style}"></th:block>
     <th:block th:insert="~{includes/scripts}"></th:block>
@@ -24,63 +10,7 @@
 </head>
 
 <body>
-
-<!-- HEADER -->
-<header id="header">
-    <div class="inner">
-
-        <a href="/user/index" class="logo">
-            <img src="/user/img/푸릇푸릇 로고.png" alt="logo" />
-        </a>
-
-        <div class="sub-menu">
-            <ul class="menu">
-                <li>
-                    <a href="/user/login">Sign In</a>
-                </li>
-                <li>
-                    <a href="/user/join">Join</a>
-                </li>
-                <li>
-                    <a href="javascript:void(0)">language</a>
-                </li>
-            </ul>
-        </div>
-
-        <ul class="main-menu">
-            <li class="item">
-                <div class="item__name">HOME</div>
-            </li>
-
-            <li class="item">
-                <div class="item__name">
-                    <a href="/user/search">상품소개</a>
-                </div>
-            </li>
-
-            <li class="item">
-                <div class="item__name">
-                    <a href="/user/search">구매내역</a>
-                </div>
-            </li>
-
-            <li class="item">
-                <div class="item__name">마이페이지</div>
-            </li>
-
-            <li class="item">
-                <div class="item__name red">
-                    장바구니
-                    <span class="material-icons">
-                            shopping_cart
-                        </span>
-
-                </div>
-            </li>
-        </ul>
-
-    </div>
-</header>
+    <th:block th:insert="~{includes/header}"></th:block>
 
 <!-- VISUAL -->
 <section id="visual">
@@ -124,19 +54,20 @@
     <div class="inner">
 
         <!-- 검색창 -->
-        <input type="text" placeholder="# 검색어를 입력해주세요.">
+        <input type="text" placeholder="# 검색어를 입력해주세요." id="searchField">
 
         <!-- 돋보기 아이콘 -->
-        <span class="material-icons">search </span>
+        <span class="material-icons" id="searchBtn">search </span>
 
         <!-- 필터 -->
         <div class="buttons">
-            <button>봄과일</button>
-            <button>여름과일</button>
-            <button>가을과일</button>
-            <button>겨울과일</button>
-            <button>열대과일</button>
-            <button>하우스과일</button>
+            <button class="productSort" value="All">전체</button>
+            <button class="productSort" value="봄과일">봄과일</button>
+            <button class="productSort" value="여름과일">여름과일</button>
+            <button class="productSort" value="가을과일">가을과일</button>
+            <button class="productSort" value="겨울과일">겨울과일</button>
+<!--            <button>열대과일</button>-->
+<!--            <button>하우스과일</button>-->
         </div>
 
     </div>
@@ -147,10 +78,20 @@
         <ul>
 
             <!-- 마이페이지 -->
-            <li>
+            <li th:if="${session.session_id}!=null">
                 <a href="#">
                     <span class="material-symbols-outlined">person</span>
-                    <p>홍길동님</p>
+                    <p th:text="마이페이지" style="font-size: 12px;"></p>
+                </a>
+
+                <div class="line"></div>
+            </li>
+
+
+            <li th:if="${session.session_id}==null">
+                <a href="/user/login">
+                    <span class="material-symbols-outlined">person</span>
+                    <p  th:if="${session.session_id}==null" th:text="로그인"></p>
                 </a>
 
                 <div class="line"></div>
@@ -196,258 +137,111 @@
 <!-- 상품리스트 -->
 <section id="products">
 
-    <div class="inner">
+    <div class="inner" >
 
         <!-- 상품 리스트 -->
-        <ul>
+        <ul id="axiosBody">
+
             <!-- 오렌지 -->
-            <li>
+            <!--            class="cart__click"-->
+            <li  th:each="p : ${pageInfo.list}">
                 <!-- 클릭 시 상세페이지 이동 -->
                 <a href="/user/detail">
 
                     <!-- 상품 사진 -->
-                    <img src="/user/img/오렌지사진.jpg" alt="오렌지사진">
+                    <img th:src="${p.IMAGE_URL}" alt="오렌지사진">
+
 
                     <div class="icons">
                         <!-- 좋아요 기능 눌렀을때 빨간 하트 아이콘-->
                         <!-- (기본 하트 아이콘은 두번 째 li (과일세트)에 있어요) -->
-                        <span class="material-icons red__heart">favorite</span>
+<!--                        <span class="material-icons red__heart">favorite</span>-->
+                        <!-- 좋아요 기능 기본 하트 아이콘-->
+                        <a th:id="productLike" th:data-product-id="${p.PRODUCT_ID}">
+                            <span th:if="${p.LIKE_ID == null}" class="material-symbols-outlined">favorite</span>
+                            <span th:unless="${p.LIKE_ID == null}" class="material-icons red__heart">favorite</span>
+                        </a>
 
                         <!-- 장바구니 카트 아이콘 -->
+                        <a id="productCart" th:data-product-id="${p.PRODUCT_ID}">
                         <span class="material-symbols-outlined">shopping_cart</span>
+                        </a>
                     </div>
 
+                    <!-- 장바구니 클릭 시 수량 증감버튼 -->
+                    <!--                <div class="cart">-->
+                    <!--                    <div class="inner">-->
+                    <!--                        <button>+</button>-->
+                    <!--                        <input type="text" value="2">-->
+                    <!--                        <button>-</button>-->
+                    <!--                    </div>-->
+                    <!--                </div>-->
 
                     <!-- 상품 -->
                     <div class="txt">
                         <!-- 상품명 -->
                         <div class="title">
-                            <span>오렌지</span>
+                            <span th:text="${p.PRODUCT_NAME}"></span>
+
                         </div>
 
                         <!-- 상품 가격 -->
-                        <div class="price">
-                            3,000원
+                        <div class="price" th:text="${p.PRODUCT_PRICE}+원">
+
+
                         </div>
                     </div>
                 </a>
             </li>
 
 
-            <!-- 장바구니 클릭 시 수량 증감버튼 -->
-            <!-- 망고스틴 -->
-            <li class="cart__click">
-                <a href="/user/detail">
-                    <img src="/user/img/상세페이지_망고스틴.png" alt="망고스틴사진">
-                </a>
-
-
-                <div class="icons">
-                    <!-- 좋아요 기능 기본 하트 아이콘-->
-                    <a href="#">
-                        <span class="material-symbols-outlined">favorite</span>
-                    </a>
-
-
-                    <!-- 장바구니 카트 아이콘 -->
-                    <a href="">
-                        <span class="material-symbols-outlined">shopping_cart</span>
-                    </a>
-                </div>
-
-                <!-- 장바구니 클릭 시 수량 증감버튼 -->
-                <div class="cart">
-                    <div class="inner">
-                        <button>+</button>
-                        <input type="text" value="2">
-                        <button>-</button>
-                    </div>
-                </div>
-
-                <div class="txt">
-                    <div class="title">
-                        <span>망고스틴</span>
-                    </div>
-                    <div class="price">
-                        12,000원
-                    </div>
-                </div>
-
-
-            </li>
-
-            <!-- 복숭아 -->
-            <li>
-                <a href="#">
-                    <img src="/user/img/복숭아사진.jpeg" alt="복숭아사진">
-
-                    <div class="icons">
-                        <span class="material-symbols-outlined">favorite</span>
-                        <span class="material-symbols-outlined">shopping_cart</span>
-                    </div>
-
-                    <div class="txt">
-                        <div class="title">
-                            <span>복숭아</span>
-                        </div>
-                        <div class="price">
-                            3,000원
-                        </div>
-                    </div>
-                </a>
-            </li>
-
-            <!-- 석류 -->
-            <li>
-                <a href="#">
-                    <img src="/user/img/석류사진.jpg" alt="석류사진">
-
-                    <div class="icons">
-                        <span class="material-symbols-outlined">favorite</span>
-                        <span class="material-symbols-outlined">shopping_cart</span>
-                    </div>
-
-                    <div class="txt">
-                        <div class="title">
-                            <span>석류</span>
-                        </div>
-                        <div class="price">
-                            3,000원
-                        </div>
-                    </div>
-                </a>
-            </li>
-
-            <!-- 수박 -->
-            <li>
-                <a href="#">
-                    <img src="/user/img/수박사진.jpg" alt="수박사진">
-
-                    <div class="icons">
-                        <span class="material-icons red__heart">favorite</span>
-                        <span class="material-symbols-outlined">shopping_cart</span>
-                    </div>
-
-                    <div class="txt">
-                        <div class="title">
-                            <span>수박</span>
-                        </div>
-                        <div class="price">
-                            3,000원
-                        </div>
-                    </div>
-                </a>
-            </li>
-
-            <!-- 자두 -->
-            <li>
-                <a href="#">
-                    <img src="/user/img/자두사진.png" alt="자두사진">
-
-                    <div class="icons">
-                        <span class="material-icons red__heart">favorite</span>
-                        <span class="material-symbols-outlined">shopping_cart</span>
-                    </div>
-
-                    <div class="txt">
-                        <div class="title">
-                            <span>자두</span>
-                        </div>
-                        <div class="price">
-                            3,000원
-                        </div>
-                    </div>
-                </a>
-            </li>
-
-            <!-- 컵과일 -->
-            <li>
-                <a href="#">
-                    <img src="/user/img/컵과일사진.png" alt="컵과일사진">
-
-                    <div class="icons">
-                        <span class="material-icons red__heart">favorite</span>
-                        <span class="material-symbols-outlined">shopping_cart</span>
-                    </div>
-
-                    <div class="txt">
-                        <div class="title">
-                            <span>컵과일</span>
-                        </div>
-                        <div class="price">
-                            3,000원
-                        </div>
-                    </div>
-                </a>
-            </li>
-
-            <!-- 키위 -->
-            <li>
-                <a href="#">
-                    <img src="/user/img/키위사진.jpg" alt="키위사진">
-
-                    <div class="icons">
-                        <span class="material-symbols-outlined">favorite</span>
-                        <span class="material-symbols-outlined">shopping_cart</span>
-                    </div>
-
-                    <div class="txt">
-                        <div class="title">
-                            <span>키위</span>
-                        </div>
-                        <div class="price">
-                            3,000원
-                        </div>
-                    </div>
-                </a>
-            </li>
-
-            <!-- 배 -->
-            <li>
-                <a href="#">
-                    <img src="/user/img/배사진.png" alt="배사진">
-
-                    <div class="icons">
-                        <span class="material-symbols-outlined">favorite</span>
-                        <span class="material-symbols-outlined">shopping_cart</span>
-                    </div>
-
-                    <div class="txt">
-                        <div class="title">
-                            <span>배</span>
-                        </div>
-                        <div class="price">
-                            3,000원
-                        </div>
-                    </div>
-                </a>
-            </li>
         </ul>
 
     </div>
 
     <div class="pagination">
-        <a href="#" class="prev">
-                <span class="material-symbols-outlined">
-                    chevron_left
-                </span>
-        </a>
+<!--        <a href="#" class="prev">-->
+<!--                <span class="material-symbols-outlined">-->
+<!--                    chevron_left-->
+<!--                </span>-->
+<!--        </a>-->
+
+<!--        <p class="numbers">-->
+<!--            <a href="#">1</a>-->
+<!--            <a href="#">2</a>-->
+<!--            <a href="#">3</a>-->
+<!--            <a href="#">-->
+<!--                <span class="bold">4</span>-->
+<!--            </a>-->
+<!--            <a href="#">5</a>-->
+<!--        </p>-->
+
+<!--        <a href="#" class="next">-->
+<!--                <span class="material-symbols-outlined">-->
+<!--                    chevron_right-->
+<!--                </span>-->
+<!--        </a>-->
+
+
+        <th:block th:if="${pageInfo.hasPreviousPage}">
+            <a th:href="'#'" class="prevBtn" th:value="${pageInfo.prePage}">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </a>
+        </th:block>
+
 
         <p class="numbers">
-            <a href="#">1</a>
-            <a href="#">2</a>
-            <a href="#">3</a>
-            <a href="#">
-                <span class="bold">4</span>
-            </a>
-            <a href="#">5</a>
+                    <span th:each="pageNumber : ${pageInfo.navigatepageNums}" th:if="${pageNumber <= pageInfo.total}">
+                      <a th:text="${pageNumber}" th:href="'#'" class="numberBtn" th:attr="value=${pageNumber}" th:classappend="${pageNumber == pageInfo.pageNum ? 'bold large-text' : ''}"
+                         style="font-size: 16px; font-weight: bold;"></a>
+                    </span>
         </p>
 
-        <a href="#" class="next">
-                <span class="material-symbols-outlined">
-                    chevron_right
-                </span>
-        </a>
+        <th:block th:if="${pageInfo.hasNextPage}">
+            <a th:href="'#'" class="nextBtn" th:value="${pageInfo.nextPage}">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </a>
+        </th:block>
     </div>
 </section>
 

@@ -1,4 +1,4 @@
-package com.shop.fruitproject.firebase;
+package com.shop.fruitfruit.firebase;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;

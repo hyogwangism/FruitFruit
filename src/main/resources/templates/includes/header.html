@@ -1,10 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+
+<header id="header">
+  <div class="inner">
+
+    <a href="/" class="logo">
+      <img src="/user/img/푸릇푸릇%20로고.png" alt="logo" />
+    </a>
+
+    <div class="sub-menu" th:if="${session.session_id}==null">
+      <ul class="menu">
+        <li>
+          <a href="/user/login">Sign In</a>
+        </li>
+        <li>
+          <a href="/user/join">Join</a>
+        </li>
+<!--        <li>-->
+<!--          <a href="javascript:void(0)">language</a>-->
+<!--        </li>-->
+      </ul>
+    </div>
+
+    <div class="sub-menu" th:if="${session.session_id}!=null">
+      <ul class="menu">
+        <li>
+          <a href="/user/login" th:text="${session.session_id}"></a>
+        </li>
+        <li>
+          <a href="/user/logout">Logout</a>
+        </li>
+        <!--        <li>-->
+        <!--          <a href="javascript:void(0)">language</a>-->
+        <!--        </li>-->
+      </ul>
+    </div>
+
+    <ul class="main-menu">
+      <li class="item">
+        <div class="item__name">HOME</div>
+      </li>
+
+      <li class="item">
+        <div class="item__name">
+          <a href="./search.html">상품소개</a>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__name">
+          <a href="./search.html">구매내역</a>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__name">마이페이지</div>
+      </li>
+
+      <li class="item">
+        <div class="item__name red">
+          장바구니
+          <span class="material-icons">
+                            shopping_cart
+                        </span>
+
+        </div>
+      </li>
+    </ul>
+
+  </div>
+</header>

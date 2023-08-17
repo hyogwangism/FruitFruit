@@ -3,11 +3,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.shop.fruitproject.user.UserMapper">
-    <select id="testSelect" resultType="HashMap">
-        SELECT * FROM users
+<mapper namespace="com.shop.fruitfruit.user.UserMapper">
+    <insert id="insertJoin" parameterType="javax.servlet.http.HttpServletRequest">
+        INSERT INTO USER VALUES (null, #{id}, #{name}, #{pw}, #{phone}, 1, now())
+    </insert>
+
+    <select id="selectUser" resultType="HashMap">
+        SELECT * FROM USER WHERE USER_EMAIL = #{id}
 
     </select>
-    
+
+    <insert id="insertTerm" parameterType="javax.servlet.http.HttpServletRequest">
+        INSERT INTO TERM VALUES (null, #{USER_ID_NO}, #{marketing}, #{chk5_Checked}), (null, #{USER_ID_NO}, #{personal_Info}, #{chk6_Checked})
+    </insert>
+
+    <select id="loginUserChk" resultType="HashMap">
+        SELECT USER_EMAIL, USER_PWD, USER_NAME FROM USER WHERE USER_EMAIL=#{id}
+
+    </select>
+
+    <select id="joinNameChk" resultType="HashMap">
+        SELECT USER_NAME FROM USER WHERE USER_NAME=#{name}
+
+    </select>
+
+    <update id="updatePw">
+        UPDATE USER SET USER_PWD = #{newpw} WHERE USER_EMAIL = #{id}
+
+    </update>
+
+
 </mapper>
 

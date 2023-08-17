@@ -201,7 +201,7 @@
   gap: 20px;
 }
 #login .inner .login__input label input {
-  width: 400px;
+  width: 370px;
   padding: 10px;
   font: normal 12px/1 "Nanum Gothic";
   color: #bbb;
@@ -2714,6 +2714,7 @@ header {
 }
 header .inner {
   height: 120px;
+  z-index: 99;
 }
 header .inner .logo {
   position: absolute;
@@ -2822,6 +2823,7 @@ header .inner .main-menu .item .red .material-icons {
 }
 #visual .promotion .swiper .swiper-wrapper .swiper-slide img {
   width: 100%;
+  z-index: 98;
 }
 #visual .promotion .swiper-button-prev {
   margin: 0px 360px;
@@ -2871,6 +2873,19 @@ header .inner .main-menu .item .red .material-icons {
   margin-right: 20px;
   background-color: #fff;
   color: var(--primary-color);
+  font: normal 13px/1 "Nanum Gothic";
+  cursor: pointer;
+}
+
+#search .inner .buttons .productSort.active {
+  padding: 5px 20px;
+  height: 35px;
+  display: inline-block;
+  border: 2px solid var(--primary-color);
+  border-radius: 30px;
+  margin-right: 20px;
+  background-color: var(--primary-color);
+  color: #fff;
   font: normal 13px/1 "Nanum Gothic";
   cursor: pointer;
 }
@@ -3011,6 +3026,7 @@ header .inner .main-menu .item .red .material-icons {
   top: 0;
   right: 0;
   width: 120px;
+  z-index: 100;
 }
 #aside .sidebar ul {
   display: flex;
@@ -3154,5 +3170,51 @@ header .inner .main-menu .item .red .material-icons {
   color: #fff;
   padding-left: 20px;
 }
+#idChkBtn, #nameChkBtn{
+  width: 80px;
+  border-radius: 50px;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  font: bold 15px/1 "Nanum Gothic";
+  letter-spacing: 1px;
+  padding: 5px 5px;
+  cursor: pointer;
+}
 
+.confirmButton{
+  width: 80px;
+  height: 30px;
+  background-color: black;
+  color: #fff;
+  border: none;
+  font: bold 15px/1 "Nanum Gothic";
+  letter-spacing: 1px;
+  padding: 5px 5px;
+  cursor: pointer;
+}
+
+/* 눈 아이콘을 중앙 정렬하는 스타일 */
+#togglePassword, #togglePassword1, #togglePassword2 {
+  position: relative;
+  cursor: pointer;
+}
+
+
+/* 입력 필드와 겹치도록 설정 */
+#togglePassword1 i, #togglePassword1 i, #togglePassword2 i {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translate(-50%, -50%);
+}
+
+/* 눈 아이콘이 클릭될 때의 스타일 */
+#passwordInput[type="text"] {
+  /* 보이도록 타입 변경 */
+}
+
+#passwordInput[type="password"] {
+  /* 숨기도록 타입 변경 */
+}
 /*# sourceMappingURL=style.css.map */
