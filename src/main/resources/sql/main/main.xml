@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shop.fruitfruit.admin.AdminMapper">
+
+    <select id="loginUserChk">
+        SELECT * FROM ADMIN_USER WHERE ADMIN_ID=#{id};
+    </select>
+
+    <insert id="insertProduct">
+        INSERT INTO PRODUCT
+        VALUES (NULL, #{productSort}, #{productName}, #{productPrice}, #{productInventory}, #{productDescription}, #{productDiscount}, "판매중", null, NOW())
+
+    </insert>
+
+    <select id="selectProductByProductName" resultType="int">
+        SELECT PRODUCT_ID FROM PRODUCT WHERE PRODUCT_NAME=#{productName}
+
+    </select>
+
+    <insert id="insertProductImage" parameterType="java.util.List">
+        INSERT INTO IMAGE (PRODUCT_ID, IMAGE_URL, IMAGE_PATH, IMAGE_FILENAME, IMAGE_UPLOADED_AT)
+        VALUES
+        <foreach collection="list" item="paramMap" separator="," >
+            (#{paramMap.productId}, #{paramMap.fireBaseImageUrl}, #{paramMap.fileDBName}, #{paramMap.productName}, now())
+        </foreach>
+    </insert>
+
+    <select id="selectAllProduct" resultType="HashMap">
+        SELECT * FROM PRODUCT ORDER BY PRODUCT_ID DESC
+    </select>
+
+    <select id="selectProductByCondition" resultType="HashMap">
+        SELECT * FROM PRODUCT
+        <where>
+            <!-- 이 부분은 조건식이 없을 때 사용됩니다. -->
+            <if test="productSaleStatus == 'All' || productSaleStatus == null"></if>
+            <if test="productSort == 'All' || productSort == null"></if>
+            <!-- 이 부분은 productSaleStatus 조건이 있는 경우 사용됩니다. -->
+            <if test="productSaleStatus != null and productSaleStatus != 'All'">
+                AND PRODUCT_SALE_STATUS = #{productSaleStatus}
+            </if>
+
+            <if test="productSort != null and productSort != 'All'">
+                AND CATEGORY_NAME = #{productSort}
+            </if>
+            <!-- 이 부분은 searchField 가존재하는 경우 사용됩니다. -->
+            <if test="searchField != null and searchField != ''">
+                AND PRODUCT_NAME LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+        </where>
+
+        ORDER BY PRODUCT_ID DESC
+    </select>
+
+    <update id="updateSaleStatusDate">
+        UPDATE PRODUCT SET PRODUCT_SALE_STATUS = #{status}, PRODUCT_UPDATED_AT = NOW() WHERE PRODUCT_ID = #{productId}
+
+    </update>
+
+    <select id="updatedSaleStatusDate" resultType="HashMap">
+        SELECT * FROM PRODUCT WHERE PRODUCT_ID = #{productId}
+
+    </select>
+
+    <select id="selectProductbyProductId" resultType="HashMap">
+        SELECT * FROM PRODUCT WHERE PRODUCT_ID = #{productId}
+
+    </select>
+
+    <select id="selectPicturebyProductId" resultType="HashMap">
+        SELECT * FROM image WHERE PRODUCT_ID = #{productId}
+
+    </select>
+
+    <update id="updateProduct">
+        UPDATE PRODUCT
+        SET
+            CATEGORY_NAME = #{productSort}
+          , PRODUCT_NAME = #{productName}
+          , PRODUCT_PRICE = #{productPrice}
+          , PRODUCT_INVENTORY = #{productInventory}
+          , PRODUCT_DESCRIPTION = #{productDescription}
+          , PRODUCT_DISCOUNT = #{productDiscount}
+          , PRODUCT_SALE_STATUS =  "판매중"
+          , PRODUCT_UPDATED_AT = null
+          , PRODUCT_CREATED_AT = NOW()
+        WHERE
+            PRODUCT_ID = #{productId}
+    </update>
+
+    <update id="updateSalectedSaleStop" parameterType="java.util.HashMap">
+        UPDATE PRODUCT
+        SET
+        PRODUCT_SALE_STATUS =  "판매중지",
+        PRODUCT_UPDATED_AT = NOW()
+        WHERE
+        PRODUCT_ID IN
+        <foreach collection="selectedProductId" item="productId" open="(" close=")" separator=",">
+            #{productId}
+        </foreach>
+    </update>
+
+    <select id="selectProductsImage" resultType="HashMap">
+        SELECT IMAGE_PATH
+        FROM IMAGE
+        WHERE
+            PRODUCT_ID IN
+        <foreach collection="selectedProductId" item="productId" open="(" close=")" separator=",">
+            #{productId}
+        </foreach>
+    </select>
+
+    <select id="selectAllProductWithImage" resultType="HashMap">
+        SELECT P.*, I.IMAGE_URL
+        FROM PRODUCT P
+                 LEFT JOIN IMAGE I ON P.PRODUCT_ID = I.PRODUCT_ID
+        ORDER BY P.PRODUCT_ID DESC
+    </select>
+
+    <select id="selectProductBySortSearchField" resultType="HashMap">
+        SELECT P.*, I.IMAGE_URL
+        FROM PRODUCT P
+        LEFT JOIN IMAGE I ON P.PRODUCT_ID = I.PRODUCT_ID
+        <where>
+            <!-- 이 부분은 조건식이 없을 때 사용됩니다. -->
+            <if test="productSort == 'All' || productSort == null"></if>
+
+            <if test="productSort != null and productSort != 'All'">
+                AND P.CATEGORY_NAME = #{productSort}
+            </if>
+            <!-- 이 부분은 searchField 가존재하는 경우 사용됩니다. -->
+            <if test="searchField != null and searchField != ''">
+                AND P.PRODUCT_NAME LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+        </where>
+
+        ORDER BY P.PRODUCT_ID DESC
+    </select>
+</mapper>
+

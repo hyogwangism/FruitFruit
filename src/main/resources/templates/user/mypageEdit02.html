@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프룻프룻 쇼핑몰</title>
+
+    <!--Open Graph-->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="프룻프룻 Shopping Mall" />
+    <meta property="og:title" content="프룻프룻 Shopping Mall" />
+    <meta property="og:description" content="프룻프룻 Shopping Mall 입니다." />
+    <meta property="og:image" content="./img/openGraph.png" />
+    <meta property="og:url" content="https://prpr-shopping-mall.co.kr" />
+
+    <!--파비콘-->
+    <link rel="icon" href="./favicon.ico" />
+
+    <!--브라우저 스타일 초기화-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" />
+
+    <!--Google Fonts - 나눔고딕-->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <!-- Google Fonts Noto Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap"
+        rel="stylesheet">
+
+
+    <!-- Google Fonts - Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+
+    <!--Google Material Icons-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <link rel="stylesheet" href="./css/style.css">
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"
+        integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"
+        integrity="sha512-cOH8ndwGgPo+K7pTvMrqYbmI8u8k6Sho3js0gOqVWTmQMlLIi6TbqGWRTpf1ga8ci9H3iPsvDLr4X7xwhC/+DQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- SWIPER -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+
+    <script defer src="./js/main.js"></script>
+</head>
+
+<body>
+
+    <header id="header">
+        <div class="inner">
+
+            <a href="./index.html" class="logo">
+                <img src="./img/푸릇푸릇 로고.png" alt="logo" />
+            </a>
+
+            <div class="sub-menu">
+                <ul class="menu">
+                    <li>
+                        <a href="./login.html">Sign In</a>
+                    </li>
+                    <li>
+                        <a href="./join.html">Join</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)">language</a>
+                    </li>
+                </ul>
+            </div>
+
+            <ul class="main-menu">
+                <li class="item">
+                    <div class="item__name">HOME</div>
+                </li>
+
+                <li class="item">
+                    <div class="item__name">
+                        <a href="./search.html">상품소개</a>
+                    </div>
+                </li>
+
+                <li class="item">
+                    <div class="item__name">
+                        <a href="./search.html">구매내역</a>
+                    </div>
+                </li>
+
+                <li class="item">
+                    <div class="item__name">마이페이지</div>
+                </li>
+
+                <li class="item">
+                    <div class="item__name red">
+                        장바구니
+                        <span class="material-icons">
+                            shopping_cart
+                        </span>
+
+                    </div>
+                </li>
+            </ul>
+
+        </div>
+    </header>
+
+    <div id="mypageEdit">
+        <div class="inner">
+
+            <h2> 마이페이지 </h2>
+
+            <div class="tab__menu">
+                <a href="#">
+                    <div class="history">
+                        <p>구매내역</p>
+                    </div>
+                </a>
+
+
+                <a href="#">
+                    <div class="delivery">
+                        <p>배송지관리</p>
+                    </div>
+                </a>
+
+
+                <a href="#">
+                    <div class="memberInfo">
+                        <p>회원정보</p>
+                    </div>
+                </a>
+
+            </div>
+
+
+            <div class="txt_box">
+                <p>회원정보 수정</p>
+            </div>
+
+            <label for="email" class="email">
+                <p>이메일주소(ID)</p>
+                <input type="textbox" name="email" id="email">
+            </label>
+
+            <label for="name">
+                <p>닉네임</p>
+                <input type="textbox" name="name" id="name">
+                <button>변경</button>
+            </label>
+
+            <label for="phone">
+                <p>연락처</p>
+                <input type="textbox" name="phone" id="phone">
+                <button>변경</button>
+            </label>
+
+            <div class="change__PW">
+                <p>비밀번호 변경</p>
+                <div class="button__box">
+                    <button>
+                        비밀번호 변경하기
+                    </button>
+                </div>
+            </div>
+
+            <div class="mypageEdit__button">
+                <button>
+                    <a href="#">취소하기</a>
+                </button>
+
+                <button>
+                    <a href="#">수정완료</a>
+                </button>
+            </div>
+        </div>
+
+        <!-- 변경중이던 사항 초기화 모달 창 -->
+        <div class="mypageEdit__cancel" style="display: none;">
+            <div class="mypageEdit__cancel__inner">
+
+                <div class="top">
+                    <span>알림</span>
+                </div>
+
+                <div class="bottom">
+                    <span>변경중이던 사항이 초기화됩니다. <br>
+                        취소 하시겠습니까?</span>
+
+
+                    <div class="mypageEdit__cancel__buttons">
+                        <button>
+                            <a href="#">취소하기</a>
+                        </button>
+                        <button>
+                            <a href="#">계속작성</a>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 변경중이던 사항 완료 모달 창 -->
+        <div class="mypageEdit__confirm" style="display: none;">
+            <div class="mypageEdit__confirm__inner">
+
+                <div class="top">
+                    <span>알림</span>
+                </div>
+
+                <div class="bottom">
+                    <span>회원정보 수정이 완료되었습니다. <br>
+                        메인페이지로 이동합니다.</span>
+
+
+                    <div class="mypageEdit__confirm__buttons">
+                        <button>
+                            <a href="#">확인</a>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <footer id="footer">
+        <div class="inner">
+            <h1>
+                <img src="./img/푸릇푸릇 로고.png" alt="로고">
+            </h1>
+            <ul>
+                <li>
+                    <a href="#">Policy</a>
+                </li>
+                <li>
+                    <a href="#">Terms</a>
+                </li>
+                <li>
+                    <a href="#">Customer</a>
+                </li>
+                <li>
+                    <a href="#">Contact us</a>
+                </li>
+            </ul>
+
+            <address>
+                <span>(주)콜론비</span>
+                <br>
+                사업자등록번호 123-12-12345
+                <br />
+                통신판매업 신고번호 제2023-서울-1234호
+                <br>
+                대표 한동윤 | 개인정보 책임자 한동윤
+                <br>
+                서울 특별시 강남구 강남대로 123
+                <br>
+                <br>
+                고객센터: 02-1544-1234
+                <br>
+                제휴문의: echel@colon-b.com
+            </address>
+
+            <p>
+                Copyright &copy; 2023 Colon:B. ALL Right reserved.
+            </p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
