@@ -237,7 +237,7 @@ function submitForm() {
             'Content-Type': 'application/json'
         }
     }).then(res => {
-        location.href='/user/joinConfirm?userName=' + res.data;
+        location.href='/user/joinConfirm?userId=' + res.data;
     });
 }
 

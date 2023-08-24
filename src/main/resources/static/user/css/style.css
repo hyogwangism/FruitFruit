@@ -691,6 +691,7 @@
   font: 800 25px/1 "Nanum Gothic";
 }
 #detail .detail__inner .box01 .right .right__txt01 span {
+  cursor: pointer;
   color: red;
   font-size: 30px;
 }
@@ -2679,6 +2680,7 @@ body {
 }
 
 a {
+  cursor: pointer;
   text-decoration: none;
   color: #333;
 }

@@ -78,7 +78,7 @@
         <ul>
 
             <!-- 마이페이지 -->
-            <li th:if="${session.session_id}!=null">
+            <li th:if="${session.sessionId}!=null">
                 <a href="#">
                     <span class="material-symbols-outlined">person</span>
                     <p th:text="마이페이지" style="font-size: 12px;"></p>
@@ -88,10 +88,10 @@
             </li>
 
 
-            <li th:if="${session.session_id}==null">
+            <li th:if="${session.sessionId}==null">
                 <a href="/user/login">
                     <span class="material-symbols-outlined">person</span>
-                    <p  th:if="${session.session_id}==null" th:text="로그인"></p>
+                    <p  th:if="${session.sessionId}==null" th:text="로그인"></p>
                 </a>
 
                 <div class="line"></div>
@@ -138,35 +138,42 @@
 <section id="products">
 
     <div class="inner" >
-
+<!--        <input type="hidden" id="sessionId" th:value="${session.sessionId}">-->
         <!-- 상품 리스트 -->
         <ul id="axiosBody">
 
             <!-- 오렌지 -->
             <!--            class="cart__click"-->
-            <li  th:each="p : ${pageInfo.list}">
+            <li  th:each="p : ${pageInfo.list}" >
+                <input class="productPrice" type="hidden" th:value="${p.PRODUCT_PRICE}*${p.PRODUCT_DISCOUNT}/100">
+
                 <!-- 클릭 시 상세페이지 이동 -->
-                <a href="/user/detail">
+                <a th:href="@{user/productDetail(productId=${p.PRODUCT_ID})}">
 
                     <!-- 상품 사진 -->
-                    <img th:src="${p.IMAGE_URL}" alt="오렌지사진">
+                    <img class="productImage" th:src="${p.IMAGE_URL}" alt="상품 이미지">
 
 
-                    <div class="icons">
-                        <!-- 좋아요 기능 눌렀을때 빨간 하트 아이콘-->
-                        <!-- (기본 하트 아이콘은 두번 째 li (과일세트)에 있어요) -->
-<!--                        <span class="material-icons red__heart">favorite</span>-->
-                        <!-- 좋아요 기능 기본 하트 아이콘-->
-                        <a th:id="productLike" th:data-product-id="${p.PRODUCT_ID}">
-                            <span th:if="${p.LIKE_ID == null}" class="material-symbols-outlined">favorite</span>
-                            <span th:unless="${p.LIKE_ID == null}" class="material-icons red__heart">favorite</span>
+                    <div class="icons" >
+                    <!-- 좋아요 기능 눌렀을때 빨간 하트 아이콘-->
+                    <!-- (기본 하트 아이콘은 두번 째 li (과일세트)에 있어요) -->
+                    <!--                        <span class="material-icons red__heart">favorite</span>-->
+                    <!-- 좋아요 기능 기본 하트 아이콘-->
+                        <a th:id="productLike" th:data-product-id="${p.PRODUCT_ID}" th:if="${sessionId==null}">
+                            <span class="material-icons material-symbols-outlined">favorite</span>
+                        </a>
+                        <a th:id="productLike" th:data-product-id="${p.PRODUCT_ID}" th:if="${sessionId!=null}">
+                            <span th:if="${p.LIKE_ID != null}" class="material-icons red__heart">favorite</span>
+                            <span th:if="${p.LIKE_ID == null}" class="material-icons material-symbols-outlined">favorite</span>
                         </a>
 
-                        <!-- 장바구니 카트 아이콘 -->
-                        <a id="productCart" th:data-product-id="${p.PRODUCT_ID}">
+                    <!-- 장바구니 카트 아이콘 -->
+                    <a th:id="productCart" th:data-product-id="${p.PRODUCT_ID}">
                         <span class="material-symbols-outlined">shopping_cart</span>
-                        </a>
-                    </div>
+                    </a>
+                </div>
+
+
 
                     <!-- 장바구니 클릭 시 수량 증감버튼 -->
                     <!--                <div class="cart">-->
@@ -181,18 +188,18 @@
                     <div class="txt">
                         <!-- 상품명 -->
                         <div class="title">
-                            <span th:text="${p.PRODUCT_NAME}"></span>
+                            <span class="productName" th:text="${p.PRODUCT_NAME}"></span>
 
                         </div>
 
                         <!-- 상품 가격 -->
-                        <div class="price" th:text="${p.PRODUCT_PRICE}+원">
-
+                        <div  th:text="${p.PRODUCT_PRICE}*${p.PRODUCT_DISCOUNT}/100+원">
 
                         </div>
                     </div>
                 </a>
             </li>
+
 
 
         </ul>
@@ -245,50 +252,4 @@
     </div>
 </section>
 
-
-<footer id="footer">
-    <div class="inner">
-        <h1>
-            <img src="/user/img/푸릇푸릇 로고.png" alt="로고">
-        </h1>
-        <ul>
-            <li>
-                <a href="#">Policy</a>
-            </li>
-            <li>
-                <a href="#">Terms</a>
-            </li>
-            <li>
-                <a href="#">Customer</a>
-            </li>
-            <li>
-                <a href="#">Contact us</a>
-            </li>
-        </ul>
-
-        <address>
-            <span>(주)콜론비</span>
-            <br>
-            사업자등록번호 123-12-12345
-            <br />
-            통신판매업 신고번호 제2023-서울-1234호
-            <br>
-            대표 한동윤 | 개인정보 책임자 한동윤
-            <br>
-            서울 특별시 강남구 강남대로 123
-            <br>
-            <br>
-            고객센터: 02-1544-1234
-            <br>
-            제휴문의: echel@colon-b.com
-        </address>
-
-        <p>
-            Copyright &copy; 2023 Colon:B. ALL Right reserved.
-        </p>
-    </div>
-</footer>
-
-</body>
-
-</html>
+    <th:block th:insert="~{includes/footer}"></th:block>

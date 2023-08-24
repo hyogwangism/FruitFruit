@@ -6,7 +6,7 @@
       <img src="/user/img/푸릇푸릇%20로고.png" alt="logo" />
     </a>
 
-    <div class="sub-menu" th:if="${session.session_id}==null">
+    <div class="sub-menu" th:if="${session.sessionId}==null">
       <ul class="menu">
         <li>
           <a href="/user/login">Sign In</a>
@@ -20,10 +20,10 @@
       </ul>
     </div>
 
-    <div class="sub-menu" th:if="${session.session_id}!=null">
+    <div class="sub-menu" th:if="${session.sessionId}!=null">
       <ul class="menu">
         <li>
-          <a href="/user/login" th:text="${session.session_id}"></a>
+          <a href="/user/login" th:text="${session.sessionId}"></a>
         </li>
         <li>
           <a href="/user/logout">Logout</a>

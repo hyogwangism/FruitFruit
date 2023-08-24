@@ -26,7 +26,7 @@ function closeModal() {
 }
 
 function changePw() {
-    var idValue = $("#id").val();
+    const idValue = $("#id").val();
     if (idValue.trim() !== '') {
         window.location.href = '/user/changePw?id=' + encodeURIComponent(idValue);
     }

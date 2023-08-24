@@ -14,9 +14,10 @@
     </select>
 
     <select id="selectProductBySortSearchField" resultType="HashMap">
-        SELECT P.*, I.IMAGE_URL
+        SELECT P.*, I.IMAGE_URL, L.*
         FROM PRODUCT P
         LEFT JOIN IMAGE I ON P.PRODUCT_ID = I.PRODUCT_ID
+        LEFT JOIN PRODUCT_LIKE L ON P.PRODUCT_ID = L.PRODUCT_ID
         <where>
             <!-- 이 부분은 조건식이 없을 때 사용됩니다. -->
             <if test="productSort == 'All' || productSort == null"></if>
@@ -33,12 +34,14 @@
         ORDER BY P.PRODUCT_ID DESC
     </select>
 
+    <!--    찜하기-->
     <insert id="insertProductLike">
         INSERT INTO PRODUCT_LIKE
         VALUES (NULL, #{productLikeId}, #{USER_ID_NO})
 
     </insert>
 
+    <!--  상품ID와 유저ID 기준으로 찜 정보 select -->
     <select id="selectProductLikeByProductId" resultType="HashMap">
         SELECT * FROM PRODUCT_LIKE WHERE PRODUCT_ID=#{productLikeId} AND USER_ID_NO=#{USER_ID_NO}
     </select>
@@ -46,5 +49,9 @@
     <delete id="deleteProductLike">
         DELETE FROM PRODUCT_LIKE WHERE LIKE_ID=#{LIKE_ID}
     </delete>
+
+    <select id="selectProductLikeListByUserId" resultType="HashMap">
+        SELECT * FROM PRODUCT_LIKE WHERE USER_ID_NO=#{USER_ID_NO}
+    </select>
 </mapper>
 

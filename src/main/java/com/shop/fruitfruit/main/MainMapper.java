@@ -9,7 +9,7 @@ import java.util.Map;
 @Mapper
 public interface MainMapper {
 
-    List<HashMap<String, Object>> selectAllProductInfo();
+    List<HashMap<String, Object>> selectAllProductInfo(HashMap<String, Object> paramMap);
 
     List<HashMap<String, Object>> selectProductBySortSearchField(HashMap<String, Object> paramMap);
 
@@ -18,4 +18,6 @@ public interface MainMapper {
     HashMap<String, Object> selectProductLikeByProductId(HashMap<String, Object> paramMap);
 
     void deleteProductLike(HashMap<String, Object> paramMap);
+
+    List<HashMap<String, Object>> selectProductLikeListByUserId(HashMap<String, Object> paramMap);
 }

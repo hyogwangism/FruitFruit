@@ -61,63 +61,76 @@ $(document).ready(function () {
                 'Content-Type': 'application/json'
             }
         }).then(res => {
+
+
             //const pList = res.data;
-            const pageInfo = res.data;
+            const pageInfo = res.data.pageInfo;
             const pList = pageInfo.list;
+            const sessionId = res.data.sessionId;
+
             console.log('피리:' + pageInfo);
             console.log('피리1:' + pList);
-            // .product-table 클래스 내부의 tbody 내부 내용 교체
+
             const UlRows = pList.map((product) => {
-                const productLink = $("<a>")
-                    .attr("href", "/user/detail?productId=" + product.PRODUCT_ID)
-                    .append($("<img>").attr("src", product.IMAGE_URL).attr("alt", "상품사진"))
-                    .append($("<div>").addClass("icons")
-                        .append(
-                            $("<a>")
-                                .attr("id", "productLike")
-                                .attr("data-product-id", product.PRODUCT_ID)
-                                .append(
-                                    $("<span>")
-                                        .addClass("material-symbols-outlined")
-                                        .addClass(product.LIKE_ID == null ? "" : "red__heart")
-                                        .text("favorite")
-                                )
-                        )
-                        .append($("<span>").addClass("material-symbols-outlined").text("shopping_cart"))
-                    );
+                const productLink = $('<a>')
+                    .attr('href', '/user/productDetail?productId=' + product.PRODUCT_ID)
+                    .append($('<img>')
+                        .addClass('productImage')
+                        .attr('src', product.IMAGE_URL)
+                        .attr('alt', '상품사진'));
 
-                const productTitle = $("<div>")
-                    .addClass("title")
-                    .append($("<span>").text(product.PRODUCT_NAME));
+                const productLikeButton = $('<a>')
+                    .attr('id', 'productLike')
+                    .attr('data-product-id', product.PRODUCT_ID);
 
-                const productPrice = $("<div>").addClass("price").text(product.PRODUCT_PRICE + "원");
+                if (sessionId == null) {
+                    productLikeButton.append($('<span>')
+                        .addClass('material-icons material-symbols-outlined')
+                        .text('favorite'));
+                } else {
+                    if (product.LIKE_ID != null) {
+                        productLikeButton.append($('<span>')
+                            .addClass('material-icons red__heart')
+                            .text('favorite'));
+                    } else {
+                        productLikeButton.append($('<span>')
+                            .addClass('material-icons material-symbols-outlined')
+                            .text('favorite'));
+                    }
+                }
 
-                const txtDiv = $("<div>").addClass("txt")
-                    .append(productTitle)
-                    .append(productPrice);
+                const productCartButton = $('<a>')
+                    .attr('id', 'productCart')
+                    .attr('data-product-id', product.PRODUCT_ID)
+                    .append($('<span>')
+                        .addClass('material-symbols-outlined')
+                        .text('shopping_cart'));
 
-                return $("<li>")
+                const iconsDiv = $('<div>')
+                    .addClass('icons')
+                    .append(productLikeButton)
+                    .append(productCartButton);
+
+                const txtDiv = $('<div>')
+                    .addClass('txt')
+                    .append($('<div>')
+                        .addClass('title')
+                        .append($('<span>')
+                            .addClass('productName')
+                            .text(product.PRODUCT_NAME)))
+                    .append($('<div>')
+                        .addClass('productPrice')
+                        .addClass('price')
+                        .text(product.PRODUCT_PRICE + '원'));
+
+                const liElement = $('<li>')
                     .append(productLink)
+                    .append(iconsDiv)
                     .append(txtDiv);
+
+                return liElement;
             });
-            // const UlRows = pList.map((product) => {
-            //     return $("<li>")
-            //         .append($("<a>").attr("href", "/user/detail?productId=" + product.PRODUCT_ID)
-            //             .append($("<img>").attr("src", product.IMAGE_URL).attr("alt", "상품사진"))
-            //             .append($("<div>").addClass("icons")
-            //
-            //                 .append($("<span>").addClass("material-symbols-outlined").text("favorite"))
-            //                 .append($("<span>").addClass("material-symbols-outlined").text("shopping_cart"))
-            //             )
-            //             .append($("<div>").addClass("txt")
-            //                 .append($("<div>").addClass("title")
-            //                     .append($("<span>").text(product.PRODUCT_NAME))
-            //                 )
-            //                 .append($("<div>").addClass("price").text(product.PRODUCT_PRICE+"원"))
-            //             )
-            //         )
-            //         .append($("</li>"));
-            // });
+
             $("#axiosBody").empty().append(UlRows);
 
             // .pagination 클래스 태그 내부 내용 교체
@@ -184,18 +197,12 @@ $(document).ready(function () {
 });
 
 $(document).ready(function() {
-    let productLikeId, productCartId;
+    let productLikeId;
     // 상품 좋아요 버튼 클릭 시
-    $('a#productLike').click(function() {
+    // 이벤트 위임을 사용하여 'a#productLike' 클릭 이벤트 처리
+    $(document).on('click', 'a#productLike', function() {
         productLikeId = $(this).data('product-id');
         console.log('상품 ID (좋아요): ' + productLikeId);
-        sendAxiosRequest_mainPage();
-    });
-
-    // 상품 장바구니 버튼 클릭 시
-    $('a#productCart').click(function() {
-        productCartId = $(this).data('product-id');
-        console.log('상품 ID (장바구니): ' + productCartId);
         sendAxiosRequest_mainPage();
     });
 
@@ -204,33 +211,104 @@ $(document).ready(function() {
             method: 'post',
             url: '/productLikeAxios',
             data: {
-                "productLikeId": productLikeId,
-                "productCartId": productCartId
+                "productLikeId": productLikeId
             },
             dataType: "JSON",
             headers: {
                 'Content-Type': 'application/json'
             }
         }).then(res => {
-            if(res.data===1){
-                $('#productLike').find('span').removeClass('material-symbols-outlined').addClass('material-icons red__heart');
+            const paramMap = res.data;
+            JSON.stringify('파람쓰:'+paramMap);
 
-            } else if(res.data===2) {
-                $('#productLike').find('span').removeClass('material-icons red__heart').addClass('material-symbols-outlined');
-            } else if(res.data===-1){
+            if (Object.keys(paramMap).length === 0) {
                 alert('로그인이 필요한 서비스 입니다.');
-                location.href='user/login';
-            }
+                location.href = 'user/login';
+            } else {
+                const isLiked = paramMap.isLiked;
 
+                const detailLikeElement = $('a#productLike[data-product-id="' + paramMap.PRODUCT_ID + '"] span');
+                if (isLiked) {
+                    detailLikeElement.addClass('red__heart').removeClass('material-symbols-outlined');
+                } else {
+                    detailLikeElement.removeClass('red__heart').addClass('material-symbols-outlined');
+                }
+            }
         });
     }
 });
-$(document).ready(function() {
 
-    // 장바구니 버튼 클릭 시
-    $('#productCart').click(function() {
-        var productId = $(this).attr('th:value');
-        console.log('상품 ID: ' + productId);
-    });
+function addToCartOrIncreaseQuantity(cartArray, cartItem) {
+    let found = false;
+
+    for (let i = 0; i < cartArray.length; i++) {
+        if (cartArray[i].productCartId === cartItem.productCartId &&
+            cartArray[i].productImage === cartItem.productImage &&
+            cartArray[i].productName === cartItem.productName) {
+            cartArray[i].productPrice = parseFloat(cartArray[i].productPrice) + parseFloat(cartItem.productPrice);
+            cartArray[i].productQuantity = parseInt(cartArray[i].productQuantity) + parseInt(cartItem.productQuantity);
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        cartArray.push(cartItem);
+    }
+
+    return cartArray;
+}
+
+$(document).on('click', '.detailCart', function() {
+    const detailCartId = parseInt($('#productId').val());
+    const detailImage = $('.detailImage').attr('alt');
+    const detailName = $('.detailName').text();
+    const detailTotalPrice = parseFloat($('.detailTotalPrice').val());
+    const detailQuantity = parseInt($('#quantityInput').val());
+
+    const cartAddArry = JSON.parse(localStorage.getItem('cartAddArry')) || [];
+    const cartItem = {
+        'productCartId': detailCartId,
+        'productImage': detailImage,
+        'productName': detailName,
+        'productPrice': detailTotalPrice * detailQuantity, // Calculate total price
+        'productQuantity': detailQuantity
+    };
+
+    const updatedCart = addToCartOrIncreaseQuantity(cartAddArry, cartItem);
+
+    localStorage.setItem('cartAddArry', JSON.stringify(updatedCart));
+
+    console.log('상품 ID (장바구니): ' + detailCartId);
+    console.log('상품명 (장바구니): ' + detailName);
+    console.log('상품가격 (장바구니): ' + detailTotalPrice * detailQuantity); // Calculate total price
+    console.log('상품이미지 (장바구니): ' + detailImage);
+    console.log('상품개수 (장바구니): ' + detailQuantity);
+    console.log('상품최종장비구니:' + JSON.stringify(cartAddArry));
 });
 
+$(document).on('click', 'a#productCart', function() {
+    const productCartId = parseInt($(this).data('product-id'));
+    const productImage = $(this).closest('li').find('.productImage').attr('alt');
+    const productName = $(this).closest('li').find('.productName').text();
+    const productPrice = parseFloat($(this).closest('li').find('.productPrice').val());
+
+    const cartAddArry = JSON.parse(localStorage.getItem('cartAddArry')) || [];
+    const cartItem = {
+        'productCartId': productCartId,
+        'productImage': productImage,
+        'productName': productName,
+        'productPrice': productPrice,
+        'productQuantity': 1
+    };
+
+    const updatedCart = addToCartOrIncreaseQuantity(cartAddArry, cartItem);
+
+    localStorage.setItem('cartAddArry', JSON.stringify(updatedCart));
+
+    console.log('상품 ID (장바구니): ' + productCartId);
+    console.log('상품명 (장바구니): ' + productName);
+    console.log('상품가격 (장바구니): ' + productPrice);
+    console.log('상품이미지 (장바구니): ' + productImage);
+    console.log('상품최종장비구니:' + JSON.stringify(cartAddArry));
+});

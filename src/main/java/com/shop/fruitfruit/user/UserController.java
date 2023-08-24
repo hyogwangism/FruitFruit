@@ -1,9 +1,13 @@
 package com.shop.fruitfruit.user;
 
+import com.shop.fruitfruit.admin.AdminService;
+import com.shop.fruitfruit.main.MainService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.apache.ibatis.annotations.Param;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,17 +15,40 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("user")
+@Log4j2
 public class UserController {
     private final UserService userService;
+    private final AdminService adminService;
+    private final MainService mainService;
 
     private final static String sessionId = "sessionId";
 
 
+    @RequestMapping("join")
+    public String Join(){
+      return "user/join" ;
+    }
+
+    @RequestMapping("login")
+    public String Login(){
+        return "user/login";
+    }
+
+
+    @RequestMapping("findPw")
+    public String findPw(){
+        return "user/findPw";
+    }
+
+    @RequestMapping("changePw")
+    public String changePw(){
+        return "user/changePw";
+    }
 
     /**
      * @author 황호준
@@ -49,6 +76,17 @@ public class UserController {
         model.addAttribute("errorMessage", "회원정보 가입 성공.");
 
         return paramMap.get("id").toString();
+    }
+
+    /**
+     * @author 황호준
+     * 회원가입시 확인페이지
+     */
+    @RequestMapping("joinConfirm")
+    public String JoinConfirm(Model model, @RequestParam(value = "userId") String userEmailId){
+        log.info("유절네임:"+ userEmailId);
+        model.addAttribute("userEmailId", userEmailId);
+        return "user/joinConfirm";
     }
 
     /**
@@ -161,5 +199,109 @@ public class UserController {
         }
     }
 
+    /**
+     * @author 황호준
+     * 상품 상세정보
+     */
+
+    @RequestMapping("/productDetail")
+    public String productDetail(HttpSession session, Model model, @Param(value = "productId") int productId) {
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("productId", productId);
+
+        //세션 아이디가 없을 때 = 로그인 하지 않았을 때
+        if (session.getAttribute("sessionId") == null) {
+
+            //상품Id 기준으로 상품 정보 select
+            HashMap<String, Object> productDetail = adminService.selectProductbyProductId(productId);
+            log.info("프로덕트 아이디기준 상품정보:" + productDetail);
+
+            model.addAttribute("productDetail", productDetail);
+
+            return "product/detail";
+
+            //로그인이 되었을 때
+        } else {
+            String sessionId = session.getAttribute("sessionId").toString();
+            paramMap.put("id", sessionId);
+            //상품Id 기준으로 상품정보 select
+            HashMap<String, Object> productDetail = adminService.selectProductbyProductId(productId);
+            log.info("프로덕트 아이디기준 상품정보:" + productDetail);
+
+            //로그인 된 유저정보 select
+            paramMap.putAll(userService.selectUser(paramMap));
+            log.info("유저정보 담은 파람맵:"+paramMap);
+            log.info("USER_ID_NO입니당:"+Integer.parseInt(paramMap.get("USER_ID_NO").toString()));
+            //유저Id 기준으로 찜list select
+            List<HashMap<String, Object>> likeList = mainService.selectProductLikeListByUserId(paramMap);
+
+            model.addAttribute("productDetail", productDetail);
+            model.addAttribute("likeList", likeList);
+            model.addAttribute("isLiked", likeList.stream().anyMatch(like -> like.get("PRODUCT_ID").equals(productDetail.get("PRODUCT_ID"))));
+            model.addAttribute("userIdNo", Integer.parseInt(paramMap.get("USER_ID_NO").toString()));
+
+
+            return "product/detail";
+        }
+
+    }
+
+    @RequestMapping("/detailLikeAxios")
+    @ResponseBody
+    @Transactional
+    public HashMap<String, Object> detailLikeAxios(HttpSession session, @RequestBody HashMap<String, Object> paramMap){
+        log.info("디텔 아쇽 리퀘스트 파람맵:"+paramMap);
+
+        Boolean isLiked = false;
+        //로그인이 되어있는 상태일때
+        if(paramMap.get("USER_ID_NO").toString()!=null){
+
+            //sessionId, productId 기준으로 찜목록 select
+            if(mainService.selectProductLikeByProductId(paramMap) == null){
+
+                //찜이 되어있지 않은 상태니까 찜하는 메서드 실행
+                mainService.insertProductLike(paramMap);
+
+                //찜이 되었으니 다시 sessionId, productId 기준으로 select
+                paramMap.putAll(mainService.selectProductLikeByProductId(paramMap));
+                log.info("아쇽파람맵1:"+paramMap);
+
+                if(paramMap.get("productLikeId").toString().equals(paramMap.get("PRODUCT_ID").toString())){
+                    isLiked = true;
+                }
+
+                paramMap.put("isLiked", isLiked);
+                return paramMap;
+
+
+                //sessionId, productId 기준으로 찜목록이 있을때
+            } else if(mainService.selectProductLikeByProductId(paramMap) != null) {
+
+                //sessionId, productId 기준으로 찜목록 불러와서 Map에 put
+                paramMap.putAll(mainService.selectProductLikeByProductId(paramMap));
+
+                //불러온 찜목록에서 LIKE_ID기준으로 찜 삭제
+                mainService.deleteProductLike(paramMap);
+
+                HashMap<String, Object> likeMap = mainService.selectProductLikeByProductId(paramMap);
+                if(likeMap == null){
+                    isLiked = false;
+                    paramMap.put("isLiked", isLiked);
+                }
+                log.info("라이크맵: "+ likeMap);
+
+                return paramMap;
+            }
+
+            //로그인 되어있지 않은 상태일때
+        } else if(session.getAttribute("sessionId")==null) {
+            //sessionId가 없으면 return할 Map을 비우기 => 로그인되지 않았을때는 찜을 할 수 없어야 하기 때문
+            paramMap.clear();
+            log.info("제거된 파람맵:"+paramMap);
+            return paramMap;
+        }
+
+        return null;
+    }
 
 }

@@ -16,9 +16,9 @@ public class MainService implements MainMapper{
     private final MainMapper mainMapper;
 
     @Override
-    public List<HashMap<String, Object>> selectAllProductInfo() {
-
-        return mainMapper.selectAllProductInfo();
+    public List<HashMap<String, Object>> selectAllProductInfo(HashMap<String, Object> paramMap) {
+        PageHelper.startPage((Integer) paramMap.get("startPage"), (Integer) paramMap.get("pageSize"));
+        return mainMapper.selectAllProductInfo(paramMap);
     }
 
     @Override
@@ -42,6 +42,11 @@ public class MainService implements MainMapper{
     @Override
     public void deleteProductLike(HashMap<String, Object> paramMap) {
         mainMapper.deleteProductLike(paramMap);
+    }
+
+    @Override
+    public List<HashMap<String, Object>> selectProductLikeListByUserId(HashMap<String, Object> paramMap) {
+        return mainMapper.selectProductLikeListByUserId(paramMap);
     }
 
 }

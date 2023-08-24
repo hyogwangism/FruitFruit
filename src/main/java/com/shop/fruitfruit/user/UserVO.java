@@ -1,7 +1,8 @@
 package com.shop.fruitfruit.user;
 
+import lombok.Data;
 import lombok.Getter;
-
+import lombok.ToString;
 @Getter
 public class UserVO {
 
@@ -17,4 +18,5 @@ public class UserVO {
         this.name = name;
         this.phone = phone;
     }
+
 }
