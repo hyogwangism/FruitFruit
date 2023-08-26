@@ -66,8 +66,11 @@
     </select>
 
     <select id="selectProductbyProductId" resultType="HashMap">
-        SELECT * FROM PRODUCT
-        WHERE PRODUCT_ID = #{productId}
+        SELECT P.*, I.IMAGE_URL
+        FROM PRODUCT P
+        LEFT JOIN IMAGE I
+        ON P.PRODUCT_ID = I.PRODUCT_ID
+        WHERE P.PRODUCT_ID = #{productId}
 
     </select>
 

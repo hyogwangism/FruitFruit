@@ -23,11 +23,6 @@ public class FireBaseService {
 
     //    @Value("${firebase.bucket}")
     private String firebaseBucket = "fruitfruit-1cf5f.appspot.com";
-    private final AdminMapper adminMapper;
-
-    public FireBaseService(AdminMapper adminMapper) {
-        this.adminMapper = adminMapper;
-    }
 
     public HashMap<String, Object> uploadFiles(MultipartFile imgFiles) throws IOException {
 

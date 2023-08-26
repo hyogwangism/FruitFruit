@@ -1,5 +1,7 @@
 package com.shop.fruitfruit.user;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop.fruitfruit.admin.AdminService;
 import com.shop.fruitfruit.main.MainService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -56,7 +59,6 @@ public class UserController {
      * 회원가입
      *
      * @param {string} 테이블 이름 user
-     * @param
      * {
      *   HashMap<String, Object> paramMap => Input에 입력된 회원정보 저장
      *   JoinMethod =>
@@ -70,10 +72,9 @@ public class UserController {
      */
     @RequestMapping("/join_ok")
     @ResponseBody
-    public String Join_ok(Model model, @RequestBody HashMap<String, Object> paramMap) throws Exception {
+    public String Join_ok(@RequestBody HashMap<String, Object> paramMap){
 
         userService.JoinMethod(paramMap);
-        model.addAttribute("errorMessage", "회원정보 가입 성공.");
 
         return paramMap.get("id").toString();
     }
@@ -218,7 +219,7 @@ public class UserController {
 
             model.addAttribute("productDetail", productDetail);
 
-            return "product/detail";
+            return "user/detail";
 
             //로그인이 되었을 때
         } else {
@@ -241,7 +242,7 @@ public class UserController {
             model.addAttribute("userIdNo", Integer.parseInt(paramMap.get("USER_ID_NO").toString()));
 
 
-            return "product/detail";
+            return "user/detail";
         }
 
     }
@@ -302,6 +303,40 @@ public class UserController {
         }
 
         return null;
+    }
+
+    @RequestMapping("cart")
+    public String cart(@RequestParam String cartData, Model model) throws JsonProcessingException {
+        log.info("넘어온 데이터:"+cartData);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> cartDataMap = null;
+
+        try {
+            cartDataMap = objectMapper.readValue(cartData, Map.class);
+        } catch (Exception e) {
+            // Handle parsing exception
+            e.printStackTrace();
+        }
+
+        if (cartDataMap != null) {
+            // 여기서 cartDataMap를 활용하여 원하는 작업을 수행합니다.
+        }
+
+        log.info("슬래시빼:"+ cartDataMap);
+        String cartArryString = (String) cartDataMap.get("cartArry");
+        List<HashMap<String, Object>> cartList = objectMapper.readValue(cartArryString, List.class);
+
+        log.info("카트리스트:"+cartList);
+        model.addAttribute("cartData", cartDataMap);
+        model.addAttribute("cartList", cartList);
+        return "user/cart";
+    }
+    @RequestMapping("cartAxios")
+    @ResponseBody
+    public HashMap<String, Object> cartAxios(@RequestBody HashMap<String, Object> cartDataMap) {
+        log.info("카트 데이터맵: " + cartDataMap);
+        // 여기서 cartData를 활용하여 원하는 작업을 수행합니다.
+        return cartDataMap;
     }
 
 }

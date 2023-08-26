@@ -51,27 +51,10 @@ public class MainController {
             List<HashMap<String, Object>> productList = mainService.selectAllProductInfo(paramMap);
             log.info("메인 프리스트:" + productList);
 
-//            List<HashMap<String, Object>> likeList = mainService.selectProductLikeListByUserId(paramMap);
-//            log.info("메인 라이크리스트:" + productList);
-////
-//            // productList의 LIKE_ID 값을 Set으로 변환
-//            Set<Object> productLikeIds = productList.stream()
-//                    .map(like -> like.get("LIKE_ID"))
-//                    .collect(Collectors.toSet());
-//
-//            // likeList의 LIKE_ID 값을 Set으로 변환
-//            Set<Object> userLikeIds = likeList.stream()
-//                    .map(like -> like.get("LIKE_ID"))
-//                    .collect(Collectors.toSet());
-//
-//            // 두 Set 간의 교집합을 확인하여 공통된 LIKE_ID 값이 있는지 여부를 결정
-//            boolean hasCommonLikes = !Collections.disjoint(productLikeIds, userLikeIds);
-
             PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(productList);
 
             model.addAttribute("pageInfo", pageInfo);
             model.addAttribute("sessionId", session.getAttribute("sessionId").toString());
-//            model.addAttribute("hasCommonLikes", hasCommonLikes);
 
             log.info("첫 페이지인뽕:" + pageInfo);
         }
@@ -98,22 +81,6 @@ public class MainController {
 
             List<HashMap<String, Object>> productList = mainService.selectProductBySortSearchField(paramMap);
             log.info("프리스트:" + productList);
-
-//            List<HashMap<String, Object>> likeList = mainService.selectProductLikeListByUserId(paramMap);
-//            log.info("라이크리스트:" + productList);
-//
-//            // productList의 LIKE_ID 값을 Set으로 변환
-//            Set<Object> productLikeIds = productList.stream()
-//                    .map(like -> like.get("LIKE_ID"))
-//                    .collect(Collectors.toSet());
-//
-//            // likeList의 LIKE_ID 값을 Set으로 변환
-//            Set<Object> userLikeIds = likeList.stream()
-//                    .map(like -> like.get("LIKE_ID"))
-//                    .collect(Collectors.toSet());
-//
-//            // 두 Set 간의 교집합을 확인하여 공통된 LIKE_ID 값이 있는지 여부를 결정
-//            boolean hasCommonLikes = !Collections.disjoint(productLikeIds, userLikeIds);
 
             PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(productList);
 
@@ -199,3 +166,20 @@ public class MainController {
 //    }
 
 }
+
+
+//            List<HashMap<String, Object>> likeList = mainService.selectProductLikeListByUserId(paramMap);
+//            log.info("라이크리스트:" + productList);
+//
+//            // productList의 LIKE_ID 값을 Set으로 변환
+//            Set<Object> productLikeIds = productList.stream()
+//                    .map(like -> like.get("LIKE_ID"))
+//                    .collect(Collectors.toSet());
+//
+//            // likeList의 LIKE_ID 값을 Set으로 변환
+//            Set<Object> userLikeIds = likeList.stream()
+//                    .map(like -> like.get("LIKE_ID"))
+//                    .collect(Collectors.toSet());
+//
+//            // 두 Set 간의 교집합을 확인하여 공통된 LIKE_ID 값이 있는지 여부를 결정
+//            boolean hasCommonLikes = !Collections.disjoint(productLikeIds, userLikeIds);

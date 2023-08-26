@@ -125,7 +125,11 @@ $(document).ready(function () {
 
                 if (product.PRODUCT_SALE_STATUS === "판매중지") {
                     stopBtn = $("");
-                    updateTime = $(`<span class="updateTime">${new Date(product.PRODUCT_UPDATED_AT).toLocaleDateString("ko-KR", { year: 'numeric', month: '2-digit', day: '2-digit' }).replaceAll(". ", ".").substring(0, 10)}</span>`);
+                    updateTime =
+                        $(`<span class="updateTime">${new Date(product.PRODUCT_UPDATED_AT)
+                        .toLocaleDateString("ko-KR", { year: 'numeric', month: '2-digit', day: '2-digit' })
+                        .replaceAll(". ", ".")
+                        .substring(0, 10)}</span>`);
                 }
 
                 return $("<tr>")

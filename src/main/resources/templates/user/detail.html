@@ -17,12 +17,12 @@
 
             <div class="box01">
                 <div class="left">
-                    <img src="user/img/상세페이지_망고스틴.png" class="detailImage" alt="상품 이미지">
+                    <img th:src="${productDetail.IMAGE_URL}" class="detailImage" alt="상품 이미지">
                 </div>
 
                 <div class="right">
                     <input type="hidden" id="productId" th:value="${productDetail.PRODUCT_ID}">
-                    <input type="hidden" class="detailTotalPrice" th:value="${productDetail.PRODUCT_PRICE}*${productDetail.PRODUCT_DISCOUNT}/100">
+                    <input type="hidden" class="detailPrice" th:value="${productDetail.PRODUCT_PRICE}*${productDetail.PRODUCT_DISCOUNT}/100">
                     <input type="hidden" id="userIdNo" th:value="${userIdNo}">
                     <div class="right__txt01">
                         <h2 class="detailName" th:text="${productDetail.PRODUCT_NAME}"></h2>

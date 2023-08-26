@@ -4,6 +4,7 @@
 /**
  * join.js
  */
+//유효성 검증
 $(document).on('click', '#JoinBtn', () => {
     let $id = $.trim($("#id").val());
     if ($id == "") {
