@@ -149,7 +149,7 @@
 
 
                 <th:block th:if="${pageInfo.hasPreviousPage}">
-                    <a th:href="@{/page(pageNum=${pageInfo.prePage}, categoryName=${pageInfo.CATEGORY_NAME}, search=${search.getSearch()})}" class="prevBtn" th:value="${pageInfo.prePage}">
+                    <a th:href="'#'" class="prevBtn" th:value="${pageInfo.prePage}">
                         <span class="material-symbols-outlined">chevron_left</span>
                     </a>
                 </th:block>

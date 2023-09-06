@@ -22,7 +22,7 @@ import java.util.List;
 public class FireBaseService {
 
     //    @Value("${firebase.bucket}")
-    private String firebaseBucket = "fruitfruit-1cf5f.appspot.com";
+    private String firebaseBucket = "fruit-281de.appspot.com";
 
     public HashMap<String, Object> uploadFiles(MultipartFile imgFiles) throws IOException {
 

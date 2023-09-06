@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -247,6 +249,10 @@ public class UserController {
 
     }
 
+    /**
+     * @author 황호준
+     * 상세페이지 찜하기 axios
+     */
     @RequestMapping("/detailLikeAxios")
     @ResponseBody
     @Transactional
@@ -305,38 +311,160 @@ public class UserController {
         return null;
     }
 
+    /**
+     * @author 황호준
+     * 장바구니 페이지 이동
+     */
     @RequestMapping("cart")
-    public String cart(@RequestParam String cartData, Model model) throws JsonProcessingException {
-        log.info("넘어온 데이터:"+cartData);
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> cartDataMap = null;
+    public String cart( Model model, HttpSession session) {
+        List<HashMap<String, Object>> cartList = (List<HashMap<String, Object>>) session.getAttribute("cartList");
 
-        try {
-            cartDataMap = objectMapper.readValue(cartData, Map.class);
-        } catch (Exception e) {
-            // Handle parsing exception
-            e.printStackTrace();
-        }
-
-        if (cartDataMap != null) {
-            // 여기서 cartDataMap를 활용하여 원하는 작업을 수행합니다.
-        }
-
-        log.info("슬래시빼:"+ cartDataMap);
-        String cartArryString = (String) cartDataMap.get("cartArry");
-        List<HashMap<String, Object>> cartList = objectMapper.readValue(cartArryString, List.class);
-
-        log.info("카트리스트:"+cartList);
-        model.addAttribute("cartData", cartDataMap);
         model.addAttribute("cartList", cartList);
         return "user/cart";
     }
+
+    /**
+     * @author 황호준
+     * 장바구니페이지에서 쓰일 LocalStorage에 담긴 장바구니 리스트 세션 저장 Axios
+     */
     @RequestMapping("cartAxios")
     @ResponseBody
-    public HashMap<String, Object> cartAxios(@RequestBody HashMap<String, Object> cartDataMap) {
+    public String cartAxios(@RequestBody HashMap<String, Object> cartDataMap,  HttpSession session) throws JsonProcessingException {
         log.info("카트 데이터맵: " + cartDataMap);
-        // 여기서 cartData를 활용하여 원하는 작업을 수행합니다.
-        return cartDataMap;
+
+        String cartData = cartDataMap.get("cartArry").toString();
+        log.info("아쇽 카트 맵을 스트링으로 : " + cartData);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        List<HashMap<String, Object>> cartList = objectMapper.readValue(cartData, List.class);
+
+        log.info("액쇼스카트리스트:"+cartList);
+
+        session.setAttribute("cartList", cartList);
+
+        log.info("세션카드: " + session.getAttribute("cartList").toString());
+
+        return "성공";
     }
 
+    /**
+     * @author 황호준
+     * 장바구니페이지에서 수량 변경시 LocalStorage에 담긴 장바구니 리스트 업데이트 Axios
+     */
+    @RequestMapping("cartPageUpdateAxios")
+    @ResponseBody
+    public List<HashMap<String, Object>> cartPageAxios(@RequestBody HashMap<String, Object> cartDataMap, HttpSession session) throws JsonProcessingException {
+        log.info("아쇽 카트 데이터맵: " + cartDataMap);
+        String cartData = cartDataMap.get("cartArry").toString();
+        log.info("아쇽 카트 맵을 스트링으로 : " + cartData);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        List<HashMap<String, Object>> cartList = objectMapper.readValue(cartData, List.class);
+
+        log.info("액쇼스카트리스트:"+cartList);
+
+        session.setAttribute("cartList", cartList);
+
+        List<HashMap<String, Object>> cartSessionList = (List<HashMap<String, Object>>) session.getAttribute("cartList");
+
+        log.info("세션카트리스트임다"+cartSessionList);
+        return cartSessionList;
+    }
+
+    /**
+     * @author 황호준
+     * 상품 결제 페이지 이동
+     */
+    @RequestMapping("payment")
+    public String payment (Model model, HttpSession session){
+        List<HashMap<String, Object>> paymentCartSessionList = (List<HashMap<String, Object>>) session.getAttribute("paymentCartList");
+
+        model.addAttribute("paymentCartList", paymentCartSessionList);
+
+        log.info("페이세션카리: "+paymentCartSessionList);
+
+        //가장 작은 productId를 가진 배열 출력
+        HashMap<String, Object> smallestIdElement = null;
+        int smallestId = Integer.MAX_VALUE;
+
+        for (HashMap<String, Object> element : paymentCartSessionList) {
+            int productId = (int) element.get("productId");
+            if (productId < smallestId) {
+                smallestId = productId;
+                smallestIdElement = element;
+            }
+        }
+
+        log.info("가장작은 id 배열: "+ smallestIdElement);
+
+        model.addAttribute("smallestIdElement", smallestIdElement);
+
+        //결제목록 개수
+        model.addAttribute("paymentAmount", paymentCartSessionList.size());
+        log.info("결제 목록 개수: "+ paymentCartSessionList.size());
+
+        return "user/payment";
+    }
+
+    /**
+     * @author 황호준
+     * 결제 완료 페이지 이동
+     */
+    @RequestMapping("payment_ok")
+    @ResponseBody
+    public String payment_ok (Model model, HttpSession session, @RequestBody HashMap<String, Object> paramMap){
+        List<HashMap<String, Object>> paymentCartSessionList = (List<HashMap<String, Object>>) session.getAttribute("paymentCartList");
+
+        log.info("배송지정보: " +paramMap);
+
+        log.info("페이세션카리: "+paymentCartSessionList);
+
+        return null;
+    }
+
+    /**
+     * @author 황호준
+     * 장바구니 페이지에서 체크된 값들만 결제페이지로 이동시키기 위해 Session 저장 Axios
+     */
+    @RequestMapping("selectedCartIdAxios")
+    @ResponseBody
+    public String selectedCartIdAxios(@RequestBody HashMap<String, Object> paramMap, HttpSession session) {
+        log.info("셀렉트아이디: " + paramMap);
+        List<HashMap<String, Object>> cartSessionList = (List<HashMap<String, Object>>) session.getAttribute("cartList");
+        log.info("세션 카트아이디입니다:" + cartSessionList);
+        List<HashMap<String, Object>> updatedCartList = new ArrayList<>();
+
+        List<String> selectedIdStrings = (List<String>) paramMap.get("selectedIds");
+        List<Integer> selectedIds = selectedIdStrings.stream()
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+
+        log.info("셀렉아이디 끄집어내기:" + selectedIds);
+
+
+        if (cartSessionList != null) {
+            for (HashMap<String, Object> updateData : cartSessionList) {
+                Integer productId = Integer.parseInt(updateData.get("productId").toString());
+                log.info("셀렉아이디 클래스: " + selectedIds.get(0).getClass());
+                log.info("포러덕트아디 클래스: " + productId.getClass());
+
+                log.info("포러덕트아디: " + productId);
+                log.info("있니?: " + selectedIds.contains(productId));
+                if (selectedIds.contains(productId)) {
+                    log.info("있니?: " + selectedIds.contains(productId));
+                    log.info("세션리스트에 있는 포러덕트아디: " + productId);
+                    log.info("세션리스트에 있는 포러덕트아디별 리스트: " + updateData);
+                    updatedCartList.add(updateData);
+                }
+            }
+        }
+
+        log.info("업뎃된 카트리스트: " + updatedCartList);
+
+        session.setAttribute("paymentCartList", updatedCartList);
+
+        return "성공";
+    }
 }

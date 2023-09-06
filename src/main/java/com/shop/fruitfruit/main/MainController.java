@@ -7,6 +7,8 @@ import com.shop.fruitfruit.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.boot.json.JsonParser;
+import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -14,10 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -34,7 +33,9 @@ public class MainController {
      */
 
     @RequestMapping("")
-    public String mainPage(Model model, HttpSession session, @RequestParam(defaultValue = "1") int startPage, @RequestParam(defaultValue = "9") int pageSize) {
+    public String mainPage(Model model, HttpSession session,
+                           @RequestParam(defaultValue = "1") int startPage,
+                           @RequestParam(defaultValue = "9") int pageSize) {
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("startPage", startPage);
         paramMap.put("pageSize", pageSize);
@@ -42,10 +43,12 @@ public class MainController {
         if (session.getAttribute("sessionId") == null) {
             List<HashMap<String, Object>> productList = mainService.selectAllProductInfo(paramMap);
             PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(productList);
+
             model.addAttribute("pageInfo", pageInfo);
         } else if (session.getAttribute("sessionId") != null) {
-            paramMap.put("id", session.getAttribute("sessionId").toString());
 
+            paramMap.put("id", session.getAttribute("sessionId").toString());
+//            paramMap.put("cartData", cartArry);
             paramMap.putAll(userService.selectUser(paramMap));
 
             List<HashMap<String, Object>> productList = mainService.selectAllProductInfo(paramMap);
@@ -53,13 +56,32 @@ public class MainController {
 
             PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(productList);
 
+
+
+            List<HashMap<String,Object>> likeList= mainService.selectProductLikeListByUserId(paramMap);
+            log.info("라사이:"+ likeList.size());
+
+//            log.info("모델카트 배열: "+cartArryLength);
+//            model.addAttribute("cartArryLength", cartArryLength);
+
             model.addAttribute("pageInfo", pageInfo);
+            model.addAttribute("likeCount", likeList.size());
             model.addAttribute("sessionId", session.getAttribute("sessionId").toString());
 
             log.info("첫 페이지인뽕:" + pageInfo);
         }
 
         return "index";
+    }
+
+
+
+    @RequestMapping("mainCartAxios")
+    @ResponseBody
+    public String cartAxios(@RequestBody HashMap<String, Object> cartArryLength) {
+        log.info("메인 카트 배열길이: " + cartArryLength);
+        // 여기서 cartData를 활용하여 원하는 작업을 수행합니다.
+        return cartArryLength.get("cartArryLength").toString();
     }
 
     @RequestMapping("/mainPageAxios")

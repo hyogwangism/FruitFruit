@@ -22,7 +22,10 @@
 
                 <div class="right">
                     <input type="hidden" id="productId" th:value="${productDetail.PRODUCT_ID}">
-                    <input type="hidden" class="detailPrice" th:value="${productDetail.PRODUCT_PRICE}*${productDetail.PRODUCT_DISCOUNT}/100">
+                    <input type="hidden" class="detailDiscount" th:value="${productDetail.PRODUCT_DISCOUNT}">
+                    <input type="hidden" class="detailInitPrice" th:value="${productDetail.PRODUCT_PRICE}">
+                    <input type="hidden" class="detailDiscountPrice" th:value="${productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT }/ 100">
+                    <input type="hidden" class="detailDiscountedPrice" th:value="${productDetail.PRODUCT_PRICE - (productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100)}">
                     <input type="hidden" id="userIdNo" th:value="${userIdNo}">
                     <div class="right__txt01">
                         <h2 class="detailName" th:text="${productDetail.PRODUCT_NAME}"></h2>
@@ -36,7 +39,7 @@
                             <span th:text="${productDetail.PRODUCT_DISCOUNT}+원"></span>
                             <p>
                                 <span th:text="${productDetail.PRODUCT_PRICE}+원"></span>
-                                <span th:text="${productDetail.PRODUCT_PRICE}*${productDetail.PRODUCT_DISCOUNT}/100+원"></span>
+                                <span th:text="${productDetail.PRODUCT_PRICE - (productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100)}+원"></span>
                             </p>
                         </div>
 
@@ -60,13 +63,13 @@
 
                         <div class="right__txt03__01">
                             <span>총 상품 금액</span>
-                            <span  th:text="${productDetail.PRODUCT_PRICE}*${productDetail.PRODUCT_DISCOUNT}/100+원"></span>
+                            <span  th:text="${productDetail.PRODUCT_PRICE - (productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100)}+원"></span>
                         </div>
 
                         <div class="right__txt03__02">
                             <span>배송비</span>
-                            <span th:if="${productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100 >= 50000}" th:text="무료"></span>
-                            <span th:unless="${productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100 >= 50000}" th:text="3000원"></span>
+                            <span th:if="${productDetail.PRODUCT_PRICE - (productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100) >= 50000}" th:text="무료"></span>
+                            <span th:unless="${productDetail.PRODUCT_PRICE - (productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100) < 50000}" th:text="3000원"></span>
                         </div>
 
                     </div>
@@ -130,6 +133,7 @@
 
             </div>
         </div>
+
     </section>
 
 <th:block th:insert="~{includes/footer}"></th:block>

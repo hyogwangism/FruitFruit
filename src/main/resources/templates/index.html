@@ -104,7 +104,7 @@
                 <a href="#" th:id="rightCart">
                     <span class="material-symbols-outlined">shopping_cart</span>
                     <p>장바구니</p>
-                    <div class="cart__count">5</div>
+                    <div class="cart__count" ></div>
                 </a>
             </li>
 
@@ -113,7 +113,8 @@
                 <a href="#">
                     <span class="material-icons">favorite</span>
                     <p>찜</p>
-                    <div class="favorite__count">3</div>
+                    <div class="favorite__count" th:if="${likeCount}!=null" th:text="${likeCount}"></div>
+                    <div class="favorite__count" th:if="${likeCount}==null" th:text="0"></div>
                 </a>
 
                 <div class="line"></div>
@@ -145,7 +146,10 @@
             <!-- 오렌지 -->
             <!--            class="cart__click"-->
             <li  th:each="p : ${pageInfo.list}" >
-                <input class="productPrice" type="hidden" th:value="${p.PRODUCT_PRICE}*${p.PRODUCT_DISCOUNT}/100">
+                <input class="productInitPrice" type="hidden" th:value="${p.PRODUCT_PRICE}">
+                <input class="productDiscountPrice" type="hidden" th:value="${p.PRODUCT_PRICE * p.PRODUCT_DISCOUNT} / 100">
+                <input class="productDiscountedPrice" type="hidden" th:value="${p.PRODUCT_PRICE - (p.PRODUCT_PRICE * p.PRODUCT_DISCOUNT / 100)}">
+                <input class="productDiscount" type="hidden" th:value="${p.PRODUCT_DISCOUNT}">
 
                 <!-- 클릭 시 상세페이지 이동 -->
                 <a th:href="@{user/productDetail(productId=${p.PRODUCT_ID})}">
@@ -153,7 +157,7 @@
                     <!-- 상품 사진 -->
                     <img class="productImage" th:src="${p.IMAGE_URL}" alt="상품 이미지">
 
-
+                </a>
                     <div class="icons" >
                     <!-- 좋아요 기능 눌렀을때 빨간 하트 아이콘-->
                     <!-- (기본 하트 아이콘은 두번 째 li (과일세트)에 있어요) -->
@@ -171,7 +175,7 @@
                     <a th:id="productCart" th:data-product-id="${p.PRODUCT_ID}">
                         <span class="material-symbols-outlined">shopping_cart</span>
                     </a>
-                </div>
+                    </div>
 
 
 
@@ -193,11 +197,11 @@
                         </div>
 
                         <!-- 상품 가격 -->
-                        <div  th:text="${p.PRODUCT_PRICE}*${p.PRODUCT_DISCOUNT}/100+원">
+                        <div  th:text="${p.PRODUCT_PRICE - (p.PRODUCT_PRICE * p.PRODUCT_DISCOUNT / 100)}+원">
 
                         </div>
                     </div>
-                </a>
+
             </li>
 
 

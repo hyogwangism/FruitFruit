@@ -72,6 +72,26 @@ $(document).ready(function () {
             console.log('피리1:' + pList);
 
             const UlRows = pList.map((product) => {
+                const hiddenPrice = $('<input>')
+                    .addClass('productInitPrice')
+                    .attr('type', 'hidden')
+                    .attr('value', product.PRODUCT_PRICE);
+
+                const hiddenDiscount = $('<input>')
+                    .addClass('productDiscount')
+                    .attr('type', 'hidden')
+                    .attr('value', product.PRODUCT_DISCOUNT);
+
+                const hiddenDiscountPrice = $('<input>')
+                    .addClass('productDiscountPrice')
+                    .attr('type', 'hidden')
+                    .attr('value', (product.PRODUCT_PRICE * product.PRODUCT_DISCOUNT) / 100);
+
+                const hiddenDiscountedPrice = $('<input>')
+                    .addClass('productDiscountedPrice')
+                    .attr('type', 'hidden')
+                    .attr('value', (product.PRODUCT_PRICE - (product.PRODUCT_PRICE * product.PRODUCT_DISCOUNT / 100)));
+
                 const productLink = $('<a>')
                     .attr('href', '/user/productDetail?productId=' + product.PRODUCT_ID)
                     .append($('<img>')
@@ -124,6 +144,10 @@ $(document).ready(function () {
                         .text(product.PRODUCT_PRICE + '원'));
 
                 const liElement = $('<li>')
+                    .append(hiddenPrice)
+                    .append(hiddenDiscount)
+                    .append(hiddenDiscountPrice)
+                    .append(hiddenDiscountedPrice)
                     .append(productLink)
                     .append(iconsDiv)
                     .append(txtDiv);

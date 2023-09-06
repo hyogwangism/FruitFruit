@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <th:block th:insert="~{includes/head}"></th:block>
+    <th:block th:insert="~{includes/library}"></th:block>
+    <th:block th:insert="~{includes/style}"></th:block>
+    <th:block th:insert="~{includes/scripts}"></th:block>
+
+</head>
+
+<body>
+<th:block th:insert="~{includes/header}"></th:block>
+
+
+    <div id="payment_success">
+        <div class="inner">
+
+            <h2> 주문결제 </h2>
+
+            <div class="txt">
+                <div class="right">
+                    <p>01 장바구니</p>
+                    <span class="material-symbols-outlined">chevron_right</span>
+                    <p>02 주문/결제</p>
+                    <span class="material-symbols-outlined">chevron_right</span>
+                    <p>03 결제완료</p>
+                </div>
+            </div>
+
+            <table>
+                <tr>
+                    <td colspan="2">주문 결제가 정상적으로 완료되었습니다.</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>주문번호</td>
+                    <td>총 결제금액</td>
+                </tr>
+                <tr>
+                    <td rowspan="2">123456</td>
+                    <td>155,000원</td>
+                </tr>
+                <tr>
+                    <td>신용카드 | 일시불</td>
+                </tr>
+            </table>
+
+
+
+            <div class="success_button">
+                <a href="./index.html">
+                    <button>계속 쇼핑하기</button>
+                </a>
+
+                <a href="./mypage.html">
+                    <button>구매내역 보기</button>
+                </a>
+            </div>
+
+
+        </div>
+    </div>
+
+</body>
+
+</html>
