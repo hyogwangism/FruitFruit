@@ -410,22 +410,6 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 결제 완료 페이지 이동
-     */
-    @RequestMapping("payment_ok")
-    @ResponseBody
-    public String payment_ok (Model model, HttpSession session, @RequestBody HashMap<String, Object> paramMap){
-        List<HashMap<String, Object>> paymentCartSessionList = (List<HashMap<String, Object>>) session.getAttribute("paymentCartList");
-
-        log.info("배송지정보: " +paramMap);
-
-        log.info("페이세션카리: "+paymentCartSessionList);
-
-        return null;
-    }
-
-    /**
-     * @author 황호준
      * 장바구니 페이지에서 체크된 값들만 결제페이지로 이동시키기 위해 Session 저장 Axios
      */
     @RequestMapping("selectedCartIdAxios")
@@ -467,4 +451,63 @@ public class UserController {
 
         return "성공";
     }
+
+
+    /**
+     * @author 황호준
+     * 상품 결제 완료 페이지 이동
+     */
+    @RequestMapping("paymentSuccess")
+    public String paymentSuccess( Model model,
+                                  @RequestParam(value = "orderId") String orderId,
+                                  @RequestParam(value = "orderPrice") String orderPrice,
+                                  @RequestParam(value = "cardType") String cardType,
+                                  @RequestParam(value = "cardMonthlyInstallments") String cardMonthlyInstallments ){
+
+        log.info("orderId : " + orderId);
+        log.info("orderPrice : " + orderPrice);
+        log.info("cardType : " + cardType);
+        log.info("cardMonthlyInstallments : " + cardMonthlyInstallments);
+
+        model.addAttribute("orderId", orderId);
+        model.addAttribute("orderPrice", orderPrice);
+        model.addAttribute("cardType", cardType);
+        model.addAttribute("cardMonthlyInstallments", cardMonthlyInstallments);
+        return "user/paymentSuccess";
+    }
+
+
+    /**
+     * @author 황호준
+     * 결제 완료 페이지 이동
+     */
+    @RequestMapping("paymentOkAxios")
+    @ResponseBody
+    public HashMap<String, Object> paymentOkAxios (Model model, HttpSession session, @RequestBody HashMap<String, Object> paramMap){
+        if(session.getAttribute("sessionId") != null) {
+            paramMap.put("sessionId", session.getAttribute("sessionId").toString());
+
+            List<HashMap<String, Object>> paymentCartSessionList = (List<HashMap<String, Object>>) session.getAttribute("paymentCartList");
+            paramMap.put("paymentCartSessionList", paymentCartSessionList);
+
+            paramMap.putAll(userService.OrderMethod(paramMap));
+            paramMap.put("yesLogin", "yesLogin");
+            return paramMap;
+        } else if(session.getAttribute("sessionId") == null) {
+            paramMap.clear();
+            return paramMap;
+        }
+
+        return null;
+    }
+
+    /**
+     * @author 황호준
+     * 마이페이지 구매내역 페이지 이동
+     */
+    @RequestMapping("mypageMain")
+    public String mypageMain (){
+        return "user/mypage";
+    }
+
 }

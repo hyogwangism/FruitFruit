@@ -38,22 +38,22 @@
                     <td>총 결제금액</td>
                 </tr>
                 <tr>
-                    <td rowspan="2">123456</td>
-                    <td>155,000원</td>
+                    <td rowspan="2" th:text="${orderId}">123456</td>
+                    <td th:text="${orderPrice}">155,000원</td>
                 </tr>
                 <tr>
-                    <td>신용카드 | 일시불</td>
+                    <td th:text="${cardType +' '+ 'ㅣ' +' '+ cardMonthlyInstallments}">신용카드 | 일시불</td>
                 </tr>
             </table>
 
 
 
             <div class="success_button">
-                <a href="./index.html">
+                <a href="/">
                     <button>계속 쇼핑하기</button>
                 </a>
 
-                <a href="./mypage.html">
+                <a href="mypageMain">
                     <button>구매내역 보기</button>
                 </a>
             </div>

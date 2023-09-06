@@ -53,12 +53,12 @@
 
                 <label for="name">
                     <p>이름</p>
-                    <input type="textbox" name="receiverName" id="receiverName">
+                    <input type="textbox" name="receiverName" id="receiverName" placeholder="예) 홍길동">
                 </label>
 
                 <label for="phone" class="phone">
                     <p>연락처</p>
-                    <input type="textbox" name="receiverPhone" id="receiverPhone">
+                    <input type="textbox" name="receiverPhone" id="receiverPhone" placeholder="예) 01012345678">
                 </label>
 
                 <label for="add" class="add">
@@ -238,13 +238,13 @@
 
             <div class="paymentWrap">
                 <p >일반결제
-                    <span class="paymentTotalProductPriceWithExpressPrice" th:text="0원"> 115,500원</span>
+                    <span class="paymentTotalProductPriceWithExpressPrice" id="finalOrderPrice" th:text="0원"> 115,500원</span>
                 </p>
 
                 <div class="paymentButtons">
                     <button>신용카드</button>
-                    <button>휴대폰 결제</button>
-                    <button>실시간 계좌이체</button>
+<!--                    <button>휴대폰 결제</button>-->
+<!--                    <button>실시간 계좌이체</button>-->
                 </div>
 
                 <div class="paymentBackground">

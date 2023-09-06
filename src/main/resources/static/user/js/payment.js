@@ -70,6 +70,8 @@ $(document).ready(function () {
         $('.paymentTotalProductPriceWithExpressPrice').text('0원');
 
     }
+
+    console.log("주문가격: " + $('#finalOrderPrice').text());
 })
 
 $(document).ready(function () {
@@ -82,6 +84,35 @@ $(document).ready(function () {
 
 $(document).on('click', '#payment_ok', () => {
 
+    if ($.trim($("#receiverName").val()) === '') {
+        alert('받으실 분 성함을 입력해주세요')
+        return false;
+    }
+
+    if ($.trim($("#receiverPhone").val()) === '') {
+        alert('받으실 분 연락처를 입력해주세요')
+        return false;
+    }
+
+    if ($.trim($("#add").val()) === '') {
+        alert('우편번호를 입력해주세요')
+        return false;
+    }
+
+    if ($.trim($("#add2").val()) === '') {
+        alert('주소를 입력해주세요')
+        return false;
+    }
+
+    if($('#ask').val()==='배송 시 요청사항 선택'){
+        alert('배송 시 요청사항을 선택해주세요')
+        return false;
+    }
+
+    if (!$('input[name="개인카드"]').is(':checked') && !$('input[name="법인카드"]').is(':checked')) {
+        alert("카드 구분을 선택해주세요.");
+        return false;
+    }
 
     if (!$("#1번").prop("checked")) {
         alert('약관 동의에 체크하셔야합니다.')
@@ -100,8 +131,14 @@ $(document).on('click', '#payment_ok', () => {
 
 function payment_ok() {
     let deliverRequirement;
-    if($('#ask').val()==='직접입력'){
-        deliverRequirement = $('#customRequest').val();
+     if($('#ask').val()==='직접입력'){
+         if($('#customRequest').val() ===''){
+             alert('배송시 요청사항을 적어주세요')
+             return false;
+         } else{
+             deliverRequirement = $('#customRequest').val();
+         }
+
     } else {
         deliverRequirement = $('#ask').val()
     }
@@ -112,17 +149,36 @@ function payment_ok() {
         'deliverPhone' : $('#receiverPhone').val(),
         'deliverPostalCode' : $('.postalCode').val(),
         'deliverAddress' : $('.postalCode2').val(),
-        'deliverRequirement' : deliverRequirement
+        'deliverRequirement' : deliverRequirement,
+        'cardType' : $('#개인카드').val(),
+        'cardName' : $('#card').val(),
+        'cardMonthlyInstallments' : $('#howlong').val(),
+        'orderPrice' : $('#finalOrderPrice').text()
     };
+
+
         axios({
             method: 'post',
-            url: 'payment_ok',
+            url: 'paymentOkAxios',
             data: formData,
             headers: {
                 'Content-Type': 'application/json'
             }
         }).then(res => {
-            console.log(res.data);
+            const resultMap = res.data;
+            if(resultMap.yesLogin != null) {
+                const orderId = resultMap.ORDER_ID;
+                const orderPrice = resultMap.orderPrice;
+                const cardType = resultMap.cardType;
+                const cardMonthlyInstallments = resultMap.cardMonthlyInstallments;
+
+                location.href='/user/paymentSuccess?orderId='+orderId+'&orderPrice='+orderPrice+'&cardType='+cardType+'&cardMonthlyInstallments='+cardMonthlyInstallments;
+
+            } else if(Object.keys(resultMap).length === 0) {
+                alert('회원만 이용할 수 있는 서비스 입니다.')
+                location.href='login'
+            }
+
         });
 }
 

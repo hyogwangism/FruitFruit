@@ -39,6 +39,33 @@
 
     </update>
 
+    <!--    USER_ID_NO기준 배송지 정보 저장-->
+    <insert id="insertDeliverInfo">
+        INSERT INTO USER_DELIVER_INFO VALUES (null, #{USER_ID_NO}, #{deliverPlace}, #{deliverReceiverName}, #{deliverPhone}, #{deliverPostalCode}, #{deliverAddress}, #{deliverRequirement})
+    </insert>
+
+    <!--    USER_ID_NO기준 DELIVER_ID 가져오기 -->
+    <select id="selectDeliverId" resultType="HashMap">
+        SELECT DELIVER_ID FROM USER_DELIVER_INFO WHERE USER_ID_NO=#{USER_ID_NO} ORDER BY DELIVER_ID DESC LIMIT 1;
+
+    </select>
+
+    <!--    DELIEVER_ID 기준 주문 정보 저장-->
+    <insert id="insertOrderInfo">
+        INSERT INTO ORDER_TABLE VALUES (null, #{DELIVER_ID}, '카드결제', #{cardType}, #{cardName}, #{cardMonthlyInstallments}, #{orderPrice}, NOW(), '미결제')
+    </insert>
+
+    <!--    DELIVER_ID 기준 ORDER_ID 가져오기 -->
+    <select id="selectOrderId" resultType="HashMap">
+        SELECT ORDER_ID FROM ORDER_TABLE WHERE DELIVER_ID=#{DELIVER_ID}
+
+    </select>
+
+    <!--    DELIEVER_ID 기준 주문 정보 저장-->
+    <insert id="insertOrderProduct">
+        INSERT INTO ORDER_PRODUCT VALUES (null, #{ORDER_ID}, #{productId}, #{productQuantity}, #{productTotalPrice}, '미작성')
+    </insert>
+
 
 </mapper>
 
