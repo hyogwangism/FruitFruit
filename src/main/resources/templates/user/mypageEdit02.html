@@ -15,7 +15,7 @@
     <meta property="og:url" content="https://prpr-shopping-mall.co.kr" />
 
     <!--파비콘-->
-    <link rel="icon" href="../../../../../../FruitProject/Fruit-Publish-master/favicon.ico" />
+    <link rel="icon" href="./favicon.ico" />
 
     <!--브라우저 스타일 초기화-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" />
@@ -40,7 +40,7 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
-    <link rel="stylesheet" href="../../../../../../FruitProject/Fruit-Publish-master/css/style.css">
+    <link rel="stylesheet" href="./css/style.css">
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"
@@ -54,7 +54,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
-    <script defer src="../../../../../../FruitProject/Fruit-Publish-master/js/main.js"></script>
+    <script defer src="./js/main.js"></script>
 </head>
 
 <body>
@@ -62,17 +62,17 @@
     <header id="header">
         <div class="inner">
 
-            <a href="../../../../../../FruitProject/Fruit-Publish-master/index.html" class="logo">
-                <img src="../../../../../../FruitProject/Fruit-Publish-master/img/푸릇푸릇%20로고.png" alt="logo" />
+            <a href="./index.html" class="logo">
+                <img src="./img/푸릇푸릇 로고.png" alt="logo" />
             </a>
 
             <div class="sub-menu">
                 <ul class="menu">
                     <li>
-                        <a href="login.html">Sign In</a>
+                        <a href="./login.html">Sign In</a>
                     </li>
                     <li>
-                        <a href="join.html">Join</a>
+                        <a href="./join.html">Join</a>
                     </li>
                     <li>
                         <a href="javascript:void(0)">language</a>
@@ -102,20 +102,22 @@
                 </li>
 
                 <li class="item">
-                    <div class="item__name red">
-                        장바구니
-                        <span class="material-icons">
-                            shopping_cart
-                        </span>
+                    <a href="./cart.html">
+                        <div class="item__name red">
+                            장바구니
+                            <span class="material-icons">
+                                shopping_cart
+                            </span>
 
-                    </div>
+                        </div>
+                    </a>
                 </li>
             </ul>
 
         </div>
     </header>
 
-    <div id="mypageEdit">
+    <div id="mypageEdit02">
         <div class="inner">
 
             <h2> 마이페이지 </h2>
@@ -159,13 +161,12 @@
                 <button>변경</button>
             </label>
 
-            <label for="phone">
+            <label for="phone" class="phone">
                 <p>연락처</p>
                 <input type="textbox" name="phone" id="phone">
-                <button>변경</button>
             </label>
 
-            <div class="change__PW">
+            <div class="change__PW" style="display: none;">
                 <p>비밀번호 변경</p>
                 <div class="button__box">
                     <button>
@@ -173,6 +174,80 @@
                     </button>
                 </div>
             </div>
+
+
+            <!-- 비밀번호 변경하기 버튼 클릭 시 -->
+            <div class="change__PW__button">
+                <div class="button1">
+                    <p>비밀번호 변경</p>
+
+                    <div class="button__box">
+                        <button>비밀번호 변경취소</button>
+
+                        <div class="input__box">
+                            <div class="box01">
+                                <p>비밀번호</p>
+
+                                <div class="input_wrap">
+                                    <input type="text" placeholder="영문, 숫자, 특수문자(8자-20자 이내)">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </div>
+
+                            </div>
+
+                            <div class="box02">
+                                <p>비밀번호 확인</p>
+
+                                <div class="input_wrap">
+                                    <input type="text" placeholder="비밀번호를 한번 더 입력해주세요.">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 비밀번호 변경하기 버튼 클릭 시, 비밀번호 일치하지 않을 때 -->
+            <div class="change__PW__buttonWrong" style="display: none;">
+                <div class="button1">
+                    <p>비밀번호 변경</p>
+
+                    <div class="button__box">
+                        <button>비밀번호 변경취소</button>
+
+                        <div class="input__box">
+                            <div class="box01">
+                                <p>비밀번호</p>
+
+                                <div class="input_wrap">
+                                    <input type="text" placeholder="영문, 숫자, 특수문자(8자-20자 이내)">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </div>
+
+                            </div>
+
+                            <div class="box02">
+                                <p>비밀번호 확인</p>
+
+                                <div class="input_wrap">
+                                    <input type="text" placeholder="비밀번호를 한번 더 입력해주세요.">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </div>
+
+                                <p>비밀번호가 일치하지 않습니다.</p>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
 
             <div class="mypageEdit__button">
                 <button>
@@ -234,51 +309,6 @@
             </div>
         </div>
     </div>
-
-
-    <footer id="footer">
-        <div class="inner">
-            <h1>
-                <img src="../../../../../../FruitProject/Fruit-Publish-master/img/푸릇푸릇%20로고.png" alt="로고">
-            </h1>
-            <ul>
-                <li>
-                    <a href="#">Policy</a>
-                </li>
-                <li>
-                    <a href="#">Terms</a>
-                </li>
-                <li>
-                    <a href="#">Customer</a>
-                </li>
-                <li>
-                    <a href="#">Contact us</a>
-                </li>
-            </ul>
-
-            <address>
-                <span>(주)콜론비</span>
-                <br>
-                사업자등록번호 123-12-12345
-                <br />
-                통신판매업 신고번호 제2023-서울-1234호
-                <br>
-                대표 한동윤 | 개인정보 책임자 한동윤
-                <br>
-                서울 특별시 강남구 강남대로 123
-                <br>
-                <br>
-                고객센터: 02-1544-1234
-                <br>
-                제휴문의: echel@colon-b.com
-            </address>
-
-            <p>
-                Copyright &copy; 2023 Colon:B. ALL Right reserved.
-            </p>
-        </div>
-    </footer>
-
 </body>
 
 </html>

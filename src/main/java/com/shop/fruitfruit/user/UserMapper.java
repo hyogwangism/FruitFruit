@@ -32,4 +32,9 @@ public interface UserMapper {
     HashMap<String,Object> selectOrderId(HashMap<String, Object> paramMap);
 
     void insertOrderProduct(HashMap<String, Object> selectMap);
+
+    List<HashMap<String, Object>> selectOrderList(HashMap<String, Object> paramMap);
+
+
+    HashMap<String,Object> selectOrderProductId(HashMap<String, Object> paramMap);
 }

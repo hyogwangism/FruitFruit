@@ -1,6 +1,9 @@
 /**
  * 메인페이지에서 장바구니아이콘 클릭시 해당 상품정보 Localstorage에 추가되는 함수
  */
+const now = new Date();
+let expiration;
+
 $(document).on('click', 'a#productCart', function () {
     const productCartId = parseInt($(this).data('product-id'));
     const productImage = $(this).closest('li').find('.productImage').attr('src');
@@ -22,7 +25,8 @@ $(document).on('click', 'a#productCart', function () {
         'productInitTotalPrice': productInitPrice * 1, //상품 할인 적용되기 전 총 가격
         'productTotalDiscountPrice': productDiscountPrice * 1, // 상품 할인 총 가격
         'productTotalPrice': productDiscountedPrice * 1, // 상품 할인 적용된 총 가격
-        'productQuantity': 1
+        'productQuantity': 1,
+         expiration: now.getTime() + 1440 * 60 * 1000 // 현재 시간에 유효 기간을 더한 값
     };
 
     const updatedCart = addToCartOrIncreaseQuantity(cartAddArry, cartItem);
@@ -96,7 +100,9 @@ $(document).on('click', '.detailCart', function () {
         'productInitTotalPrice': detailInitPrice * detailQuantity, //상품 할인 정용되기 전 총 가격
         'productTotalDiscountPrice': detailDiscountPrice * detailQuantity, // 상품 할인 총 가격
         'productTotalPrice': detailDiscountedPrice * detailQuantity, // 상품 할인 적용된 총 가격
-        'productQuantity': detailQuantity
+        'productQuantity': detailQuantity,
+         expiration: now.getTime() + 1440 * 60 * 1000 // 현재 시간에 유효 기간을 더한 값
+
     };
 
     const updatedCart = addToDetailCartOrIncreaseQuantity(cartAddArry, cartItem);
@@ -182,7 +188,9 @@ $(document).ready(function () {
             'productInitTotalPrice': cartProductInitPrice * currentQuantity, //상품 할인 정용되기 전 총 가격
             'ProductTotalDiscountPrice': ((cartProductDiscountPrice * cartProductQuantity) - cartProductDiscountPrice), // 상품 할인 총 가격
             'productTotalPrice': ((cartProductDiscountedPrice * cartProductQuantity) - cartProductDiscountedPrice), // 상품 할인 적용된 총 가격
-            'productQuantity': cartProductQuantity
+            'productQuantity': cartProductQuantity,
+             expiration: now.getTime() + 1440 * 60 * 1000 // 현재 시간에 유효 기간을 더한 값
+
         };
 
         updatedCart = CartPlusMinusQuantity(cartAddArry, cartItem);
@@ -293,7 +301,9 @@ $(document).ready(function () {
             'productInitTotalPrice': cartProductInitPrice * currentQuantity, //상품 할인 정용되기 전 총 가격
             'ProductTotalDiscountPrice': ((cartProductDiscountPrice * cartProductQuantity) + cartProductDiscountPrice), // 상품 할인 총 가격
             'productTotalPrice': ((cartProductDiscountedPrice * cartProductQuantity) + cartProductDiscountedPrice), // 상품 할인 적용된 총 가격
-            'productQuantity': cartProductQuantity
+            'productQuantity': cartProductQuantity,
+            expiration: now.getTime() + 1440 * 60 * 1000 // 현재 시간에 유효 기간을 더한 값
+
         };
 
         updatedCart = CartPlusMinusQuantity(cartAddArry, cartItem);
@@ -422,7 +432,7 @@ $(document).on('click', '.cartProductCancelBtn', function () {
 /**
  * 장바구니페이지 이동시 로컬스토리지에 저장된 값들을 보내는 함수
  */
-$(document).on('click', 'a#rightCart, #menuCart', function () {
+$(document).on('click', 'a#rightCart, #menuCart, .goCart', function () {
     const cartAddArry = JSON.parse(localStorage.getItem('cartAddArry')) || [];
 
     axios({
@@ -437,7 +447,7 @@ $(document).on('click', 'a#rightCart, #menuCart', function () {
         }
     }).then(res => {
         console.log(res.data)
-        location.href = 'user/cart';
+        location.href = '/user/cart';
     })
 });
 

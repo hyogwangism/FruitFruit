@@ -77,6 +77,13 @@
             </div>
 
         </div>
+        <!-- 알림 메시지를 JavaScript로 표시 -->
+        <script th:if="${mypageErrorMessage}" th:inline="javascript">
+            /*<![CDATA[*/
+            const errorMessage = [[${mypageErrorMessage}]];
+            alert(errorMessage);
+            /*]]>*/
+        </script>
     </section>
 
     <th:block th:insert="~{includes/footer}"></th:block>

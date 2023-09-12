@@ -67,6 +67,39 @@
     </insert>
 
 
+    <select id="selectOrderList" resultType="HashMap">
+        SELECT UDI.*, OP.*, OT.ORDER_ID, OT.ORDER_DATE, OT.DELIVER_ID, P.PRODUCT_NAME, I.IMAGE_URL
+        FROM ORDER_TABLE OT
+        JOIN ORDER_PRODUCT OP ON OT.ORDER_ID = OP.ORDER_ID
+        JOIN USER_DELIVER_INFO UDI ON OT.DELIVER_ID = UDI.DELIVER_ID
+        JOIN PRODUCT P ON OP.PRODUCT_ID = P.PRODUCT_ID
+        JOIN IMAGE I ON I.PRODUCT_ID = P.PRODUCT_ID
+        <where>
+
+            <if test="startDate != null and endDate != null" >
+                AND OT.ORDER_DATE BETWEEN #{startDate} AND #{endDate}
+            </if>
+
+            <!-- 이 부분은 searchField 가존재하는 경우 사용됩니다. -->
+            <if test="searchType != null and searchType == '상품명' and searchField != null and searchField != ''">
+                AND P.PRODUCT_NAME LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+            <!-- 이 부분은 searchField 가존재하는 경우 사용됩니다. -->
+            <if test="searchType != null and searchType == '주문번호' and searchField != null and searchField != ''">
+                AND OT.ORDER_ID LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+        </where>
+
+        ORDER BY OT.ORDER_ID DESC
+
+    </select>
+
+    <select id="selectOrderProductId" resultType="HashMap">
+        SELECT PRODUCT_ID FROM PRODUCT WHERE PRODUCT_NAME=#{order_product_name}
+    </select>
+
 </mapper>
 
 

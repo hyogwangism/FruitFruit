@@ -171,7 +171,7 @@ function payment_ok() {
                 const orderPrice = resultMap.orderPrice;
                 const cardType = resultMap.cardType;
                 const cardMonthlyInstallments = resultMap.cardMonthlyInstallments;
-
+                localStorage.clear();
                 location.href='/user/paymentSuccess?orderId='+orderId+'&orderPrice='+orderPrice+'&cardType='+cardType+'&cardMonthlyInstallments='+cardMonthlyInstallments;
 
             } else if(Object.keys(resultMap).length === 0) {

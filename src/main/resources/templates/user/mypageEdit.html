@@ -15,7 +15,7 @@
     <meta property="og:url" content="https://prpr-shopping-mall.co.kr" />
 
     <!--파비콘-->
-    <link rel="icon" href="../../../../../../FruitProject/Fruit-Publish-master/favicon.ico" />
+    <link rel="icon" href="./favicon.ico" />
 
     <!--브라우저 스타일 초기화-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" />
@@ -23,11 +23,6 @@
     <!--Google Fonts - 나눔고딕-->
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
-
-    <!-- Google Fonts Noto Sans -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap"
-        rel="stylesheet">
-
 
     <!-- Google Fonts - Montserrat -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
@@ -40,7 +35,7 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
-    <link rel="stylesheet" href="../../../../../../FruitProject/Fruit-Publish-master/css/style.css">
+    <link rel="stylesheet" href="./css/style.css">
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"
@@ -54,7 +49,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
-    <script defer src="../../../../../../FruitProject/Fruit-Publish-master/js/main.js"></script>
+    <script defer src="./js/main.js"></script>
 </head>
 
 <body>
@@ -62,17 +57,17 @@
     <header id="header">
         <div class="inner">
 
-            <a href="../../../../../../FruitProject/Fruit-Publish-master/index.html" class="logo">
-                <img src="../../../../../../FruitProject/Fruit-Publish-master/img/푸릇푸릇%20로고.png" alt="logo" />
+            <a href="./index.html" class="logo">
+                <img src="./img/푸릇푸릇 로고.png" alt="logo" />
             </a>
 
             <div class="sub-menu">
                 <ul class="menu">
                     <li>
-                        <a href="login.html">Sign In</a>
+                        <a href="./login.html">Sign In</a>
                     </li>
                     <li>
-                        <a href="join.html">Join</a>
+                        <a href="./join.html">Join</a>
                     </li>
                     <li>
                         <a href="javascript:void(0)">language</a>
@@ -102,13 +97,15 @@
                 </li>
 
                 <li class="item">
-                    <div class="item__name red">
-                        장바구니
-                        <span class="material-icons">
-                            shopping_cart
-                        </span>
+                    <a href="./cart.html">
+                        <div class="item__name red">
+                            장바구니
+                            <span class="material-icons">
+                                shopping_cart
+                            </span>
 
-                    </div>
+                        </div>
+                    </a>
                 </li>
             </ul>
 
@@ -121,21 +118,21 @@
             <h2> 마이페이지 </h2>
 
             <div class="tab__menu">
-                <a href="#">
+                <a href="./mypage.html">
                     <div class="history">
                         <p>구매내역</p>
                     </div>
                 </a>
 
 
-                <a href="#">
+                <a href="./mypage_delivery.html">
                     <div class="delivery">
                         <p>배송지관리</p>
                     </div>
                 </a>
 
 
-                <a href="#">
+                <a href="./mypageEdit.html">
                     <div class="memberInfo">
                         <p>회원정보</p>
                     </div>
@@ -150,19 +147,31 @@
                     보고하기 위해 현재 비밀번호 확인이 필요합니다.</span>
             </div>
 
-            <label for="pwConfirm">
-                <p>비밀번호 확인</p>
-                <input type="textbox" name="pwConfirm" value="비밀번호를 입력해주세요." id="pwConfirm">
-            </label>
 
+            <div class="input">
+                <p>비밀번호 확인</p>
+                <div class="input_wrap">
+                    <div class="input_wrap">
+                        <input type="text" placeholder="비밀번호를 입력해주세요.">
+                        <span class="material-symbols-outlined">visibility</span>
+                    </div>
+                </div>
+            </div>
 
 
             <!-- 비밀번호가 일치하지 않을 때 -->
-            <label for="pwConfirm" class="wrong" style="display: none;">
+            <div class="inputWrong" style="display: none;">
                 <p>비밀번호 확인</p>
-                <input type="textbox" name="pwConfirm" value="비밀번호를 입력해주세요." id="pwConfirm">
-                <span>비밀번호가 일치하지 않습니다.</span>
-            </label>
+                <div class="input_wrap">
+                    <div class="input_wrap">
+                        <input type="text" placeholder="비밀번호를 입력해주세요.">
+                        <span class="material-symbols-outlined">visibility</span>
+                    </div>
+                </div>
+
+                <p>비밀번호가 일치하지 않습니다.</p>
+            </div>
+
 
 
             <div class="button">
@@ -176,51 +185,6 @@
             </div>
         </div>
     </div>
-
-
-
-    <footer id="footer">
-        <div class="inner">
-            <h1>
-                <img src="../../../../../../FruitProject/Fruit-Publish-master/img/푸릇푸릇%20로고.png" alt="로고">
-            </h1>
-            <ul>
-                <li>
-                    <a href="#">Policy</a>
-                </li>
-                <li>
-                    <a href="#">Terms</a>
-                </li>
-                <li>
-                    <a href="#">Customer</a>
-                </li>
-                <li>
-                    <a href="#">Contact us</a>
-                </li>
-            </ul>
-
-            <address>
-                <span>(주)콜론비</span>
-                <br>
-                사업자등록번호 123-12-12345
-                <br />
-                통신판매업 신고번호 제2023-서울-1234호
-                <br>
-                대표 한동윤 | 개인정보 책임자 한동윤
-                <br>
-                서울 특별시 강남구 강남대로 123
-                <br>
-                <br>
-                고객센터: 02-1544-1234
-                <br>
-                제휴문의: echel@colon-b.com
-            </address>
-
-            <p>
-                Copyright &copy; 2023 Colon:B. ALL Right reserved.
-            </p>
-        </div>
-    </footer>
 
 </body>
 

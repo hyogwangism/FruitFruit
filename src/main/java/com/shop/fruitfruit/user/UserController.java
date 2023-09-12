@@ -2,6 +2,8 @@ package com.shop.fruitfruit.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.shop.fruitfruit.admin.AdminService;
 import com.shop.fruitfruit.main.MainService;
 import lombok.RequiredArgsConstructor;
@@ -315,10 +317,10 @@ public class UserController {
      * @author 황호준
      * 장바구니 페이지 이동
      */
-    @RequestMapping("cart")
+    @RequestMapping("/cart")
     public String cart( Model model, HttpSession session) {
         List<HashMap<String, Object>> cartList = (List<HashMap<String, Object>>) session.getAttribute("cartList");
-
+        log.info("카트리스트확인입니당쓰:"+cartList);
         model.addAttribute("cartList", cartList);
         return "user/cart";
     }
@@ -491,6 +493,7 @@ public class UserController {
             paramMap.put("paymentCartSessionList", paymentCartSessionList);
 
             paramMap.putAll(userService.OrderMethod(paramMap));
+            log.info("결제완료 파람맵:"+paramMap);
             paramMap.put("yesLogin", "yesLogin");
             return paramMap;
         } else if(session.getAttribute("sessionId") == null) {
@@ -506,8 +509,63 @@ public class UserController {
      * 마이페이지 구매내역 페이지 이동
      */
     @RequestMapping("mypageMain")
-    public String mypageMain (){
-        return "user/mypage";
+    public String mypageMain (Model model, HttpSession session,
+                              @RequestParam(defaultValue = "1") int startPage,
+                              @RequestParam(defaultValue = "5") int pageSize){
+        if(session.getAttribute("sessionId") != null) {
+            HashMap<String, Object> paramMap = new HashMap<>();
+            paramMap.put("startPage", startPage);
+            paramMap.put("pageSize", pageSize);
+            List<HashMap<String, Object>> orderList = userService.selectOrderList(paramMap);
+            PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(orderList);
+            model.addAttribute("pageInfo", pageInfo);
+            log.info("주문목록: " + orderList);
+            log.info("페이지 주문목록: " + pageInfo);
+            return "user/mypage";
+        } else {
+            model.addAttribute("mypageErrorMessage", "로그인이 필요한 서비스입니다.");
+            return "user/login";
+        }
     }
+
+    /**
+     * @author 황호준
+     * mypage 구매목록 Axios
+     */
+    @RequestMapping("mypageAxios")
+    @ResponseBody
+    public PageInfo<HashMap<String, Object>> mypageAxios (@RequestBody HashMap<String, Object> paramMap){
+        log.info("마이페이지 데이터: " + paramMap);
+
+        List<HashMap<String, Object>> orderList = userService.selectOrderList(paramMap);
+        PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(orderList);
+        log.info("주문목록: " + orderList);
+        log.info("페이지 주문목록: " + pageInfo);
+        return pageInfo;
+    }
+
+    /**
+     * @author 황호준
+     * 재구매 Axios
+     */
+    @RequestMapping("rePurchaseAxios")
+    @ResponseBody
+    public HashMap<String, Object> rePurchaseAxios (HttpSession session, @RequestBody HashMap<String, Object> paramMap){
+        if(session.getAttribute("sessionId") != null) {
+            paramMap.put("sessionId", session.getAttribute("sessionId").toString());
+            paramMap.putAll(userService.selectOrderProductId(paramMap));
+            int productId = Integer.parseInt(paramMap.get("PRODUCT_ID").toString());
+            paramMap.putAll(adminService.selectProductbyProductId(productId));
+            log.info("프로덕트 확인:" + paramMap);
+            paramMap.put("yesLogin", "yesLogin");
+            return paramMap;
+        } else if(session.getAttribute("sessionId") == null) {
+            paramMap.clear();
+            return paramMap;
+        }
+
+        return null;
+    }
+
 
 }

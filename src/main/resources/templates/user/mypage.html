@@ -45,11 +45,12 @@
                     <span>기간검색</span>
 
                     <div class="search__box__buttons">
-                        <button>1개월</button>
-                        <button>3개월</button>
-                        <button>6개월</button>
-                        <button>1년</button>
-                        <button>3년</button>
+                        <button data-months="0">전체</button>
+                        <button data-months="1">1개월</button>
+                        <button data-months="3">3개월</button>
+                        <button data-months="6">6개월</button>
+                        <button data-months="12">1년</button>
+                        <button data-months="36">3년</button>
                     </div>
 
                     <div class="date">
@@ -66,20 +67,20 @@
                 </div>
 
                 <div class="second">
-                    <select name="products" id="products">
+                    <select name="mypageSearchType" id="mypageSearchType">
                         <option value="상품명">상품명</option>
-                        <option value="상품명">주문번호</option>
-                        <option value="상품명">상품번호</option>
-                        <option value="상품명">기간</option>
+                        <option value="주문번호">주문번호</option>
+<!--                        <option value="상품번호">상품번호</option>-->
+<!--                        <option value="기간">기간</option>-->
                     </select>
 
                     <label for="search">
-                        <input type="text">
+                        <input type="text" id="mypageSearchField">
                     </label>
 
-                    <button>초기화</button>
+                    <button onclick="location.href='mypageMain'">초기화</button>
 
-                    <button>검색</button>
+                    <button id="mypageSearchBtn">검색</button>
                 </div>
             </div>
 
@@ -90,21 +91,24 @@
                 <div class="history__line"></div>
 
                 <div class="historyContents">
-                    <ul>
-                        <li>
+                    <ul id="li_Axios">
+                        <li th:each="orderList : ${pageInfo.list}">
+                            <input type="hidden" id="order_Id" th:value="${orderList.ORDER_ID}">
+                            <input type="hidden" id="order_product_name" th:value="${orderList.PRODUCT_NAME}">
+                            <input type="hidden" id="order_product_quantity" th:value="${orderList.PRODUCT_QUANTITY}">
                             <div class="txt">
-                                <span>12345678</span>
-                                <span>2023. 07. 01</span>
+                                <span th:text="${orderList.ORDER_ID}">12345678</span>
+                                <span th:text="${#dates.format(orderList.ORDER_DATE, 'yyyy-MM-dd')}">2023. 07. 01</span>
                             </div>
 
                             <div class="img">
-                                <img src="./img/마이페이지-망고스틴.png" alt="망고스틴">
+                                <img th:src="${orderList.IMAGE_URL}" alt="상품 이미지">
                                 <div class="img__txt">
-                                    <p>프리미엄 고당도 꿀수박 4kg</p>
+                                    <p th:text="${orderList.PRODUCT_NAME}">프리미엄 고당도 꿀수박 4kg</p>
 
                                     <div class="group">
-                                        <span class="orange">50,000원</span>
-                                        <span>구매수량 1개</span>
+                                        <span class="orange" th:text="${orderList.PRODUCT_PRICE} + '원'">50,000원</span>
+                                        <span th:text="${orderList.PRODUCT_QUANTITY} + '개'">구매수량 1개</span>
                                     </div>
 
                                     <div class="group2">
@@ -117,162 +121,7 @@
                             </div>
 
                             <div class="buttons">
-                                <button>재구매</button>
-                                <button>리뷰작성</button>
-                            </div>
-                        </li>
-
-                        <li>
-                            <div class="txt">
-                                <span>12345678</span>
-                                <span>2023. 07. 01</span>
-                            </div>
-
-                            <div class="img">
-                                <img src="./img/마이페이지-망고스틴.png" alt="망고스틴">
-                                <div class="img__txt">
-                                    <p>프리미엄 고당도 꿀수박 4kg</p>
-
-                                    <div class="group">
-                                        <span class="orange">50,000원</span>
-                                        <span>구매수량 1개</span>
-                                    </div>
-
-                                    <div class="group2">
-                                        <p>배송지 확인
-                                            <span class="material-symbols-outlined">double_arrow</span>
-                                        </p>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div class="buttons">
-                                <button>재구매</button>
-                                <button>리뷰작성</button>
-                            </div>
-                        </li>
-
-                        <li>
-                            <div class="txt">
-                                <span>12345678</span>
-                                <span>2023. 07. 01</span>
-                            </div>
-
-                            <div class="img">
-                                <img src="./img/마이페이지-망고스틴.png" alt="망고스틴">
-                                <div class="img__txt">
-                                    <p>프리미엄 고당도 꿀수박 4kg</p>
-
-                                    <div class="group">
-                                        <span class="orange">50,000원</span>
-                                        <span>구매수량 1개</span>
-                                    </div>
-
-                                    <div class="group2">
-                                        <p>배송지 확인
-                                            <span class="material-symbols-outlined">double_arrow</span>
-                                        </p>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div class="buttons">
-                                <button>재구매</button>
-                                <button>리뷰작성</button>
-                            </div>
-                        </li>
-
-                        <li>
-                            <div class="txt">
-                                <span>12345678</span>
-                                <span>2023. 07. 01</span>
-                            </div>
-
-                            <div class="img">
-                                <img src="./img/마이페이지-망고스틴.png" alt="망고스틴">
-                                <div class="img__txt">
-                                    <p>프리미엄 고당도 꿀수박 4kg</p>
-
-                                    <div class="group">
-                                        <span class="orange">50,000원</span>
-                                        <span>구매수량 1개</span>
-                                    </div>
-
-                                    <div class="group2">
-                                        <p>배송지 확인
-                                            <span class="material-symbols-outlined">double_arrow</span>
-                                        </p>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div class="buttons">
-                                <button>재구매</button>
-                                <button>리뷰작성</button>
-                            </div>
-                        </li>
-
-                        <li>
-                            <div class="txt">
-                                <span>12345678</span>
-                                <span>2023. 07. 01</span>
-                            </div>
-
-                            <div class="img">
-                                <img src="./img/마이페이지-망고스틴.png" alt="망고스틴">
-                                <div class="img__txt">
-                                    <p>프리미엄 고당도 꿀수박 4kg</p>
-
-                                    <div class="group">
-                                        <span class="orange">50,000원</span>
-                                        <span>구매수량 1개</span>
-                                    </div>
-
-                                    <div class="group2">
-                                        <p>배송지 확인
-                                            <span class="material-symbols-outlined">double_arrow</span>
-                                        </p>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div class="buttons">
-                                <button>재구매</button>
-                                <button>리뷰작성</button>
-                            </div>
-                        </li>
-
-                        <li>
-                            <div class="txt">
-                                <span>12345678</span>
-                                <span>2023. 07. 01</span>
-                            </div>
-
-                            <div class="img">
-                                <img src="./img/마이페이지-망고스틴.png" alt="망고스틴">
-                                <div class="img__txt">
-                                    <p>프리미엄 고당도 꿀수박 4kg</p>
-
-                                    <div class="group">
-                                        <span class="orange">50,000원</span>
-                                        <span>구매수량 1개</span>
-                                    </div>
-
-                                    <div class="group2">
-                                        <p>배송지 확인
-                                            <span class="material-symbols-outlined">double_arrow</span>
-                                        </p>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div class="buttons">
-                                <button>재구매</button>
+                                <button class="rePurchase">재구매</button>
                                 <button>리뷰작성</button>
                             </div>
                         </li>
@@ -281,27 +130,25 @@
             </div>
 
             <div class="pagination">
-                <a href="#" class="prev">
-                    <span class="material-symbols-outlined">
-                        chevron_left
-                    </span>
-                </a>
+                <th:block th:if="${pageInfo.hasPreviousPage}">
+                    <a th:href="'#'" class="prevBtn" th:value="${pageInfo.prePage}">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </a>
+                </th:block>
+
 
                 <p class="numbers">
-                    <a href="#">1</a>
-                    <a href="#">2</a>
-                    <a href="#">3</a>
-                    <a href="#">
-                        <span class="bold">4</span>
-                    </a>
-                    <a href="#">5</a>
+                    <span th:each="pageNumber : ${pageInfo.navigatepageNums}" th:if="${pageNumber <= pageInfo.total}">
+                      <a th:text="${pageNumber}" th:href="'#'" class="numberBtn" th:attr="value=${pageNumber}" th:classappend="${pageNumber == pageInfo.pageNum ? 'bold large-text' : ''}"
+                         style="font-size: 16px; font-weight: bold;"></a>
+                    </span>
                 </p>
 
-                <a href="#" class="next">
-                    <span class="material-symbols-outlined">
-                        chevron_right
-                    </span>
-                </a>
+                <th:block th:if="${pageInfo.hasNextPage}">
+                    <a th:href="'#'" class="nextBtn" th:value="${pageInfo.nextPage}">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </a>
+                </th:block>
             </div>
 
 
@@ -317,8 +164,8 @@
                     <h5>장바구니에 담겼습니다.</h5>
 
                     <div class="buttons">
-                        <button>닫기</button>
-                        <button>장바구니로 이동</button>
+                        <button onclick="closeModal()">닫기</button>
+                        <button class="goCart">장바구니로 이동</button>
                     </div>
                 </div>
             </div>

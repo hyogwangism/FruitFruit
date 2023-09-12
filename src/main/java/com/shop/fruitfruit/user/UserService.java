@@ -1,5 +1,6 @@
 package com.shop.fruitfruit.user;
 
+import com.github.pagehelper.PageHelper;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -136,6 +137,17 @@ public class UserService implements UserMapper {
     @Override
     public void insertOrderProduct(HashMap<String, Object> selectMap) {
         userMapper.insertOrderProduct(selectMap);
+    }
+
+    @Override
+    public List<HashMap<String, Object>> selectOrderList(HashMap<String, Object> paramMap) {
+        PageHelper.startPage((Integer) paramMap.get("startPage"), (Integer) paramMap.get("pageSize"));
+        return userMapper.selectOrderList(paramMap);
+    }
+
+    @Override
+    public HashMap<String, Object> selectOrderProductId(HashMap<String, Object> paramMap) {
+        return userMapper.selectOrderProductId(paramMap);
     }
 
 
