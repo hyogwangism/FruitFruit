@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("user")
 @Log4j2
+@Transactional
 public class UserController {
     private final UserService userService;
     private final AdminService adminService;
@@ -567,5 +568,164 @@ public class UserController {
         return null;
     }
 
+    /**
+     * @author 황호준
+     * 마이페이지 배송지관리 페이지 이동
+     */
+    @RequestMapping("mypageDelivery")
+    public String mypageDelivery (Model model, HttpSession session){
+        if(session.getAttribute("sessionId") != null) {
+            HashMap<String, Object> paramMap = new HashMap<>();
+            String sessionId = session.getAttribute("sessionId").toString();
+            paramMap.put("id", sessionId);
+            paramMap.putAll(userService.selectUser(paramMap));
+            log.info("유저 아이디 넘버:"+paramMap);
+
+            List<HashMap<String, Object>> userDeliveryAddressList = userService.selectUserDeliveryAddressList(paramMap);
+            log.info("유저 배송지정보:"+ userDeliveryAddressList);
+
+            int addressCount = userService.selectUserDeliveryAddressCount(paramMap);
+            log.info("어드카운트:"+addressCount);
+            model.addAttribute("userDeliveryAddressList", userDeliveryAddressList);
+            model.addAttribute("addressCount", addressCount);
+            return "user/mypage_delivery";
+        } else {
+            model.addAttribute("mypageErrorMessage", "로그인이 필요한 서비스입니다.");
+            return "user/login";
+        }
+    }
+
+    /**
+     * @author 황호준
+     * 마이페이지 배송지추가 Axios
+     */
+    @RequestMapping("mypageAddDeliveryAxios")
+    @ResponseBody
+    public String mypageAddDeliveryAxios (HttpSession session, @RequestBody HashMap<String, Object> paramMap){
+        log.info("배달지정보 확인:" + paramMap);
+        if(session.getAttribute("sessionId") != null) {
+            String sessionId = session.getAttribute("sessionId").toString();
+            paramMap.put("id", sessionId);
+            paramMap.putAll(userService.selectUser(paramMap));
+            userService.insertUserDeliveryAddressInfo(paramMap);
+            return "배송지 추가 성공";
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @author 황호준
+     * 마이페이지 배송지수정 Axios
+     */
+    @RequestMapping("mypageEditDeliveryAxios")
+    @ResponseBody
+    public String mypageEditDeliveryAxios (HttpSession session, @RequestBody HashMap<String, Object> paramMap){
+        log.info("수정배달지정보 확인:" + paramMap);
+        if(session.getAttribute("sessionId") != null) {
+            String sessionId = session.getAttribute("sessionId").toString();
+            paramMap.put("id", sessionId);
+            paramMap.putAll(userService.selectUser(paramMap));
+            userService.updateUserDeliveryAddressInfo(paramMap);
+            return "배송지 수정 성공";
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @author 황호준
+     * 마이페이지 배송지삭제 Axios
+     */
+    @RequestMapping("mypageDeleteDeliveryAxios")
+    @ResponseBody
+    public String mypageDeleteDeliveryAxios (HttpSession session, @RequestBody HashMap<String, Object> paramMap){
+        log.info("삭제배달지정보 확인:" + paramMap);
+        if(session.getAttribute("sessionId") != null) {
+            userService.deleteUserDeliveryAddressInfo(paramMap);
+            return "배송지 삭제 성공";
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @author 황호준
+     * 마이페이지 회원정보수정 페이지 이동
+     */
+    @RequestMapping("mypageEdit")
+    public String mypageEdit (Model model, HttpSession session){
+        if(session.getAttribute("sessionId") != null) {
+            return "user/mypageEdit";
+        } else {
+            model.addAttribute("mypageErrorMessage", "로그인이 필요한 서비스입니다.");
+            return "user/login";
+        }
+    }
+
+    /**
+     * @author 황호준
+     * 마이페이지 회원정보수정2 페이지 이동전 비번확인 Axios
+     */
+    @RequestMapping("editPwdChk")
+    @ResponseBody
+    public HashMap<String, Object> editPwdChk (HttpSession session, @RequestBody HashMap<String, Object> paramMap){
+        log.info("비번잘들어오나:"+paramMap);
+        if(session.getAttribute("sessionId") != null) {
+            String id = session.getAttribute("sessionId").toString();
+            if(paramMap.get("editPwdChk")!=null && paramMap.get("wrongPwdConfirm").equals(0)) {
+                log.info("여기돈다");
+                if (BCrypt.checkpw(paramMap.get("editPwdChk").toString(), userService.loginUserChk(id).get("USER_PWD").toString())) {
+                    paramMap.put("equalPwd", "equalPwd");
+                } else {
+                    paramMap.put("nonEqualPwd", "nonEqualPwd");
+                }
+            } else if(paramMap.get("editPwdChk")!=null && paramMap.get("wrongPwdConfirm")!=null){
+                paramMap.remove("equalPwd", "equalPwd");
+                paramMap.remove("nonEqualPwd", "nonEqualPwd");
+                if (BCrypt.checkpw(paramMap.get("wrongPwdConfirm").toString(), userService.loginUserChk(id).get("USER_PWD").toString())) {
+                    log.info("성공이에요");
+                    paramMap.put("equalPwd", "equalPwd");
+                } else {
+                    log.info("실패에요");
+                    paramMap.put("nonEqualPwd", "nonEqualPwd");
+                }
+            }
+        } else {
+            paramMap.clear();
+        }
+        return paramMap;
+    }
+
+    /**
+     * @author 황호준
+     * 마이페이지 회원정보수정2 페이지 이동
+     */
+    @RequestMapping("mypageEdit2")
+    public String mypageEdit2 (Model model, HttpSession session){
+        if(session.getAttribute("sessionId") != null) {
+            HashMap<String, Object> paramMap = new HashMap<>();
+            paramMap.put("id", session.getAttribute("sessionId").toString());
+            paramMap.putAll(userService.selectUser(paramMap));
+            model.addAttribute("userInfo", paramMap);
+            log.info("userInfo: " + paramMap);
+            return "user/mypageEdit02";
+        } else {
+            model.addAttribute("mypageErrorMessage", "로그인이 필요한 서비스입니다.");
+            return "user/login";
+        }
+    }
+
+    /**
+     * @author 황호준
+     * 수정페이지 닉네임 중복체크
+     */
+    @RequestMapping("/edit_ok")
+    @ResponseBody
+    public int edit_ok(@RequestBody HashMap<String, Object> paramMap) throws Exception {
+        log.info("수정정보확인:"+paramMap);
+        userService.updateUserInfo(paramMap);
+        return 1;
+    }
 
 }

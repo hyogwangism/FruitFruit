@@ -1,121 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko">
 
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>프룻프룻 쇼핑몰</title>
+    <th:block th:insert="~{includes/head}"></th:block>
+    <th:block th:insert="~{includes/library}"></th:block>
+    <th:block th:insert="~{includes/style}"></th:block>
+    <th:block th:insert="~{includes/scripts}"></th:block>
 
-    <!--Open Graph-->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="프룻프룻 Shopping Mall" />
-    <meta property="og:title" content="프룻프룻 Shopping Mall" />
-    <meta property="og:description" content="프룻프룻 Shopping Mall 입니다." />
-    <meta property="og:image" content="./img/openGraph.png" />
-    <meta property="og:url" content="https://prpr-shopping-mall.co.kr" />
-
-    <!--파비콘-->
-    <link rel="icon" href="./favicon.ico" />
-
-    <!--브라우저 스타일 초기화-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" />
-
-    <!--Google Fonts - 나눔고딕-->
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
-
-    <!-- Google Fonts Noto Sans -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap"
-        rel="stylesheet">
-
-
-    <!-- Google Fonts - Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-
-
-    <!--Google Material Icons-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-
-    <link rel="stylesheet" href="./css/style.css">
-
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"
-        integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"
-        integrity="sha512-cOH8ndwGgPo+K7pTvMrqYbmI8u8k6Sho3js0gOqVWTmQMlLIi6TbqGWRTpf1ga8ci9H3iPsvDLr4X7xwhC/+DQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <!-- SWIPER -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-
-    <script defer src="./js/main.js"></script>
 </head>
 
 <body>
+<th:block th:insert="~{includes/header}"></th:block>
 
-    <header id="header">
-        <div class="inner">
-
-            <a href="./index.html" class="logo">
-                <img src="./img/푸릇푸릇 로고.png" alt="logo" />
-            </a>
-
-            <div class="sub-menu">
-                <ul class="menu">
-                    <li>
-                        <a href="./login.html">Sign In</a>
-                    </li>
-                    <li>
-                        <a href="./join.html">Join</a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0)">language</a>
-                    </li>
-                </ul>
-            </div>
-
-            <ul class="main-menu">
-                <li class="item">
-                    <div class="item__name">HOME</div>
-                </li>
-
-                <li class="item">
-                    <div class="item__name">
-                        <a href="./search.html">상품소개</a>
-                    </div>
-                </li>
-
-                <li class="item">
-                    <div class="item__name">
-                        <a href="./search.html">구매내역</a>
-                    </div>
-                </li>
-
-                <li class="item">
-                    <div class="item__name">마이페이지</div>
-                </li>
-
-                <li class="item">
-                    <a href="./cart.html">
-                        <div class="item__name red">
-                            장바구니
-                            <span class="material-icons">
-                                shopping_cart
-                            </span>
-
-                        </div>
-                    </a>
-                </li>
-            </ul>
-
-        </div>
-    </header>
 
     <div id="mypage_delivery">
         <div class="inner">
@@ -123,21 +20,21 @@
             <h2> 마이페이지 </h2>
 
             <div class="tab__menu">
-                <a href="/mypage.html">
+                <a href="mypageMain">
                     <div class="history">
                         <p>구매내역</p>
                     </div>
                 </a>
 
 
-                <a href="/mypage_delivery.html">
+                <a href="mypageDelivery">
                     <div class="delivery">
                         <p>배송지관리</p>
                     </div>
                 </a>
 
 
-                <a href="/mypageEdit.html">
+                <a href="mypageEdit">
                     <div class="memberInfo">
                         <p>회원정보</p>
                     </div>
@@ -150,86 +47,39 @@
                     <span>* 배송지는 3개까지만 저장됩니다.</span>
                 </p>
 
-                <button>+ 배송지추가</button>
+                <button class="addDeliveryAddress">+ 배송지추가</button>
             </div>
+            <input type="hidden" id="addressCount" th:value="${addressCount}">
 
-            <div class="delivery__wrap">
+            <div class="delivery__wrap"  th:each="UDAList : ${userDeliveryAddressList}">
                 <div class="buttons">
-                    <button>수정</button>
-                    <button>삭제</button>
+                    <input type="hidden" id="USER_DELIVERY_ID" th:value="${UDAList.USER_DELIVERY_ID}">
+                    <input type="hidden" id="USER_DELIVERY_PLACE" th:value="${UDAList.DELIVER_PLACE}">
+                    <input type="hidden" id="DELIVER_RECEIVER_NAME" th:value="${UDAList.DELIVER_RECEIVER_NAME}">
+                    <input type="hidden" id="DELIVER_PHONE" th:value="${UDAList.DELIVER_PHONE}">
+                    <input type="hidden" id="DELIVER_POSTCODE" th:value="${UDAList.DELIVER_POSTCODE}">
+                    <input type="hidden" id="DELIVER_ADDRESS" th:value="${UDAList.DELIVER_ADDRESS}">
+                    <button class="Delivery_Edit_Btn">수정</button>
+                    <button class="Delivery_Delete_Btn">삭제</button>
                 </div>
 
                 <ul>
                     <li>
                         <span class="li__title">배송지명</span>
-                        <span>우리집</span>
+                        <span th:text="${UDAList.DELIVER_PLACE}">우리집</span>
 
                     </li>
                     <li>
                         <span class="li__title">수령인</span>
-                        <span>홍길동 팀장</span>
+                        <span th:text="${UDAList.DELIVER_RECEIVER_NAME}">홍길동 팀장</span>
                     </li>
                     <li>
                         <span class="li__title">연락처</span>
-                        <span>010-1234-5678</span>
+                        <span id="formattedPhoneNumber" th:text="${UDAList.DELIVER_PHONE}"></span>
                     </li>
                     <li>
                         <span class="li__title">배송주소</span>
-                        <span>12345 서울시 강남구 강남로 123 강남빌딩</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="delivery__wrap">
-                <div class="buttons">
-                    <button>수정</button>
-                    <button>삭제</button>
-                </div>
-
-                <ul>
-                    <li>
-                        <span class="li__title">배송지명</span>
-                        <span>우리집</span>
-
-                    </li>
-                    <li>
-                        <span class="li__title">수령인</span>
-                        <span>홍길동 팀장</span>
-                    </li>
-                    <li>
-                        <span class="li__title">연락처</span>
-                        <span>010-1234-5678</span>
-                    </li>
-                    <li>
-                        <span class="li__title">배송주소</span>
-                        <span>12345 서울시 강남구 강남로 123 강남빌딩</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="delivery__wrap">
-                <div class="buttons">
-                    <button>수정</button>
-                    <button>삭제</button>
-                </div>
-
-                <ul>
-                    <li>
-                        <span class="li__title">배송지명</span>
-                        <span>우리집</span>
-
-                    </li>
-                    <li>
-                        <span class="li__title">수령인</span>
-                        <span>홍길동 팀장</span>
-                    </li>
-                    <li>
-                        <span class="li__title">연락처</span>
-                        <span>010-1234-5678</span>
-                    </li>
-                    <li>
-                        <span class="li__title">배송주소</span>
-                        <span>12345 서울시 강남구 강남로 123 강남빌딩</span>
+                        <span th:text="${UDAList.DELIVER_ADDRESS}">12345 서울시 강남구 강남로 123 강남빌딩</span>
                     </li>
                 </ul>
             </div>
@@ -247,26 +97,29 @@
                 <div class="bottom">
                     <label for="title">
                         <p>배송지명</p>
-                        <input type="textbox" name="title" id="title">
+                        <input type="textbox" name="add_title" id="add_title">
                     </label>
 
                     <label for="name">
                         <p>이름</p>
-                        <input type="textbox" name="name" id="name">
+                        <input type="textbox" name="add_name" id="add_name">
                     </label>
 
                     <label for="phone" class="phone">
                         <p>연락처</p>
-                        <input type="textbox" name="phone1" id="phone1">
-                        <input type="textbox" name="phone2" id="phone2">
+                        <input type="textbox" name="add_phone1" id="add_phone1">
+                        <input type="textbox" name="add_phone2" id="add_phone2">
                     </label>
 
                     <label for="add" class="add">
                         <p>주소</p>
-                        <button>우편번호</button>
-                        <input type="textbox" name="add" id="add" class="postalCode">
-                        <input type="textbox" name="add2" id="add2" class="postalCode2">
-                        <input type="textbox" name="add3" id="add3" class="postalCode2">
+                        <button onclick="sample6_execDaumPostcode()">우편번호</button>
+
+                        <input type="text" id="sample6_postcode" class="postalCode" placeholder="우편번호">
+                        <input type="text" id="sample6_address" class="postalCode2" placeholder="주소"><br>
+                        <input type="text" id="sample6_detailAddress" class="postalCode2" placeholder="상세주소">
+                        <input type="text" id="sample6_extraAddress" class="postalCode2" placeholder="참고항목">
+
                     </label>
 
 
@@ -275,7 +128,7 @@
                             작성취소
                         </button>
 
-                        <button class="delivery__add__confirm">
+                        <button class="delivery__add__confirm" id="delivery__add__confirm_ok">
                             저장하기
                         </button>
                     </div>
@@ -283,6 +136,8 @@
 
             </div>
         </div>
+
+
 
         <!-- 배송지저장이 완료되었습니다. 모달 창 -->
         <div class="delivery__add__confirm" style="display: none;">
@@ -297,12 +152,13 @@
 
 
                     <div class="delivery__add__confirm__buttons">
-                        <button>확인</button>
+                        <button class="delivery__add__confirm__ok">확인</button>
                     </div>
                 </div>
 
             </div>
         </div>
+
 
         <!-- 배송지저장 작성취소 모달 창 -->
         <div class="delivery__add__calcel" style="display: none;">
@@ -318,11 +174,11 @@
 
 
                     <div class="delivery__add__calcel__buttons">
-                        <button>
+                        <button class="cancel_modal_ok">
                             취소하기
                         </button>
 
-                        <button>
+                        <button class="continueBtn">
                             계속작성
                         </button>
                     </div>
@@ -330,6 +186,8 @@
 
             </div>
         </div>
+
+
 
         <!-- 배송지관리 삭제 모달 창 -->
         <div class="delivery__delete" style="display: none;">
@@ -344,11 +202,11 @@
 
 
                     <div class="delivery__delete__buttons">
-                        <button>
+                        <button id="deleteCancelBtn">
                             취소하기
                         </button>
 
-                        <button>
+                        <button id="deleteBtn">
                             삭제하기
                         </button>
                     </div>
@@ -362,34 +220,36 @@
             <div class="delivery__edit__inner">
 
                 <div class="top">
-                    <span>배송지추가</span>
+                    <span>배송지수정</span>
                 </div>
 
                 <div class="bottom">
                     <label for="title">
                         <p>배송지명</p>
-                        <input type="textbox" name="title" id="title">
+                        <input type="textbox" name="add_title" id="edit_title">
                     </label>
 
                     <label for="name">
                         <p>이름</p>
-                        <input type="textbox" name="name" id="name">
+                        <input type="textbox" name="add_name" id="edit_name">
                     </label>
 
                     <label for="phone" class="phone">
                         <p>연락처</p>
-                        <input type="textbox" name="phone1" id="phone1">
-                        <input type="textbox" name="phone2" id="phone2">
+                        <input type="textbox" name="add_phone1" id="edit_phone1">
+                        <input type="textbox" name="add_phone2" id="edit_phone2">
                     </label>
 
                     <label for="add" class="add">
                         <p>주소</p>
-                        <button>우편번호</button>
-                        <input type="textbox" name="add" id="add" class="postalCode">
-                        <input type="textbox" name="add2" id="add2" class="postalCode2">
-                        <input type="textbox" name="add3" id="add3" class="postalCode2">
-                    </label>
+                        <button onclick="sample7_execDaumPostcode()">우편번호</button>
 
+                        <input type="text" id="sample7_postcode" class="postalCode" placeholder="우편번호">
+                        <input type="text" id="sample7_address" class="postalCode2" placeholder="주소"><br>
+                        <input type="text" id="sample7_detailAddress" class="postalCode2" placeholder="상세주소">
+                        <input type="text" id="sample7_extraAddress" class="postalCode2" placeholder="참고항목">
+
+                    </label>
 
                     <div class="delivery__edit__buttons">
                         <button class="delivery__edit__cancel">

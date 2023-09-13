@@ -37,4 +37,16 @@ public interface UserMapper {
 
 
     HashMap<String,Object> selectOrderProductId(HashMap<String, Object> paramMap);
+
+    void insertUserDeliveryAddressInfo(HashMap<String, Object> paramMap);
+
+    List<HashMap<String, Object>> selectUserDeliveryAddressList(HashMap<String, Object> paramMap);
+
+    int selectUserDeliveryAddressCount(HashMap<String, Object> paramMap);
+
+    void updateUserDeliveryAddressInfo(HashMap<String, Object> paramMap);
+
+    void deleteUserDeliveryAddressInfo(HashMap<String, Object> paramMap);
+
+    void updateUserInfo(HashMap<String, Object> paramMap);
 }

@@ -2,115 +2,16 @@
 <html lang="ko">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>프룻프룻 쇼핑몰</title>
+    <th:block th:insert="~{includes/head}"></th:block>
+    <th:block th:insert="~{includes/library}"></th:block>
+    <th:block th:insert="~{includes/style}"></th:block>
+    <th:block th:insert="~{includes/scripts}"></th:block>
 
-    <!--Open Graph-->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="프룻프룻 Shopping Mall" />
-    <meta property="og:title" content="프룻프룻 Shopping Mall" />
-    <meta property="og:description" content="프룻프룻 Shopping Mall 입니다." />
-    <meta property="og:image" content="./img/openGraph.png" />
-    <meta property="og:url" content="https://prpr-shopping-mall.co.kr" />
-
-    <!--파비콘-->
-    <link rel="icon" href="./favicon.ico" />
-
-    <!--브라우저 스타일 초기화-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" />
-
-    <!--Google Fonts - 나눔고딕-->
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
-
-    <!-- Google Fonts - Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-
-
-    <!--Google Material Icons-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-
-    <link rel="stylesheet" href="./css/style.css">
-
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"
-        integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"
-        integrity="sha512-cOH8ndwGgPo+K7pTvMrqYbmI8u8k6Sho3js0gOqVWTmQMlLIi6TbqGWRTpf1ga8ci9H3iPsvDLr4X7xwhC/+DQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <!-- SWIPER -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-
-    <script defer src="./js/main.js"></script>
 </head>
 
 <body>
+<th:block th:insert="~{includes/header}"></th:block>
 
-    <header id="header">
-        <div class="inner">
-
-            <a href="./index.html" class="logo">
-                <img src="./img/푸릇푸릇 로고.png" alt="logo" />
-            </a>
-
-            <div class="sub-menu">
-                <ul class="menu">
-                    <li>
-                        <a href="./login.html">Sign In</a>
-                    </li>
-                    <li>
-                        <a href="./join.html">Join</a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0)">language</a>
-                    </li>
-                </ul>
-            </div>
-
-            <ul class="main-menu">
-                <li class="item">
-                    <div class="item__name">HOME</div>
-                </li>
-
-                <li class="item">
-                    <div class="item__name">
-                        <a href="./search.html">상품소개</a>
-                    </div>
-                </li>
-
-                <li class="item">
-                    <div class="item__name">
-                        <a href="./search.html">구매내역</a>
-                    </div>
-                </li>
-
-                <li class="item">
-                    <div class="item__name">마이페이지</div>
-                </li>
-
-                <li class="item">
-                    <a href="./cart.html">
-                        <div class="item__name red">
-                            장바구니
-                            <span class="material-icons">
-                                shopping_cart
-                            </span>
-
-                        </div>
-                    </a>
-                </li>
-            </ul>
-
-        </div>
-    </header>
 
     <div id="mypageEdit">
         <div class="inner">
@@ -118,21 +19,21 @@
             <h2> 마이페이지 </h2>
 
             <div class="tab__menu">
-                <a href="./mypage.html">
+                <a href="mypageMain">
                     <div class="history">
                         <p>구매내역</p>
                     </div>
                 </a>
 
 
-                <a href="./mypage_delivery.html">
+                <a href="mypageDelivery">
                     <div class="delivery">
                         <p>배송지관리</p>
                     </div>
                 </a>
 
 
-                <a href="./mypageEdit.html">
+                <a href="mypageEdit">
                     <div class="memberInfo">
                         <p>회원정보</p>
                     </div>
@@ -147,25 +48,25 @@
                     보고하기 위해 현재 비밀번호 확인이 필요합니다.</span>
             </div>
 
-
             <div class="input">
                 <p>비밀번호 확인</p>
                 <div class="input_wrap">
                     <div class="input_wrap">
-                        <input type="text" placeholder="비밀번호를 입력해주세요.">
-                        <span class="material-symbols-outlined">visibility</span>
+                        <input class="pwdConfirm" type="password" name="pwdConfirm" id="pwdConfirm" placeholder="비밀번호를 입력해주세요.">
+                        <span id="togglePassword1" ><i class="fa fa-eye-slash fa-lg"></i></span>
+                        <!--                        <span class="material-symbols-outlined">visibility</span>-->
                     </div>
                 </div>
             </div>
-
 
             <!-- 비밀번호가 일치하지 않을 때 -->
             <div class="inputWrong" style="display: none;">
                 <p>비밀번호 확인</p>
                 <div class="input_wrap">
                     <div class="input_wrap">
-                        <input type="text" placeholder="비밀번호를 입력해주세요.">
-                        <span class="material-symbols-outlined">visibility</span>
+                        <input class="wrongPwdConfirm" type="password" name="wrongPwdConfirm" id="wrongPwdConfirm" placeholder="비밀번호를 입력해주세요.">
+                        <span id="togglePassword2" ><i class="fa fa-eye-slash fa-lg"></i></span>
+                        <!--                        <span class="material-symbols-outlined">visibility</span>-->
                     </div>
                 </div>
 
@@ -175,12 +76,12 @@
 
 
             <div class="button">
-                <button>
+                <button id="pwdCheckBtn">
                     <a href="#">확인</a>
                 </button>
 
                 <span>
-                    <a href="#">비밀번호 찾기</a>
+                    <a href="findPw">비밀번호 찾기</a>
                 </span>
             </div>
         </div>

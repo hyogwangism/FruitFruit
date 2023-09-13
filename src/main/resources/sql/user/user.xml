@@ -96,10 +96,53 @@
 
     </select>
 
+    <!--    재구매 장바구니를 위해 주문번호에 담긴 상품이름 조건으로 Product_ID 가져오기-->
     <select id="selectOrderProductId" resultType="HashMap">
         SELECT PRODUCT_ID FROM PRODUCT WHERE PRODUCT_NAME=#{order_product_name}
     </select>
 
+    <!--    유저 배송지 추가-->
+    <insert id="insertUserDeliveryAddressInfo">
+        INSERT INTO USER_DELIVERY_ADDRESS VALUES (NULL, #{USER_ID_NO}, #{deliverPlace} , #{deliverReceiverName}, #{deliverPhone}, #{deliverPostalCode}, #{deliverAddress})
+    </insert>
+
+    <!--    유저 배송지 리스트 select -->
+    <select id="selectUserDeliveryAddressList" resultType="HashMap">
+        SELECT * FROM USER_DELIVERY_ADDRESS WHERE USER_ID_NO = #{USER_ID_NO} ORDER BY USER_DELIVERY_ID DESC
+    </select>
+
+    <!--    유저 배송지 리스트 개수 -->
+    <select id="selectUserDeliveryAddressCount" resultType="int">
+        SELECT COUNT(*) FROM USER_DELIVERY_ADDRESS WHERE USER_ID_NO = #{USER_ID_NO}
+    </select>
+
+    <!--    유저 배송지 수정-->
+    <update id="updateUserDeliveryAddressInfo">
+        UPDATE USER_DELIVERY_ADDRESS
+        SET
+            DELIVER_PLACE = #{deliverPlace}
+          , DELIVER_RECEIVER_NAME = #{deliverReceiverName}
+          , DELIVER_PHONE = #{deliverPhone}
+          , DELIVER_POSTCODE = #{deliverPostalCode}
+          , DELIVER_ADDRESS = #{deliverAddress}
+        WHERE USER_DELIVERY_ID = #{deliverId}
+    </update>
+
+    <!--    유저 배송지 삭제-->
+    <delete id="deleteUserDeliveryAddressInfo">
+        DELETE FROM USER_DELIVERY_ADDRESS
+        WHERE USER_DELIVERY_ID = #{deliverId}
+    </delete>
+
+    <!-- 유저 정보 수정-->
+    <update id="updateUserInfo">
+        UPDATE USER
+        SET
+            USER_NAME = #{name}
+          , USER_PWD = #{newpw}
+          , USER_PHONE = #{phone}
+        WHERE USER_EMAIL = #{id}
+    </update>
 </mapper>
 
 

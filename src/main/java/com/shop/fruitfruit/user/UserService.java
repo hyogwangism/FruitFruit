@@ -38,7 +38,7 @@ public class UserService implements UserMapper {
         userMapper.insertTerm(paramMap);
     }
 
-    public HashMap<String, Object> OrderMethod(HashMap<String, Object> paramMap){
+    public HashMap<String, Object> OrderMethod(HashMap<String, Object> paramMap) {
 
         /**
          * 1. SessionId를 기준으로 유저 검색을 해서 USER_ID_NO를 가져온다
@@ -49,33 +49,33 @@ public class UserService implements UserMapper {
          * 6. ORDER_PRODUCT테이블에 상세 주문정보(ORDER_ID, PRODUCT_ID, PRODUCT_QUANTITY, PRODUCT_PRICE(구매당시 해당물폼 총가격), REVIEW_STATUS)를 저장
          */
 
-            paramMap.put("id", paramMap.get("sessionId").toString());
-            //sessionId기준 유저검색해서 저장
-            paramMap.putAll(userMapper.selectUser(paramMap));
+        paramMap.put("id", paramMap.get("sessionId").toString());
+        //sessionId기준 유저검색해서 저장
+        paramMap.putAll(userMapper.selectUser(paramMap));
 
-            //USER_ID_NO를 기준으로 배송지 정보 저장
-            userMapper.insertDeliverInfo(paramMap);
+        //USER_ID_NO를 기준으로 배송지 정보 저장
+        userMapper.insertDeliverInfo(paramMap);
 
-            //저장된 배송자정보중 USER_ID_NO 기준으로 최근 저장된 DELIVER_ID 가져와서 저장
-            paramMap.putAll(userMapper.selectDeliverId(paramMap));
+        //저장된 배송자정보중 USER_ID_NO 기준으로 최근 저장된 DELIVER_ID 가져와서 저장
+        paramMap.putAll(userMapper.selectDeliverId(paramMap));
 
-            //DELIVER_ID 기준으로 주문 정보 저장
-            userMapper.insertOrderInfo(paramMap);
+        //DELIVER_ID 기준으로 주문 정보 저장
+        userMapper.insertOrderInfo(paramMap);
 
-            //
+        //
 
-            //DELIVER_ID 기준 ORDER_ID SELECT
-            paramMap.putAll(userMapper.selectOrderId(paramMap));
+        //DELIVER_ID 기준 ORDER_ID SELECT
+        paramMap.putAll(userMapper.selectOrderId(paramMap));
 
-            List<HashMap<String, Object>> paymentCartSessionList = (List<HashMap<String,Object>>) paramMap.get("paymentCartSessionList");
+        List<HashMap<String, Object>> paymentCartSessionList = (List<HashMap<String, Object>>) paramMap.get("paymentCartSessionList");
 
 
-            for(HashMap<String, Object> selectMap : paymentCartSessionList){
-                selectMap.put("ORDER_ID", paramMap.get("ORDER_ID").toString());
-                userMapper.insertOrderProduct(selectMap);
-            }
+        for (HashMap<String, Object> selectMap : paymentCartSessionList) {
+            selectMap.put("ORDER_ID", paramMap.get("ORDER_ID").toString());
+            userMapper.insertOrderProduct(selectMap);
+        }
 
-            return paramMap;
+        return paramMap;
     }
 
     @Override
@@ -89,7 +89,8 @@ public class UserService implements UserMapper {
     }
 
     @Override
-    public void insertTerm(HashMap<String, Object> paramMap) {}
+    public void insertTerm(HashMap<String, Object> paramMap) {
+    }
 
     @Override
     public HashMap<String, Object> joinNameChk(String name) {
@@ -121,7 +122,7 @@ public class UserService implements UserMapper {
 
     @Override
     public HashMap<String, Object> selectDeliverId(HashMap<String, Object> paramMap) {
-       return userMapper.selectDeliverId(paramMap);
+        return userMapper.selectDeliverId(paramMap);
     }
 
     @Override
@@ -145,9 +146,48 @@ public class UserService implements UserMapper {
         return userMapper.selectOrderList(paramMap);
     }
 
+    //재구매 장바구니를 위해 주문번호에 담긴 상품이름 조건으로 Product_ID 가져오기
     @Override
     public HashMap<String, Object> selectOrderProductId(HashMap<String, Object> paramMap) {
         return userMapper.selectOrderProductId(paramMap);
+    }
+
+    //유저 배송지 추가
+    @Override
+    public void insertUserDeliveryAddressInfo(HashMap<String, Object> paramMap) {
+        userMapper.insertUserDeliveryAddressInfo(paramMap);
+    }
+
+    //유저 배송지 리스트
+    @Override
+    public List<HashMap<String, Object>> selectUserDeliveryAddressList(HashMap<String, Object> paramMap) {
+        return userMapper.selectUserDeliveryAddressList(paramMap);
+    }
+
+    // 유저 배송지 개수
+    @Override
+    public int selectUserDeliveryAddressCount(HashMap<String, Object> paramMap) {
+        return userMapper.selectUserDeliveryAddressCount(paramMap);
+    }
+
+    // 유저 배송지 update
+    @Override
+    public void updateUserDeliveryAddressInfo(HashMap<String, Object> paramMap) {
+        userMapper.updateUserDeliveryAddressInfo(paramMap);
+    }
+
+    @Override
+    public void deleteUserDeliveryAddressInfo(HashMap<String, Object> paramMap) {
+        userMapper.deleteUserDeliveryAddressInfo(paramMap);
+    }
+
+    @Override
+    public void updateUserInfo(HashMap<String, Object> paramMap) {
+        //사용자 입력비번 암호화
+        String BcrypPwd = BCrypt.hashpw(paramMap.get("newpw").toString(), BCrypt.gensalt());
+        //암호화 비번 HashMap에 추가
+        paramMap.put("newpw", BcrypPwd);
+        userMapper.updateUserInfo(paramMap);
     }
 
 

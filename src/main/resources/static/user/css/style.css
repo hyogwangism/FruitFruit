@@ -2131,7 +2131,7 @@
 #mypage_delivery .delivery__add .delivery__add__inner .bottom {
   background-color: #fff;
   width: 100%;
-  height: 600px;
+  height: 700px;
   padding: 50px 80px;
   display: flex;
   flex-direction: column;
@@ -2208,11 +2208,7 @@
   color: #fff;
 }
 #mypage_delivery .delivery__add__confirm {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+
   background: rgba(0, 0, 0, 0.7) fixed;
   z-index: 9;
   display: flex;
@@ -2418,7 +2414,7 @@
 #mypage_delivery .delivery__edit .delivery__edit__inner .bottom {
   background-color: #fff;
   width: 100%;
-  height: 600px;
+  height: 700px;
   padding: 50px 80px;
   display: flex;
   flex-direction: column;
@@ -2617,6 +2613,7 @@
   margin-bottom: 150px;
 }
 #mypageEdit .inner .button button {
+  cursor: pointer;
   background-color: var(--primary-color);
   border: none;
   width: 450px;
@@ -2698,7 +2695,7 @@
   margin-left: 5px;
 }
 #mypageEdit02 .inner label input {
-  width: 400px;
+  width: 370px;
   padding: 10px;
   font: normal 12px/1 "Nanum Gothic";
   color: #bbb;
@@ -2709,7 +2706,7 @@
   margin-right: 10px;
 }
 #mypageEdit02 .inner label button {
-  width: 70px;
+  width: 100px;
   background-color: #252525;
   color: #fff;
   border-radius: 5px;
@@ -2902,6 +2899,7 @@
   margin-bottom: 80px;
 }
 #mypageEdit02 .inner .mypageEdit__button button {
+  cursor: pointer;
   background-color: var(--primary-color);
   border: 1px solid var(--primary-color);
   width: 200px;
