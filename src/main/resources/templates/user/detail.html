@@ -114,19 +114,11 @@
                 </a>
 
 
-                <a href="./review.html">
+                <a th:href="@{/user/productReview(productId=${productDetail.PRODUCT_ID})}">
                     <div class="review">
                         <p>상품리뷰</p>
                     </div>
                 </a>
-
-
-                <a href="#">
-                    <div class="question">
-                        <p>상품문의</p>
-                    </div>
-                </a>
-
             </div>
 
             <div class="box03" th:utext="${productDetail.PRODUCT_DESCRIPTION}">

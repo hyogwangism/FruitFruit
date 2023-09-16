@@ -49,4 +49,14 @@ public interface UserMapper {
     void deleteUserDeliveryAddressInfo(HashMap<String, Object> paramMap);
 
     void updateUserInfo(HashMap<String, Object> paramMap);
+
+    List<HashMap<String, Object>> getOrdersByUserIdWithinLastMonth(HashMap<String, Object> paramMap);
+
+    void insertReview(HashMap<String, Object> paramMap);
+
+    void updateReviewStatus(HashMap<String, Object> paramMap);
+
+    List<HashMap<String, Object>> reviewListByProductId(HashMap<String, Object> paramMap);
+
+    void updateReview(HashMap<String, Object> paramMap);
 }

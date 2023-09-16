@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <th:block th:insert="~{includes/head}"></th:block>
+    <th:block th:insert="~{includes/library}"></th:block>
+    <th:block th:insert="~{includes/style}"></th:block>
+    <th:block th:insert="~{includes/scripts}"></th:block>
+
+</head>
+
+<body>
+<th:block th:insert="~{includes/header}"></th:block>
+
+
+    <section id="review">
+        <div class="inner detail__inner">
+
+            <div class="box01">
+                <div class="left">
+                    <img th:src="${productDetail.IMAGE_URL}" class="detailImage" alt="상품 이미지">
+                </div>
+
+                <div class="right">
+                    <input type="hidden" id="productId" th:value="${productDetail.PRODUCT_ID}">
+                    <input type="hidden" class="detailDiscount" th:value="${productDetail.PRODUCT_DISCOUNT}">
+                    <input type="hidden" class="detailInitPrice" th:value="${productDetail.PRODUCT_PRICE}">
+                    <input type="hidden" class="detailDiscountPrice" th:value="${productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT }/ 100">
+                    <input type="hidden" class="detailDiscountedPrice" th:value="${productDetail.PRODUCT_PRICE - (productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100)}">
+                    <input type="hidden" id="userIdNo" th:value="${userIdNo}">
+                    <div class="right__txt01">
+                        <h2 class="detailName" th:text="${productDetail.PRODUCT_NAME}"></h2>
+                        <span id="detailLike" class="material-icons" th:classappend="${isLiked} ? 'red__heart' : 'material-symbols-outlined'">
+                            favorite
+                        </span>
+                    </div>
+
+                    <div class="right__txt02">
+                        <div class="right__txt02__01">
+                            <span th:text="${productDetail.PRODUCT_DISCOUNT}+원"></span>
+                            <p>
+                                <span th:text="${productDetail.PRODUCT_PRICE}+원"></span>
+                                <span th:text="${productDetail.PRODUCT_PRICE - (productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100)}+원"></span>
+                            </p>
+                        </div>
+
+                        <div class="right__txt02__02">
+                            <p>배송비 3,000원
+                                <span class="free">(50,000원이상 결제시 무료배송)</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="right__txt03">
+                        <!-- 장바구니 클릭 시 수량 증감버튼 -->
+                        <div class="cart">
+                            <div class="inner">
+                                <button class="quantityMinusBtn">-</button>
+                                <input type="text" id="quantityInput" value="1">
+                                <button class="quantityPlusBtn">+</button>
+                            </div>
+                            <span th:text="남은수량 + ${productDetail.PRODUCT_INVENTORY}+개"></span>
+                        </div>
+
+                        <div class="right__txt03__01">
+                            <span>총 상품 금액</span>
+                            <span  th:text="${productDetail.PRODUCT_PRICE - (productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100)}+원"></span>
+                        </div>
+
+                        <div class="right__txt03__02">
+                            <span>배송비</span>
+                            <span th:if="${productDetail.PRODUCT_PRICE - (productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100) >= 50000}" th:text="무료"></span>
+                            <span th:unless="${productDetail.PRODUCT_PRICE - (productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100) < 50000}" th:text="3000원"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="right__buttons">
+                        <button class="detailCart">장바구니</button>
+                        <button>바로구매</button>
+                    </div>
+
+                    <!-- 장바구니에 담겼습니다. 모달 창 -->
+                    <div class="txt04 right__modal" style="display: none;">
+                        <div class="inner">
+
+                            <h4>알림</h4>
+
+                            <h5>
+                                <span>장바구니에 담겼습니다.</span>
+
+                                <div class="buttons">
+                                    <a href="./detail.html">
+                                        <button>계속 쇼핑하기</button>
+                                    </a>
+
+                                    <a href="#">
+                                        <button>장바구니로 이동</button>
+                                    </a>
+                                </div>
+
+                            </h5>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="box02">
+                <a href="./detail.html">
+                    <div class="detailed__info">
+                        <p>상세정보</p>
+                    </div>
+                </a>
+
+
+                <a th:href="@{/user/productReview(productId=${productDetail.PRODUCT_ID})}">
+                    <div class="review">
+                        <p>상품리뷰</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="write">
+                <input type="hidden" id="ORDER_PRODUCT_ID" th:if="${filteredMap!=null}" th:value="${filteredMap.ORDER_PRODUCT_ID}">
+                <span th:if="${isReviewed}==false" style="font-weight: bold; color: red;">상품 구입후 한 달 이내에만 리뷰작성이 가능합니다.</span>
+
+                <button id="review_write_btn" th:if="${isReviewed}==true">
+                    <span class="material-symbols-outlined">rate_review</span>
+                    <span>리뷰작성하기</span>
+                </button>
+
+
+
+
+                <!-- 리뷰작성 모달 창 -->
+                <div class="review__modal" style="display: none;">
+                    <div class="inner">
+
+                        <h4>알림</h4>
+
+                        <div class="modal__wrap">
+                            <h5>상품에 대한 리뷰를 남겨주세요.</h5>
+
+                            <input id="cont" type="text" placeholder="10자 이상 500자 미만으로 작성해주세요.">
+                            <span class="count">0/500</span>
+
+
+                            <div class="review__buttons">
+                                <button class="review__cancel">
+                                    작성취소
+                                </button>
+
+                                <button class="review__confirm" id="review__confirm__ok">
+                                    리뷰등록
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 리뷰수정 모달 창 -->
+                <div class="review__modal" id="review__edit__modal" style="display: none;">
+                    <div class="inner">
+
+                        <h4>알림</h4>
+
+                        <div class="modal__wrap">
+                            <h5>상품에 대한 리뷰를 남겨주세요.</h5>
+
+                            <input id="editCont" type="text" placeholder="10자 이상 500자 미만으로 작성해주세요.">
+                            <span class="count">0/500</span>
+
+
+                            <div class="review__buttons">
+                                <button class="review__cancel">
+                                    작성취소
+                                </button>
+
+                                <button class="review__confirm" id="review__edit__ok">
+                                    리뷰수정
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 리뷰작성 취소 모달 창 -->
+                <div class="review__cancel__modal" style="display: none;">
+                    <div class="inner">
+
+                        <h4>알림</h4>
+
+                        <div class="cancel__modal__wrap">
+                            <h5>작성중인 내용이 모두 삭제됩니다. <br>
+                                취소 하시겠습니까?</h5>
+
+
+                            <div class="review__buttons">
+                                <button class="review__cancel" id="review__cancel__modal__cancel">
+                                    <a href="#">취소하기</a>
+                                </button>
+
+                                <button class="review__confirm" id="review__continue">
+                                    <a href="#">계속작성</a>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 리뷰작성 완료 모달 창 -->
+                <div class="review__confirm__modal" style="display: none;">
+                    <div class="inner">
+
+                        <h4>알림</h4>
+
+                        <div class="confirm__modal__wrap">
+                            <h5>리뷰 작성이 완료 되었습니다.</h5>
+
+
+                            <div class="review__buttons">
+                                <button class="review__confirm">
+                                    <a th:href="@{/user/productReview(productId=${productDetail.PRODUCT_ID})}">확인</a>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="box03">
+                <div id="reviewPageAxiosBody">
+                <ul th:each="rList : ${reviewPageInfo.list}" style="margin-bottom: 10px;">
+                    <li>
+                        <span class="id" th:text="${#strings.substring(rList.USER_EMAIL, 0, 4)} + '****' + ${#strings.repeat('*', #strings.length(rList.USER_EMAIL) - 4)}"></span>
+                        <span class="date" th:text="${rList.REVIEW_DATE}">2023. 07. 17</span>
+
+                        <p>
+                            <span th:text="${rList.REVIEW_CONT}"> </span>
+                            <button th:if="${rList.USER_ID_NO == userIdNo}" id="review_edit_btn" style="color: black; background-color: white; font-weight: bold;" th:data-review-id="${rList.REVIEW_ID}">수정하기</button>
+                            <button id="reply_view_btn">답글보기</button>
+                            <button id="reply_view_cancel_btn" style="display: none">답글닫기</button>
+                        </p>
+                    </li>
+                    <ul class="review__reply__cont" th:if="${rList.REVIEW_REPLY_CONT}==null" style="display: none; margin-bottom: 30px; text-align: right; background-color: #F6F6F6;">
+                    <li>
+                        <span style="color: red;">아직 답변되지 않은 리뷰입니다.</span>
+                    </li>
+                    </ul>
+
+                    <ul class="review__reply__cont" th:if="${rList.REVIEW_REPLY_CONT}!=null" style="display: none; margin-bottom: 30px; text-align: right; background-color: #F6F6F6;">
+                        <li>
+                            <span style="color: blue;">판매자</span>
+                            <br>
+                            <span th:text="${rList.REVIEW_REPLY_CONT}" style="color: black"></span>
+                            <span th:text="${rList.REVIEW_REPLY_DATE}" style="color: black"></span>
+                        </li>
+                    </ul>
+
+
+                </ul>
+                </div>
+
+                <div class="pagination">
+
+                    <th:block th:if="${reviewPageInfo.hasPreviousPage}">
+                        <a th:href="'#'" id="reviewPrevBtn"  th:value="${reviewPageInfo.prePage}">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </a>
+                    </th:block>
+
+
+                    <p class="numbers">
+                    <span th:each="pageNumber : ${reviewPageInfo.navigatepageNums}" th:if="${pageNumber <= reviewPageInfo.total}">
+                      <a th:text="${pageNumber}" th:href="'#'" id="reviewNumberBtn" th:attr="value=${pageNumber}" th:classappend="${pageNumber == reviewPageInfo.pageNum ? 'bold large-text' : ''}"
+                         style="font-size: 16px; font-weight: bold;"></a>
+                    </span>
+                    </p>
+
+                    <th:block th:if="${reviewPageInfo.hasNextPage}">
+                        <a th:href="'#'" id="reviewNextBtn" th:value="${reviewPageInfo.nextPage}">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </a>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

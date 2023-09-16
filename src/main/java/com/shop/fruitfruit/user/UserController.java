@@ -2,6 +2,7 @@ package com.shop.fruitfruit.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.shop.fruitfruit.admin.AdminService;
@@ -515,11 +516,14 @@ public class UserController {
                               @RequestParam(defaultValue = "5") int pageSize){
         if(session.getAttribute("sessionId") != null) {
             HashMap<String, Object> paramMap = new HashMap<>();
+            paramMap.put("id", session.getAttribute("sessionId").toString());
+            paramMap.putAll(userService.selectUser(paramMap));
             paramMap.put("startPage", startPage);
             paramMap.put("pageSize", pageSize);
             List<HashMap<String, Object>> orderList = userService.selectOrderList(paramMap);
             PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(orderList);
             model.addAttribute("pageInfo", pageInfo);
+            model.addAttribute("USER_ID_NO", Integer.parseInt(paramMap.get("USER_ID_NO").toString()));
             log.info("주문목록: " + orderList);
             log.info("페이지 주문목록: " + pageInfo);
             return "user/mypage";
@@ -728,4 +732,141 @@ public class UserController {
         return 1;
     }
 
+
+    /**
+     * @author 황호준
+     * 상품 리뷰페이지
+     */
+
+    @RequestMapping("/productReview")
+    public String productReview(HttpSession session, Model model, @Param(value = "productId") int productId,
+                                @RequestParam(defaultValue = "1") int startPage,
+                                @RequestParam(defaultValue = "5") int pageSize)
+    {
+
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("productId", productId);
+        paramMap.put("startPage", startPage);
+        paramMap.put("pageSize", pageSize);
+
+        //세션 아이디가 없을 때 = 로그인 하지 않았을 때
+        if (session.getAttribute("sessionId") == null) {
+
+            //상품Id 기준으로 상품 정보 select
+            HashMap<String, Object> productDetail = adminService.selectProductbyProductId(productId);
+            log.info("프로덕트 아이디기준 상품정보:" + productDetail);
+
+            model.addAttribute("productDetail", productDetail);
+
+            return "user/review";
+
+            //로그인이 되었을 때
+        } else {
+            String sessionId = session.getAttribute("sessionId").toString();
+            paramMap.put("id", sessionId);
+            //상품Id 기준으로 상품정보 select
+            HashMap<String, Object> productDetail = adminService.selectProductbyProductId(productId);
+            log.info("프로덕트 아이디기준 상품정보:" + productDetail);
+
+            //로그인 된 유저정보 select
+            paramMap.putAll(userService.selectUser(paramMap));
+            log.info("유저정보 담은 파람맵:"+paramMap);
+            log.info("USER_ID_NO입니당:"+Integer.parseInt(paramMap.get("USER_ID_NO").toString()));
+
+            //유저Id 기준으로 찜list select
+            List<HashMap<String, Object>> likeList = mainService.selectProductLikeListByUserId(paramMap);
+
+            //리뷰쓸 수 있는지 여부 판단
+            /**
+             * 1. order테이블에서 유저가 한달내에 주문한 주문 리스트를 뽑는다
+             * 2. order_product테이블에서 해당 order_id들로 이루어진 리스트들중 리뷰가 미작성된 리스트들을 뽑아온다.
+             */
+            List<HashMap<String, Object>> orderListWithinMonth = userService.getOrdersByUserIdWithinLastMonth(paramMap);
+            log.info("리뷰 미작성 리스트 : " + orderListWithinMonth);
+            log.info("리뷰있니확인:"+orderListWithinMonth.stream().anyMatch(review -> review.get("PRODUCT_ID").equals(productDetail.get("PRODUCT_ID"))));
+
+
+            /**
+             * 3. 리스트들중 현재 페이지의 product_id를 확인하여 있으면 해당 HashMap을 model로 보낸다.
+             */
+            Map<String, Object> filteredMap = new HashMap<>();
+
+            // 주문 목록에서 productId와 일치하는 주문을 필터링
+            for (Map<String, Object> order : orderListWithinMonth) {
+                int orderProductId = Integer.parseInt(order.get("PRODUCT_ID").toString());
+                if (orderProductId == Integer.parseInt(productDetail.get("PRODUCT_ID").toString())) {
+                    filteredMap.putAll(order);
+                }
+            }
+
+            log.info("상품아이디 맞는거 filteredMap:"+filteredMap);
+
+            /**
+             * 해당페이지 리뷰에 대한 관리자 답글들 select
+             * 1. 해당 Product_ID에 달린 review 리스트 가져오기
+             * 2. 리뷰 리스트중 ID에 맞는 답글들 찾기
+             */
+            List<HashMap<String,Object>> reviewList = userService.reviewListByProductId(paramMap);
+            log.info("리뷰리스트: " + reviewList);
+            log.info("유저아이디넘버:"+Integer.parseInt(paramMap.get("USER_ID_NO").toString()));
+
+            PageInfo<HashMap<String,Object>> reviewPageInfo = new PageInfo<>(reviewList);
+
+            model.addAttribute("userIdNo", Integer.parseInt(paramMap.get("USER_ID_NO").toString()));
+            model.addAttribute("productDetail", productDetail);
+            model.addAttribute("likeList", likeList);
+            model.addAttribute("isLiked", likeList.stream().anyMatch(like -> like.get("PRODUCT_ID").equals(productDetail.get("PRODUCT_ID"))));
+            model.addAttribute("isReviewed", orderListWithinMonth.stream().anyMatch(review -> review.get("PRODUCT_ID").equals(productDetail.get("PRODUCT_ID"))));
+
+            if(filteredMap.isEmpty()) {
+                model.addAttribute("filteredMap", null);
+            } else {
+                model.addAttribute("filteredMap", filteredMap);
+            }
+
+            model.addAttribute("reviewPageInfo", reviewPageInfo);
+
+
+            return "user/review";
+        }
+
+    }
+
+    /**
+     * @author 황호준
+     * 리뷰등록 Axios
+     */
+    @RequestMapping("/review_ok")
+    @ResponseBody
+    public int review_ok(@RequestBody HashMap<String, Object> paramMap){
+        log.info("리뷰정보확인:"+paramMap);
+        //상품리뷰 등록
+        userService.insertReview(paramMap);
+        //등록한 주문상품 작성완료로 업데이트
+        userService.updateReviewStatus(paramMap);
+        return 1;
+    }
+
+    /**
+     * @author 황호준
+     * 리뷰수정 Axios
+     */
+    @RequestMapping("/review_edit_ok")
+    @ResponseBody
+    public int review_edit_ok(@RequestBody HashMap<String, Object> paramMap){
+        log.info("리뷰정보확인:"+paramMap);
+        //상품리뷰 등록
+        userService.updateReview(paramMap);
+        return 1;
+    }
+
+    @RequestMapping("reviewPageAxios")
+    @ResponseBody
+    public PageInfo<HashMap<String, Object>> reviewPageAxios (@RequestBody HashMap<String, Object> paramMap){
+        List<HashMap<String,Object>> reviewList = userService.reviewListByProductId(paramMap);
+        log.info("리뷰리스트아쇽: " + reviewList);
+
+        PageInfo<HashMap<String,Object>> reviewPageInfo = new PageInfo<>(reviewList);
+        return reviewPageInfo;
+    }
 }

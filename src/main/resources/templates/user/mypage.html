@@ -94,6 +94,7 @@
                     <ul id="li_Axios">
                         <li th:each="orderList : ${pageInfo.list}">
                             <input type="hidden" id="order_Id" th:value="${orderList.ORDER_ID}">
+                            <input type="hidden" id="USER_ID_NO" th:value="${orderList.USER_ID_NO}">
                             <input type="hidden" id="order_product_name" th:value="${orderList.PRODUCT_NAME}">
                             <input type="hidden" id="order_product_quantity" th:value="${orderList.PRODUCT_QUANTITY}">
                             <div class="txt">
@@ -122,7 +123,7 @@
 
                             <div class="buttons">
                                 <button class="rePurchase">재구매</button>
-                                <button>리뷰작성</button>
+                                <button id="review_write_btn">리뷰작성</button>
                             </div>
                         </li>
                     </ul>
@@ -131,7 +132,7 @@
 
             <div class="pagination">
                 <th:block th:if="${pageInfo.hasPreviousPage}">
-                    <a th:href="'#'" class="prevBtn" th:value="${pageInfo.prePage}">
+                    <a th:href="'#'" class="prevBtn"th:value="${pageInfo.prePage}">
                         <span class="material-symbols-outlined">chevron_left</span>
                     </a>
                 </th:block>
@@ -139,13 +140,13 @@
 
                 <p class="numbers">
                     <span th:each="pageNumber : ${pageInfo.navigatepageNums}" th:if="${pageNumber <= pageInfo.total}">
-                      <a th:text="${pageNumber}" th:href="'#'" class="numberBtn" th:attr="value=${pageNumber}" th:classappend="${pageNumber == pageInfo.pageNum ? 'bold large-text' : ''}"
+                      <a th:text="${pageNumber}" th:href="'#'" th:attr="value=${pageNumber}" th:classappend="${pageNumber == pageInfo.pageNum ? 'bold large-text' : ''}"
                          style="font-size: 16px; font-weight: bold;"></a>
                     </span>
                 </p>
 
                 <th:block th:if="${pageInfo.hasNextPage}">
-                    <a th:href="'#'" class="nextBtn" th:value="${pageInfo.nextPage}">
+                    <a th:href="'#'" class="nextBtn"  th:value="${pageInfo.nextPage}">
                         <span class="material-symbols-outlined">chevron_right</span>
                     </a>
                 </th:block>

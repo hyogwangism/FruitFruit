@@ -93,7 +93,8 @@ $(document).ready(function() {
                 "searchType" : searchType,
                 "searchField" : searchField,
                 "startPage": currentPage,
-                "pageSize": pageSizeVal
+                "pageSize": pageSizeVal,
+                "USER_ID_NO" : $('#USER_ID_NO').val()
             },
             dataType: "JSON",
             headers: {

@@ -176,11 +176,13 @@ public class UserService implements UserMapper {
         userMapper.updateUserDeliveryAddressInfo(paramMap);
     }
 
+    // 유저 배송지 delete
     @Override
     public void deleteUserDeliveryAddressInfo(HashMap<String, Object> paramMap) {
         userMapper.deleteUserDeliveryAddressInfo(paramMap);
     }
 
+    // 유저 정보 수정
     @Override
     public void updateUserInfo(HashMap<String, Object> paramMap) {
         //사용자 입력비번 암호화
@@ -188,6 +190,37 @@ public class UserService implements UserMapper {
         //암호화 비번 HashMap에 추가
         paramMap.put("newpw", BcrypPwd);
         userMapper.updateUserInfo(paramMap);
+    }
+
+    // 유저의 1달이내 주문목록 select
+    @Override
+    public List<HashMap<String, Object>> getOrdersByUserIdWithinLastMonth(HashMap<String, Object> paramMap) {
+        return userMapper.getOrdersByUserIdWithinLastMonth(paramMap);
+    }
+
+    // 리뷰 insert
+    @Override
+    public void insertReview(HashMap<String, Object> paramMap) {
+        userMapper.insertReview(paramMap);
+    }
+
+    // 리뷰 작성 상태 업데이트
+    @Override
+    public void updateReviewStatus(HashMap<String, Object> paramMap) {
+        userMapper.updateReviewStatus(paramMap);
+    }
+
+    // 해당 상품 리뷰리스트 select
+    @Override
+    public List<HashMap<String, Object>> reviewListByProductId(HashMap<String, Object> paramMap) {
+        PageHelper.startPage((Integer) paramMap.get("startPage"), (Integer) paramMap.get("pageSize"));
+        return userMapper.reviewListByProductId(paramMap);
+    }
+
+    // 리뷰 업데이트
+    @Override
+    public void updateReview(HashMap<String, Object> paramMap) {
+        userMapper.updateReview(paramMap);
     }
 
 

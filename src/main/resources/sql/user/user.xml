@@ -90,6 +90,10 @@
                 AND OT.ORDER_ID LIKE CONCAT('%', #{searchField}, '%')
             </if>
 
+            <!-- USER_ID_NO 조건을 추가합니다. -->
+            <if test="USER_ID_NO != null">
+                AND UDI.USER_ID_NO = #{USER_ID_NO}
+            </if>
         </where>
 
         ORDER BY OT.ORDER_ID DESC
@@ -143,6 +147,71 @@
           , USER_PHONE = #{phone}
         WHERE USER_EMAIL = #{id}
     </update>
+
+    <!--    로그인한 유저가 상품리뷰를 쓰기위해 구입한 상품리스트 select-->
+    <select id="getOrdersByUserIdWithinLastMonth" resultType="HashMap">
+        SELECT *
+        FROM ORDER_PRODUCT op
+        WHERE op.ORDER_ID IN (
+            SELECT ot.ORDER_ID
+            FROM ORDER_TABLE ot
+            WHERE ot.DELIVER_ID IN (
+                SELECT udi.DELIVER_ID
+                FROM USER_DELIVER_INFO udi
+                WHERE udi.USER_ID_NO = #{USER_ID_NO}
+            )
+              AND ot.ORDER_DATE BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH) AND CURRENT_DATE()
+        )
+          AND op.REVIEW_STATUS = '미작성';
+    </select>
+
+    <!--    리뷰작성내용 INSERT-->
+    <insert id="insertReview">
+        INSERT INTO REVIEW
+        VALUES (NULL, #{ORDER_PRODUCT_ID}, #{USER_ID_NO}, #{REVIEW_CONT}, NOW())
+    </insert>
+
+    <!--    작성된 리뷰상품 상태 작성완료로 UPDATE -->
+    <update id="updateReviewStatus">
+        UPDATE ORDER_PRODUCT
+        SET REVIEW_STATUS = '작성완료'
+        WHERE ORDER_PRODUCT_ID=#{ORDER_PRODUCT_ID}
+    </update>
+
+    <!--    해당 상품의 리뷰와 리뷰답글 리스트 select-->
+    <select id="reviewListByProductId" resultType="HashMap">
+        SELECT
+            R.REVIEW_ID,
+            R.REVIEW_CONT,
+            R.REVIEW_DATE,
+            U.USER_ID_NO,
+            U.USER_EMAIL,
+            RR.REVIEW_REPLY_ID,
+            RR.REVIEW_REPLY_CONT,
+            RR.REVIEW_REPLY_DATE
+        FROM
+            REVIEW R
+                LEFT JOIN
+            REVIEW_REPLY RR ON R.REVIEW_ID = RR.REVIEW_ID
+                INNER JOIN
+            USER U ON R.USER_ID_NO = U.USER_ID_NO
+        WHERE
+                R.ORDER_PRODUCT_ID IN (
+                SELECT OP.ORDER_PRODUCT_ID
+                FROM ORDER_PRODUCT OP
+                WHERE OP.PRODUCT_ID = #{productId}
+            )
+        ORDER BY
+            R.REVIEW_DATE DESC
+    </select>
+
+    <!--    리뷰 내용 업데이트-->
+    <update id="updateReview">
+        UPDATE REVIEW
+        SET REVIEW_CONT=#{REVIEW_CONT}
+        WHERE REVIEW_ID=#{REVIEW_ID}
+    </update>
+
 </mapper>
 
 
