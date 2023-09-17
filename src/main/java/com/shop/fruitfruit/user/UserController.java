@@ -520,8 +520,10 @@ public class UserController {
             paramMap.putAll(userService.selectUser(paramMap));
             paramMap.put("startPage", startPage);
             paramMap.put("pageSize", pageSize);
+
             List<HashMap<String, Object>> orderList = userService.selectOrderList(paramMap);
             PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(orderList);
+
             model.addAttribute("pageInfo", pageInfo);
             model.addAttribute("USER_ID_NO", Integer.parseInt(paramMap.get("USER_ID_NO").toString()));
             log.info("주문목록: " + orderList);
@@ -539,9 +541,10 @@ public class UserController {
      */
     @RequestMapping("mypageAxios")
     @ResponseBody
-    public PageInfo<HashMap<String, Object>> mypageAxios (@RequestBody HashMap<String, Object> paramMap){
+    public PageInfo<HashMap<String, Object>> mypageAxios (HttpSession session, @RequestBody HashMap<String, Object> paramMap){
         log.info("마이페이지 데이터: " + paramMap);
-
+        paramMap.put("id", session.getAttribute("sessionId").toString());
+        paramMap.putAll(userService.selectUser(paramMap));
         List<HashMap<String, Object>> orderList = userService.selectOrderList(paramMap);
         PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(orderList);
         log.info("주문목록: " + orderList);

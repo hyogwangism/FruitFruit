@@ -1,9 +1,9 @@
-$(document).ready(function() {
+$(document).ready(function () {
     let startDateValue, endDateValue, searchType, searchField;
     let currentPage = 1;
     let pageSizeVal = 5;
 
-    $('.search__box__buttons button').click(function() {
+    $('.search__box__buttons button').click(function () {
         // 모든 버튼의 스타일 초기화
         $('.search__box__buttons button').css({
             'background-color': '',
@@ -40,7 +40,7 @@ $(document).ready(function() {
     });
 
     // input 요소의 값이 변경될 때 발생하는 이벤트 핸들러
-    $('#date1, #date2').change(function() {
+    $('#date1, #date2').change(function () {
         // 변경된 값 가져오기
         startDateValue = $('#date1').val();
         endDateValue = $('#date2').val();
@@ -52,7 +52,7 @@ $(document).ready(function() {
     });
 
     searchType = $('#mypageSearchType').val();
-    $('#mypageSearchType').change(function() {
+    $('#mypageSearchType').change(function () {
         // 선택된 옵션의 value 값을 가져오기
         searchType = $(this).val();
         sendAxiosRequest_mypage();
@@ -66,19 +66,20 @@ $(document).ready(function() {
 
 
     // 이전 페이지 버튼
-    $(document).on('click', '.prevBtn', () => {
+    $(document).on('click', '#mypagePrevBtn', () => {
         currentPage -= 1;
         sendAxiosRequest_mypage();
     });
 
     // 페이지 번호 버튼
-    $(document).on('click', '.numberBtn', (e) => {
+    $(document).on('click', '#mypageNumberBtn', (e) => {
         currentPage = parseInt($(e.currentTarget).attr("value"));
+        console.log('커페:' + currentPage)
         sendAxiosRequest_mypage();
     });
 
     // 다음 페이지 버튼
-    $(document).on('click', '.nextBtn', () => {
+    $(document).on('click', '#mypageNextBtn', () => {
         currentPage += 1;
         sendAxiosRequest_mypage();
     });
@@ -90,11 +91,11 @@ $(document).ready(function() {
             data: {
                 "startDate": startDateValue,
                 "endDate": endDateValue,
-                "searchType" : searchType,
-                "searchField" : searchField,
+                "searchType": searchType,
+                "searchField": searchField,
                 "startPage": currentPage,
                 "pageSize": pageSizeVal,
-                "USER_ID_NO" : $('#USER_ID_NO').val()
+                "USER_ID_NO": $('#USER_ID_NO').val()
             },
             dataType: "JSON",
             headers: {
@@ -109,40 +110,56 @@ $(document).ready(function() {
             console.log('오리:' + orderList);
 
             $('#li_Axios').empty();
-            for(let i=0; i < orderList.length; i++){
-            const liHtml = `
-             <li>
-                            <div class="txt">
-                                <span>${orderList[i].ORDER_ID}</span>
-                                <span>${monthDate(new Date(orderList[i].ORDER_DATE), 'yyyy-MM-dd')}</span>
-                            </div>
+            for (let i = 0; i < orderList.length; i++) {
+                const reviewButtonText = orderList[i].REVIEW_STATUS === '미작성' ? '리뷰작성' : '리뷰작성완료';
+                const liHtml = `
+            <li>
+                 <input type="hidden" id="order_Id" value="${orderList[i].ORDER_ID}">
+                 <input type="hidden" id="USER_ID_NO" value="${orderList[i].USER_ID_NO}">
+                 <input type="hidden" id="order_product_name" value="${orderList[i].PRODUCT_NAME}">
+                 <input type="hidden" id="order_product_id" value="${orderList[i].ORDER_PRODUCT_ID}">
+                 <input type="hidden" id="order_product_quantity" value="${orderList[i].PRODUCT_QUANTITY}">
+                <div class="txt">
+                    <span>${orderList[i].ORDER_ID}</span>
+                    <span>${monthDate(new Date(orderList[i].ORDER_DATE), 'yyyy-MM-dd')}</span>
+                </div>
 
-                            <div class="img">
-                                <img src="${orderList[i].IMAGE_URL}" alt="상품 이미지">
-                                <div class="img__txt">
-                                    <p>${orderList[i].PRODUCT_NAME}</p>
+                <div class="img">
+                    <img src="${orderList[i].IMAGE_URL}" alt="상품 이미지">
+                    <div class="img__txt">
+                        <p>${orderList[i].PRODUCT_NAME}</p>
 
-                                    <div class="group">
-                                        <span class="orange">${orderList[i].PRODUCT_PRICE}원</span>
-                                        <span>${orderList[i].PRODUCT_QUANTITY}개</span>
-                                    </div>
+                        <div class="group">
+                            <span class="orange">${orderList[i].PRODUCT_PRICE}원</span>
+                            <span>${orderList[i].PRODUCT_QUANTITY}개</span>
+                        </div>
 
-                                    <div class="group2">
-                                        <p>배송지 확인
-                                            <span class="material-symbols-outlined">double_arrow</span>
-                                        </p>
-                                    </div>
+                     <div class="group2">
+                        <p>배송지 확인
+                            <span class="material-symbols-outlined">double_arrow</span>
+                        </p>
+                     </div>
 
-                                </div>
-                            </div>
+                </div>
+                </div>
 
-                            <div class="buttons">
-                                <button>재구매</button>
-                                <button>리뷰작성</button>
-                            </div>
-                        </li>
-            `
-                $('#li_Axios').append(liHtml);
+                <div class="buttons">
+                    <button id="rePurchase">재구매</button>
+                    <button id="review_write_btn">${reviewButtonText}</button>
+                </div>
+            </li>
+                `;
+                const $li = $(liHtml);
+                $('#li_Axios').append($li);
+                if (orderList[i].REVIEW_STATUS === '작성완료') {
+                    $li.find('button:last').css({
+                        'background-color': 'black',
+                        'color': 'white',
+                        'font-weight': 'bold',
+                        'border-color': 'black',
+                        'cursor': 'none'
+                    });
+                }
             }
             // .pagination 클래스 태그 내부 내용 교체
             const paginationDiv = $('.pagination');
@@ -157,7 +174,7 @@ $(document).ready(function() {
             if (pageInfo.hasPreviousPage) {
                 const prevBtn = $('<a>')
                     .attr('href', '#')
-                    .addClass('prevBtn')
+                    .attr('id', 'mypagePrevBtn')
                     .attr('value', pageInfo.prePage)
                     .html('<span class="material-symbols-outlined">chevron_left</span>');
                 paginationDiv.append(prevBtn);
@@ -168,7 +185,7 @@ $(document).ready(function() {
                     const numberBtn = $('<a>')
                         .text(pageNumber)
                         .attr('href', '#')
-                        .addClass('numberBtn')
+                        .attr('id', 'mypageNumberBtn')
                         .attr('value', pageNumber);
 
                     if (pageNumber === currentPage) {
@@ -183,7 +200,7 @@ $(document).ready(function() {
             if (pageInfo.hasNextPage) {
                 const nextBtn = $('<a>')
                     .attr('href', '#')
-                    .addClass('nextBtn')
+                    .attr('id', 'mypageNextBtn')
                     .attr('value', pageInfo.nextPage)
                     .html('<span class="material-symbols-outlined">chevron_right</span>');
                 paginationDiv.append(nextBtn);
@@ -203,7 +220,7 @@ $(document).ready(function() {
 
 });
 
-$(document).ready( function () {
+$(document).ready(function () {
     // 현재 날짜를 가져오는 함수
     function getCurrentDate() {
         const now = new Date();
@@ -227,7 +244,7 @@ $(document).on('click', '.rePurchase', function () {
         url: '/user/rePurchaseAxios',
         data: {
             "order_product_name": $('#order_product_name').val(),
-            'PRUDUCT_QUANTITY' : $('#order_product_quantity').val()
+            'PRUDUCT_QUANTITY': $('#order_product_quantity').val()
         }
         ,  // 이미 JavaScript 객체이므로 JSON.stringify()를 사용하지 않습니다.
         headers: {
@@ -285,3 +302,60 @@ function rePurchaseCart(cartArray, cartItem) {
 
     return cartArray;
 }
+
+$(document).ready(function () {
+    $(document).on('click', '#review_write_btn', function () {
+        console.log('오프아:'+$('#order_product_id').val())
+        console.log('유아넘:'+$('#USER_ID_NO').val())
+        $('.txt05').show();
+    });
+
+    $(document).on('click', '#review_write_btn_cancel', function () {
+        $('.txt05').hide();
+        $('.txt06').show();
+    });
+
+    $(document).on('click', '#review_write_cancel', function () {
+        $('.txt06').hide();
+    });
+
+    $(document).on('click', '#review__continue', function () {
+        $('.txt06').hide();
+        $('.txt05').show();
+    });
+
+    // textarea 입력 내용을 모니터링하고 글자수를 업데이트하는 함수
+    $('#mypage__review__cont').on('input', function () {
+        const maxLength = 500;
+        const currentLength = $(this).val().length;
+        const countElement = $('.count');
+        countElement.text(currentLength + '/' + maxLength);
+
+        // 글자수가 500자를 초과하면 입력을 제한
+        if (currentLength > maxLength) {
+            $(this).val($(this).val().substring(0, maxLength));
+            countElement.text(maxLength + '/' + maxLength);
+        }
+    });
+
+    // 리뷰 등록 버튼 클릭 시 리뷰 작성을 서버에 전송
+    $(document).on('click', '#review_write_btn_ok', function () {
+
+        axios({
+            method: 'post',
+            url: '/user/review_ok',
+            data: {
+                "ORDER_PRODUCT_ID": $('#order_product_id').val(),
+                "USER_ID_NO": $('#USER_ID_NO').val(),
+                "REVIEW_CONT": $('#mypage__review__cont').val()
+            },
+            dataType: "JSON",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            $('.txt05').hide()
+            $('.txt07').show()
+        });
+    })
+})

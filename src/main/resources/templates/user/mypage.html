@@ -96,6 +96,7 @@
                             <input type="hidden" id="order_Id" th:value="${orderList.ORDER_ID}">
                             <input type="hidden" id="USER_ID_NO" th:value="${orderList.USER_ID_NO}">
                             <input type="hidden" id="order_product_name" th:value="${orderList.PRODUCT_NAME}">
+                            <input type="hidden" id="order_product_id" th:value="${orderList.ORDER_PRODUCT_ID}">
                             <input type="hidden" id="order_product_quantity" th:value="${orderList.PRODUCT_QUANTITY}">
                             <div class="txt">
                                 <span th:text="${orderList.ORDER_ID}">12345678</span>
@@ -123,7 +124,8 @@
 
                             <div class="buttons">
                                 <button class="rePurchase">재구매</button>
-                                <button id="review_write_btn">리뷰작성</button>
+                                <button th:if="${orderList.REVIEW_STATUS}=='미작성'" id="review_write_btn">리뷰작성</button>
+                                <button th:if="${orderList.REVIEW_STATUS}=='작성완료'" style="background-color: black; color: white; font-weight: bold; border-color: black; cursor: none;">리뷰작성완료</button>
                             </div>
                         </li>
                     </ul>
@@ -132,7 +134,7 @@
 
             <div class="pagination">
                 <th:block th:if="${pageInfo.hasPreviousPage}">
-                    <a th:href="'#'" class="prevBtn"th:value="${pageInfo.prePage}">
+                    <a th:href="'#'" id="mypagePrevBtn" th:value="${pageInfo.prePage}">
                         <span class="material-symbols-outlined">chevron_left</span>
                     </a>
                 </th:block>
@@ -140,13 +142,13 @@
 
                 <p class="numbers">
                     <span th:each="pageNumber : ${pageInfo.navigatepageNums}" th:if="${pageNumber <= pageInfo.total}">
-                      <a th:text="${pageNumber}" th:href="'#'" th:attr="value=${pageNumber}" th:classappend="${pageNumber == pageInfo.pageNum ? 'bold large-text' : ''}"
+                      <a th:text="${pageNumber}" id="mypageNumberBtn" th:href="'#'" th:attr="value=${pageNumber}" th:classappend="${pageNumber == pageInfo.pageNum ? 'bold large-text' : ''}"
                          style="font-size: 16px; font-weight: bold;"></a>
                     </span>
                 </p>
 
                 <th:block th:if="${pageInfo.hasNextPage}">
-                    <a th:href="'#'" class="nextBtn"  th:value="${pageInfo.nextPage}">
+                    <a th:href="'#'" id="mypageNextBtn" th:value="${pageInfo.nextPage}">
                         <span class="material-symbols-outlined">chevron_right</span>
                     </a>
                 </th:block>
@@ -181,13 +183,13 @@
                     <h5>상품에 대한 리뷰를 남겨주세요.</h5>
 
                     <div class="input">
-                        <input type="text" placeholder="10자이상 500자 미만으로 작성해주세요.">
-                        <span>15/500</span>
+                        <input id="mypage__review__cont" type="text" placeholder="10자이상 500자 미만으로 작성해주세요.">
+                        <span class="count">0/500</span>
                     </div>
 
                     <div class="buttons">
-                        <button>작성취소</button>
-                        <button>리뷰등록</button>
+                        <button id="review_write_btn_cancel">작성취소</button>
+                        <button id="review_write_btn_ok">리뷰등록</button>
                     </div>
                 </div>
             </div>
@@ -204,8 +206,8 @@
                     </h5>
 
                     <div class="buttons">
-                        <button>취소하기</button>
-                        <button>계속작성</button>
+                        <button id="review_write_cancel">취소하기</button>
+                        <button id="review__continue">계속작성</button>
                     </div>
                 </div>
             </div>
@@ -219,7 +221,7 @@
                     <h5>리뷰 작성이 완료 되었습니다.</h5>
 
                     <div class="buttons">
-                        <button>확인</button>
+                        <button onclick="location.href='mypageMain'">확인</button>
                     </div>
                 </div>
             </div>
