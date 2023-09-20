@@ -96,9 +96,10 @@
                             <input type="hidden" id="order_Id" th:value="${orderList.ORDER_ID}">
                             <input type="hidden" id="USER_ID_NO" th:value="${orderList.USER_ID_NO}">
                             <input type="hidden" id="order_product_name" th:value="${orderList.PRODUCT_NAME}">
-                            <input type="hidden" id="order_product_id" th:value="${orderList.ORDER_PRODUCT_ID}">
+<!--                            <input type="hidden" id="order_product_id" th:value="${orderList.ORDER_PRODUCT_ID}">-->
                             <input type="hidden" id="order_product_quantity" th:value="${orderList.PRODUCT_QUANTITY}">
                             <div class="txt">
+                                <input type="hidden" class="order_product_id" th:value="${orderList.ORDER_PRODUCT_ID}">
                                 <span th:text="${orderList.ORDER_ID}">12345678</span>
                                 <span th:text="${#dates.format(orderList.ORDER_DATE, 'yyyy-MM-dd')}">2023. 07. 01</span>
                             </div>

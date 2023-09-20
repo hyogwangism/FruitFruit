@@ -117,9 +117,10 @@ $(document).ready(function () {
                  <input type="hidden" id="order_Id" value="${orderList[i].ORDER_ID}">
                  <input type="hidden" id="USER_ID_NO" value="${orderList[i].USER_ID_NO}">
                  <input type="hidden" id="order_product_name" value="${orderList[i].PRODUCT_NAME}">
-                 <input type="hidden" id="order_product_id" value="${orderList[i].ORDER_PRODUCT_ID}">
+<!--                 <input type="hidden" id="order_product_id" value="${orderList[i].ORDER_PRODUCT_ID}">-->
                  <input type="hidden" id="order_product_quantity" value="${orderList[i].PRODUCT_QUANTITY}">
                 <div class="txt">
+                    <input type="hidden" class="order_product_id" value="${orderList[i].ORDER_PRODUCT_ID}">
                     <span>${orderList[i].ORDER_ID}</span>
                     <span>${monthDate(new Date(orderList[i].ORDER_DATE), 'yyyy-MM-dd')}</span>
                 </div>
@@ -305,7 +306,10 @@ function rePurchaseCart(cartArray, cartItem) {
 
 $(document).ready(function () {
     $(document).on('click', '#review_write_btn', function () {
-        console.log('오프아:'+$('#order_product_id').val())
+        const orderProductId = $(this).closest('li').find('.order_product_id').val();
+        // console.log('오프아:'+$('.order_product_id').val())
+        console.log('오프아:'+orderProductId)
+        console.log('프넴:'+$('#order_product_name').val())
         console.log('유아넘:'+$('#USER_ID_NO').val())
         $('.txt05').show();
     });
@@ -340,12 +344,12 @@ $(document).ready(function () {
 
     // 리뷰 등록 버튼 클릭 시 리뷰 작성을 서버에 전송
     $(document).on('click', '#review_write_btn_ok', function () {
-
+        console.log('찐오프아: ' + $('#review_write_btn').closest('li').find('.order_product_id').val())
         axios({
             method: 'post',
             url: '/user/review_ok',
             data: {
-                "ORDER_PRODUCT_ID": $('#order_product_id').val(),
+                "ORDER_PRODUCT_ID": $('#review_write_btn').closest('li').find('.order_product_id').val(),
                 "USER_ID_NO": $('#USER_ID_NO').val(),
                 "REVIEW_CONT": $('#mypage__review__cont').val()
             },

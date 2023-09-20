@@ -1,4 +1,5 @@
 $(document).ready(function() {
+
     const quantityInput = $('#quantityInput');
 
     $('.quantityMinusBtn').on('click', function() {
@@ -16,7 +17,45 @@ $(document).ready(function() {
         quantityInput.val(currentValue + 1);
         console.log("커밸플후:"+currentValue);
     });
+
+
+
 });
+
+$(document).ready(function (){
+    let productIdVal;
+
+    // 상품 클릭 시
+    $('.productImage').on('click', function() {
+        productIdVal = $(this).data('product-id');
+        sendAxiosRequest_currentProduct();
+        // $('#searchField').val('');
+    });
+
+    $('.currentView__Image').on('click', function () {
+        // 클릭된 이미지의 상품 ID를 가져오기
+        const productId = $(this).data('product-id');
+        // 상세 페이지로 이동
+        location.href = '/user/productDetail?productId=' + productId;
+    });
+
+    function sendAxiosRequest_currentProduct() {
+        axios({
+            method: 'post',
+            url: '/user/currentProductAxios',
+            data: {
+                "productId": productIdVal
+            },
+            dataType: "JSON",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            console.log("최근 본 상품 세션저장 성공")
+        });
+    }
+
+})
 
 $(document).ready(function (){
     let productId, userIdNo;
@@ -59,4 +98,5 @@ $(document).ready(function (){
     }
 
 })
+
 

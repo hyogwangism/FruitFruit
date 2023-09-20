@@ -138,11 +138,16 @@ public class UserController {
      * DB에 저장되어진 회원 데이터와 비교해서 로그인
      */
     @RequestMapping("/login_ok")
-    public String Login_ok(Model model, HttpServletRequest request, @RequestParam("id") String id, @RequestParam("pw") String pw){
-        if(id.equals(userService.loginUserChk(id).get("USER_EMAIL").toString()) && BCrypt.checkpw(pw, userService.loginUserChk(id).get("USER_PWD").toString())){
-            HttpSession session = request.getSession();
-            session.setAttribute(sessionId, id);
-            return "redirect:/";
+    public String Login_ok(Model model, HttpServletRequest request, HttpSession session ,@RequestParam("id") String id, @RequestParam("pw") String pw){
+        if(userService.loginUserChk(id)!=null){
+            if(id.equals(userService.loginUserChk(id).get("USER_EMAIL").toString()) && BCrypt.checkpw(pw, userService.loginUserChk(id).get("USER_PWD").toString())){
+                session.setAttribute(sessionId, id);
+                return "redirect:/";
+            } else {
+                model.addAttribute("errorMessage", "아이디 또는 비밀번호가 틀렸습니다.");
+                return "/user/login";
+            }
+
         } else {
             model.addAttribute("errorMessage", "아이디 또는 비밀번호가 틀렸습니다.");
 
@@ -251,6 +256,34 @@ public class UserController {
             return "user/detail";
         }
 
+    }
+
+    @RequestMapping("currentProductAxios")
+    @ResponseBody
+    public String currentProductAxios(@RequestBody HashMap<String, Object> paramMap,  HttpSession session) {
+        log.info("커런트아이디 데이터맵: " + paramMap);
+
+        // 세션에서 currentProductList 가져오기 또는 초기화
+        List<HashMap<String, Object>> currentProductList = (List<HashMap<String, Object>>) session.getAttribute("currentProductInfo");
+        if (currentProductList == null) {
+            currentProductList = new ArrayList<>();
+        }
+
+        // adminService.selectProductbyProductId 호출 및 결과를 currentProductList에 추가
+        HashMap<String, Object> productInfo = adminService.selectProductbyProductId(Integer.parseInt(paramMap.get("productId").toString()));
+        currentProductList.add(productInfo);
+        log.info("프인포: " + productInfo);
+
+        // 첫 번째 배열 삭제 (index 0)
+        if (currentProductList.size() >= 4) {
+            currentProductList.remove(0);
+        }
+
+        // currentProductList를 세션에 저장
+        session.setAttribute("currentProductInfo", currentProductList);
+        log.info("커프리세션: " + session.getAttribute("currentProductInfo"));
+
+        return "성공";
     }
 
     /**

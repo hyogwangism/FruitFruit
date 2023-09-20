@@ -1,6 +1,5 @@
 $(document).ready(function () {
-    let productSortVal;
-    let searchFieldVal;
+    let productSortVal, productIdVal, searchFieldVal;
     let currentPage = 1;
     let pageSizeVal = 9;
 
@@ -53,6 +52,7 @@ $(document).ready(function () {
             data: {
                 "productSort": productSortVal,
                 "searchField": searchFieldVal,
+                'productIdVal' : productIdVal,
                 "startPage": currentPage,
                 "pageSize": pageSizeVal
             },
@@ -94,6 +94,7 @@ $(document).ready(function () {
 
                 const productLink = $('<a>')
                     .attr('href', '/user/productDetail?productId=' + product.PRODUCT_ID)
+                    .addClass('productImage')
                     .append($('<img>')
                         .addClass('productImage')
                         .attr('src', product.IMAGE_URL)

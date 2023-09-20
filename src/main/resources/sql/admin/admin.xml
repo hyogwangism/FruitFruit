@@ -117,6 +117,147 @@
         </foreach>
     </select>
 
+    <!--    리뷰 목록-->
+    <select id="selectReview" resultType="HashMap">
+        SELECT
+            RR.REVIEW_REPLY_CONT, RR.REVIEW_REPLY_DATE,
+            R.REVIEW_ID, R.REVIEW_CONT, R.REVIEW_REPLY_STATUS, R.REVIEW_DATE, R.REVIEW_REPLY_STATUS,
+            U.USER_NAME, U.USER_EMAIL,
+            O.ORDER_ID,
+            P.PRODUCT_NAME, P.PRODUCT_ID
+        FROM REVIEW R
+        LEFT JOIN REVIEW_REPLY RR ON RR.REVIEW_ID = R.REVIEW_ID
+        LEFT JOIN USER U ON U.USER_ID_NO = R.USER_ID_NO
+        LEFT JOIN ORDER_PRODUCT OP ON OP.ORDER_PRODUCT_ID = R.ORDER_PRODUCT_ID
+        LEFT JOIN PRODUCT P ON P.PRODUCT_ID = OP.PRODUCT_ID
+        LEFT JOIN ORDER_TABLE O ON O.ORDER_ID = OP.ORDER_ID
+        <where>
+            <!-- 기본 검색 조건 -->
+            <if test="startDate != null and endDate != null">
+                AND R.REVIEW_DATE BETWEEN #{startDate} AND #{endDate}
+            </if>
 
+            <!-- 상품명 검색 -->
+            <if test="searchType != null and searchType == '상품명' and searchField != null and searchField != ''">
+                AND P.PRODUCT_NAME LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+            <!-- 회원ID 검색 -->
+            <if test="searchType != null and searchType == '회원ID' and searchField != null and searchField != ''">
+                AND U.USER_EMAIL LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+            <!-- 주문번호 검색 -->
+            <if test="searchType != null and searchType == '주문번호' and searchField != null and searchField != ''">
+                AND O.ORDER_ID = #{searchField}
+            </if>
+
+            <!-- 작성자명 검색 -->
+            <if test="searchType != null and searchType == '작성자명' and searchField != null and searchField != ''">
+                AND U.USER_NAME LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+            <!-- 작성자명 검색 -->
+            <if test="REVIEW_ID != null">
+                AND R.REVIEW_ID = ${REVIEW_ID}
+            </if>
+
+            <!-- 답변 상태 검색 -->
+            <if test="replyStatus != null">
+                <choose>
+                    <when test="replyStatus == '전체'">
+                        <!-- 아무 조건 없이 전체 리뷰 검색 -->
+                    </when>
+                    <when test="replyStatus == '답변완료'">
+                        AND (R.REVIEW_REPLY_STATUS = '답변완료' OR R.REVIEW_REPLY_STATUS IS NULL)
+                    </when>
+                    <when test="replyStatus == '미답변'">
+                        AND (R.REVIEW_REPLY_STATUS = '미답변' OR R.REVIEW_REPLY_STATUS IS NULL)
+                    </when>
+                </choose>
+            </if>
+        </where>
+        ORDER BY R.REVIEW_DATE DESC, R.REVIEW_ID DESC
+    </select>
+
+    <!--    리뷰답변 INSERT-->
+    <insert id="insertReviewReply">
+        INSERT INTO REVIEW_REPLY (REVIEW_ID, REVIEW_REPLY_CONT, REVIEW_REPLY_DATE)
+        VALUES (#{REVIEW_ID}, #{REVIEW_REPLY_CONT}, NOW())
+    </insert>
+
+    <!--    리뷰답변 상태 UPDATE-->
+    <update id="updateReviewStatus">
+        UPDATE REVIEW
+        SET REVIEW_REPLY_STATUS = '답변완료'
+        WHERE REVIEW_ID=#{REVIEW_ID}
+    </update>
+
+    <!--    리뷰답변 갯수-->
+    <select id="countReview">
+    SELECT
+    COUNT(*) AS TOTAL_REVIEW_COUNT,
+    SUM(CASE WHEN REVIEW_REPLY_STATUS = '미답변' THEN 1 ELSE 0 END) AS UNANSWERED_REVIEW_COUNT,
+    SUM(CASE WHEN REVIEW_REPLY_STATUS = '답변완료' THEN 1 ELSE 0 END) AS ANSWERED_REVIEW_COUNT
+    FROM REVIEW;
+    </select>
+
+    <!--    리뷰 목록 검색결과 갯수-->
+    <select id="countSearchReview" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM REVIEW R
+        LEFT JOIN REVIEW_REPLY RR ON RR.REVIEW_ID = R.REVIEW_ID
+        LEFT JOIN USER U ON U.USER_ID_NO = R.USER_ID_NO
+        LEFT JOIN ORDER_PRODUCT OP ON OP.ORDER_PRODUCT_ID = R.ORDER_PRODUCT_ID
+        LEFT JOIN PRODUCT P ON P.PRODUCT_ID = OP.PRODUCT_ID
+        LEFT JOIN ORDER_TABLE O ON O.ORDER_ID = OP.ORDER_ID
+        <where>
+            <!-- 기본 검색 조건 -->
+            <if test="startDate != null and endDate != null">
+                AND R.REVIEW_DATE BETWEEN #{startDate} AND #{endDate}
+            </if>
+
+            <!-- 상품명 검색 -->
+            <if test="searchType != null and searchType == '상품명' and searchField != null and searchField != ''">
+                AND P.PRODUCT_NAME LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+            <!-- 회원ID 검색 -->
+            <if test="searchType != null and searchType == '회원ID' and searchField != null and searchField != ''">
+                AND U.USER_EMAIL LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+            <!-- 주문번호 검색 -->
+            <if test="searchType != null and searchType == '주문번호' and searchField != null and searchField != ''">
+                AND O.ORDER_ID = #{searchField}
+            </if>
+
+            <!-- 작성자명 검색 -->
+            <if test="searchType != null and searchType == '작성자명' and searchField != null and searchField != ''">
+                AND U.USER_NAME LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+            <!-- 작성자명 검색 -->
+            <if test="REVIEW_ID != null">
+                AND R.REVIEW_ID = ${REVIEW_ID}
+            </if>
+
+            <!-- 답변 상태 검색 -->
+            <if test="replyStatus != null">
+                <choose>
+                    <when test="replyStatus == '전체'">
+                        <!-- 아무 조건 없이 전체 리뷰 검색 -->
+                    </when>
+                    <when test="replyStatus == '답변완료'">
+                        AND (R.REVIEW_REPLY_STATUS = '답변완료' OR R.REVIEW_REPLY_STATUS IS NULL)
+                    </when>
+                    <when test="replyStatus == '미답변'">
+                        AND (R.REVIEW_REPLY_STATUS = '미답변' OR R.REVIEW_REPLY_STATUS IS NULL)
+                    </when>
+                </choose>
+            </if>
+        </where>
+    </select>
 </mapper>
 

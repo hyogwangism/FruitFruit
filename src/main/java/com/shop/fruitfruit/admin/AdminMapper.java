@@ -63,4 +63,13 @@ public interface AdminMapper {
 
     List<HashMap<String, Object>> selectSaleStopProducts(HashMap<String, Object> paramMap);
 
+    List<HashMap<String, Object>> selectReview(HashMap<String, Object> paramMap);
+
+    void insertReviewReply(HashMap<String, Object> paramMap);
+
+    void updateReviewStatus(HashMap<String, Object> paramMap);
+
+    HashMap<String, Object> countReview();
+
+    int countSearchReview(HashMap<String, Object> paramMap);
 }

@@ -109,6 +109,34 @@ public class AdminService implements AdminMapper {
         return adminMapper.selectSaleStopProducts(paramMap);
     }
 
+    //리뷰목록 select
+    @Override
+    public List<HashMap<String, Object>> selectReview(HashMap<String, Object> paramMap) {
+        PageHelper.startPage(Integer.parseInt(paramMap.get("startPage").toString()), Integer.parseInt(paramMap.get("pageSize").toString()));
+        return adminMapper.selectReview(paramMap);
+    }
+
+    //리뷰답변 insert
+    @Override
+    public void insertReviewReply(HashMap<String, Object> paramMap) {
+        adminMapper.insertReviewReply(paramMap);
+    }
+
+    //리뷰 답변 상태 update
+    @Override
+    public void updateReviewStatus(HashMap<String, Object> paramMap) {
+        adminMapper.updateReviewStatus(paramMap);
+    }
+
+    @Override
+    public HashMap<String, Object> countReview() {
+        return adminMapper.countReview();
+    }
+
+    @Override
+    public int countSearchReview(HashMap<String, Object> paramMap) {
+        return adminMapper.countSearchReview(paramMap);
+    }
 
 
 }

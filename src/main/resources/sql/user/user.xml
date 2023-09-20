@@ -168,7 +168,7 @@
     <!--    리뷰작성내용 INSERT-->
     <insert id="insertReview">
         INSERT INTO REVIEW
-        VALUES (NULL, #{ORDER_PRODUCT_ID}, #{USER_ID_NO}, #{REVIEW_CONT}, NOW())
+        VALUES (NULL, #{ORDER_PRODUCT_ID}, #{USER_ID_NO}, #{REVIEW_CONT}, NOW(), '미답변')
     </insert>
 
     <!--    작성된 리뷰상품 상태 작성완료로 UPDATE -->

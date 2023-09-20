@@ -60,7 +60,13 @@
             </div>
         </div>
     </section>
-
+    <!-- 알림 메시지를 JavaScript로 표시 -->
+    <script th:if="${adminErrorMessage}" th:inline="javascript">
+        /*<![CDATA[*/
+        const errorMessage = [[${adminErrorMessage}]];
+        alert(errorMessage);
+        /*]]>*/
+    </script>
 
 </body>
 

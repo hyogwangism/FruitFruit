@@ -109,6 +109,9 @@ function editProductSubmitForm() {
         if (res.data === 1) {
             $(".txt06").show();
             $("#errorMsg2").html("상품 수정에 성공했습니다!");
+        } else {
+            alert('관리자로 로그인 해주세요')
+            location.href='adminLogin';
         }
     });
 }

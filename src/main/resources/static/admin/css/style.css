@@ -1161,12 +1161,12 @@
   border: 1px solid #333;
   cursor: pointer;
 }
-#admin_review .inner .box02 .status .buttons button:nth-of-type(3),
-#admin_review .inner .box02 .sort .buttons button:nth-of-type(3),
-#admin_review .inner .box02 .search .buttons button:nth-of-type(3) {
-  background-color: #333;
-  color: #fff;
-}
+/*#admin_review .inner .box02 .status .buttons button:nth-of-type(3),*/
+/*#admin_review .inner .box02 .sort .buttons button:nth-of-type(3),*/
+/*#admin_review .inner .box02 .search .buttons button:nth-of-type(3) {*/
+/*  background-color: #333;*/
+/*  color: #fff;*/
+/*}*/
 #admin_review .inner .box02 .status input,
 #admin_review .inner .box02 .sort input,
 #admin_review .inner .box02 .search input {
@@ -1175,11 +1175,14 @@
   border-radius: 20px;
   margin-right: 10px;
 }
-#admin_review .inner .box02 .status .buttons button {
-  background-color: #fff;
-}
+/*#admin_review .inner .box02 .status .buttons button {*/
+/*  background-color: #fff;*/
+/*}*/
 #admin_review .inner .box02 .sort .buttons button {
-  border: none;
+  border-radius: 20px;
+  padding: 5px 20px;
+  border: 1px solid #333;
+  cursor: pointer;
 }
 #admin_review .inner .box02 .sort input {
   border-radius: 5px;

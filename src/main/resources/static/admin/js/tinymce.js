@@ -52,6 +52,9 @@ function productSubmitForm() {
         if (res.data === 1) {
             $(".txt06").show();
             $("#errorMsg2").html("상품 등록에 성공했습니다!");
+        } else {
+            alert('관리자로 로그인 해주세요')
+            location.href='adminLogin';
         }
     });
 }

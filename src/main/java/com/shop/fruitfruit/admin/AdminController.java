@@ -33,7 +33,6 @@ public class AdminController {
     private final FireBaseService fireBaseService;
     private final AdminService adminService;
 
-    private final static String session_id = "adminSessionId";
 
 //    @PostMapping("/files")
 //    public String uploadFile(@RequestParam("file") MultipartFile file, String fileName, String path) throws IOException, FirebaseAuthException {
@@ -51,22 +50,39 @@ public class AdminController {
 
     //admin - 로그인 페이지
     @RequestMapping("/adminLogin")
-    public String adminMain() {
-        return "/admin/index";
+    public String adminMain(HttpSession session) {
+        if(session.getAttribute("admin_sessionId")!=null) {
+
+            return "/admin/dashboard";
+        } else {
+            return "/admin/index";
+        }
     }
 
     //admin - 메인(통계)
     @RequestMapping("/dashboard")
-    public String dashboard() {
-        return "/admin/dashboard";
+    public String dashboard(HttpSession session, Model model) {
+        if(session.getAttribute("admin_sessionId")!=null) {
+
+            return "/admin/dashboard";
+        } else {
+            model.addAttribute("adminErrorMessage", "관리자로 로그인 해주세요.");
+            return "/admin/index";
+        }
+
     }
 
 
 
     //admin - 상품등록
     @RequestMapping("/product02")
-    public String product02() {
-        return "/admin/product02";
+    public String product02(HttpSession session, Model model) {
+        if(session.getAttribute("admin_sessionId")!=null){
+            return "/admin/product02";
+        } else {
+            model.addAttribute("adminErrorMessage", "관리자로 로그인 해주세요.");
+            return "/admin/index";
+        }
     }
 
     /**
@@ -78,15 +94,19 @@ public class AdminController {
      * @param {String id => input에 입력한 id, String pw => input에 입력한 pw}
      */
     @RequestMapping("/adminLogin_ok")
-    public String adminLogin_ok(Model model, HttpServletRequest request, String id, String pw) {
-        if(id.equals(adminService.loginUserChk(id).get("ADMIN_ID").toString()) && pw.equals(adminService.loginUserChk(id).get("ADMIN_PWD").toString())){
-            HttpSession session = request.getSession();
-            session.setAttribute(session_id, id);
-            return "redirect:/admin/dashboard";
+    public String adminLogin_ok(Model model, HttpSession session, String id, String pw) {
+        if(adminService.loginUserChk(id)!=null){
+            if(id.equals(adminService.loginUserChk(id).get("ADMIN_ID").toString()) && pw.equals(adminService.loginUserChk(id).get("ADMIN_PWD").toString())){
+                session.setAttribute("admin_sessionId", id);
+                return "redirect:/admin/dashboard";
+        } else {
+                model.addAttribute("errorMessage", "아이디 또는 비밀번호가 틀렸습니다.");
+                return "/admin/index";
+            }
+
         } else {
             model.addAttribute("errorMessage", "아이디 또는 비밀번호가 틀렸습니다.");
-
-            return "redirect:/admin/adminLogin";
+            return "/admin/index";
         }
     }
 
@@ -110,7 +130,8 @@ public class AdminController {
     @RequestMapping("/insertProduct")
     @ResponseBody
     @Transactional
-    public int insertProduct(@RequestParam("productName") String productName,
+    public int insertProduct(HttpSession session,
+                             @RequestParam("productName") String productName,
                              @RequestParam("productSort") String productSort,
                              @RequestParam("productPrice") String productPrice,
                              @RequestParam("productDiscount") String productDiscount,
@@ -119,35 +140,39 @@ public class AdminController {
                              @RequestParam("productDescription") String productDescription
     ) throws IOException {
 
-        List<HashMap<String, Object>> paramMapList = new ArrayList<>();
-        HashMap<String, Object> paramMap = new HashMap<>();
-        for (MultipartFile imgFile : imgFiles) {
-            //Firebase에 이미지 저장
-            paramMap = fireBaseService.uploadFiles(imgFile);
-            paramMap.put("productName", productName);
-            paramMap.put("productSort", productSort);
-            paramMap.put("productPrice", productPrice);
-            paramMap.put("productDiscount", productDiscount);
-            paramMap.put("productInventory", productInventory);
-            //Firebase에 등록된 URL로 변환
-            String updatedDescription = productDescription.replaceAll("<img[^>]*src=[\"']([^\"^']*)[\"'][^>]*>", "<img src=\"" + paramMap.get("fireBaseImageUrl") + "\" />");
-            paramMap.put("productDescription", updatedDescription);
+        if (session.getAttribute("admin_sessionId") != null) {
+            List<HashMap<String, Object>> paramMapList = new ArrayList<>();
+            HashMap<String, Object> paramMap = new HashMap<>();
+            for (MultipartFile imgFile : imgFiles) {
+                //Firebase에 이미지 저장
+                paramMap = fireBaseService.uploadFiles(imgFile);
+                paramMap.put("productName", productName);
+                paramMap.put("productSort", productSort);
+                paramMap.put("productPrice", productPrice);
+                paramMap.put("productDiscount", productDiscount);
+                paramMap.put("productInventory", productInventory);
+                //Firebase에 등록된 URL로 변환
+                String updatedDescription = productDescription.replaceAll("<img[^>]*src=[\"']([^\"^']*)[\"'][^>]*>", "<img src=\"" + paramMap.get("fireBaseImageUrl") + "\" />");
+                paramMap.put("productDescription", updatedDescription);
+                paramMapList.add(paramMap);
+            }
+
+            //Product 테이블에 삽입
+            adminService.insertProduct(paramMap);
+            //삽입된 상품의 productId 검색
+            int productId = adminService.selectProductByProductName(productName);
+            for (HashMap<String, Object> paramMaps : paramMapList) {
+                paramMaps.put("productId", productId);
+            }
+
+            //Image 테이블에 삽입
+            log.info("파람리스트:" + paramMapList);
+            adminService.insertProductImage(paramMapList);
             paramMapList.add(paramMap);
+            return 1;
+        } else {
+            return -1;
         }
-
-        //Product 테이블에 삽입
-        adminService.insertProduct(paramMap);
-        //삽입된 상품의 productId 검색
-        int productId = adminService.selectProductByProductName(productName);
-        for (HashMap<String, Object> paramMaps : paramMapList) {
-            paramMaps.put("productId", productId);
-        }
-
-        //Image 테이블에 삽입
-        log.info("파람리스트:"+paramMapList);
-        adminService.insertProductImage(paramMapList);
-        paramMapList.add(paramMap);
-        return 1;
     }
 
     /**
@@ -155,31 +180,36 @@ public class AdminController {
      */
 
     @RequestMapping("product")
-    public String product(Model model, @RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "5") int pageSize) {
+    public String product(HttpSession session, Model model, @RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "5") int pageSize) {
 
-        PageHelper.startPage(pageNum, pageSize);
+        if (session.getAttribute("admin_sessionId") != null) {
+            PageHelper.startPage(pageNum, pageSize);
 
-        List<HashMap<String, Object>> productList = adminService.selectAllProduct();
-        PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(productList);
-        // 판매중인 상품의 수를 계산하여 모델에 추가한다
-        long saleCount = productList.stream()
-                .filter(product -> "판매중".equals(product.get("PRODUCT_SALE_STATUS")))
-                .count();
-        long nonSaleCount = productList.stream()
-                .filter(product -> "판매중지".equals(product.get("PRODUCT_SALE_STATUS")))
-                .count();
-        long soldOutCount = productList.stream()
-                .filter(product -> 0 == (int) product.get("PRODUCT_INVENTORY"))
-                .count();
+            List<HashMap<String, Object>> productList = adminService.selectAllProduct();
+            PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(productList);
+            // 판매중인 상품의 수를 계산하여 모델에 추가한다
+            long saleCount = productList.stream()
+                    .filter(product -> "판매중".equals(product.get("PRODUCT_SALE_STATUS")))
+                    .count();
+            long nonSaleCount = productList.stream()
+                    .filter(product -> "판매중지".equals(product.get("PRODUCT_SALE_STATUS")))
+                    .count();
+            long soldOutCount = productList.stream()
+                    .filter(product -> 0 == (int) product.get("PRODUCT_INVENTORY"))
+                    .count();
 
-        model.addAttribute("saleCount", saleCount);
-        log.info("셀카:"+saleCount);
-        model.addAttribute("nonSaleCount", nonSaleCount);
-        model.addAttribute("soldOutCount", soldOutCount);
-        model.addAttribute("pageInfo", pageInfo);
-        log.info("첫 페이지인뽕:" + pageInfo);
+            model.addAttribute("saleCount", saleCount);
+            log.info("셀카:" + saleCount);
+            model.addAttribute("nonSaleCount", nonSaleCount);
+            model.addAttribute("soldOutCount", soldOutCount);
+            model.addAttribute("pageInfo", pageInfo);
+            log.info("첫 페이지인뽕:" + pageInfo);
 
-        return "/admin/product";
+            return "/admin/product";
+        } else {
+            model.addAttribute("adminErrorMessage", "관리자로 로그인 해주세요.");
+            return "/admin/index";
+        }
     }
 
     @RequestMapping("/productAxios")
@@ -207,19 +237,24 @@ public class AdminController {
     }
 
     @RequestMapping("/editProduct")
-    public String editProduct(Model model, int productId) {
-        HashMap<String, Object> pInfo = adminService.selectProductbyProductId(productId);
-        List<HashMap<String, Object>> pPictureInfo = adminService.selectPicturebyProductId(productId);
-        model.addAttribute("productId", productId);
-        model.addAttribute("pInfo", pInfo);
-        model.addAttribute("pPictureInfo", pPictureInfo);
-        return "admin/editProduct";
+    public String editProduct(HttpSession session, Model model, int productId) {
+        if (session.getAttribute("admin_sessionId") != null) {
+            HashMap<String, Object> pInfo = adminService.selectProductbyProductId(productId);
+            List<HashMap<String, Object>> pPictureInfo = adminService.selectPicturebyProductId(productId);
+            model.addAttribute("productId", productId);
+            model.addAttribute("pInfo", pInfo);
+            model.addAttribute("pPictureInfo", pPictureInfo);
+            return "admin/editProduct";
+        } else {
+            model.addAttribute("adminErrorMessage", "관리자로 로그인 해주세요.");
+            return "/admin/index";
+        }
     }
 
     @RequestMapping("/editProduct_ok")
     @ResponseBody
     @Transactional
-    public int editProduct_ok(
+    public int editProduct_ok(HttpSession session,
                              @RequestParam("productId") int productId,
                              @RequestParam("productName") String productName,
                              @RequestParam("productSort") String productSort,
@@ -229,26 +264,27 @@ public class AdminController {
                              @RequestParam("imgFiles") List<MultipartFile> imgFiles,
                              @RequestParam("productDescription") String productDescription
     ) throws IOException {
+        if (session.getAttribute("admin_sessionId") != null) {
 
-        List<HashMap<String, Object>> paramMapList = new ArrayList<>();
-        HashMap<String, Object> paramMap = new HashMap<>();
-        for (MultipartFile imgFile : imgFiles) {
-            //Firebase에 이미지 저장
-            paramMap = fireBaseService.uploadFiles(imgFile);
-            paramMap.put("productName", productName);
-            paramMap.put("productSort", productSort);
-            paramMap.put("productPrice", productPrice);
-            paramMap.put("productDiscount", productDiscount);
-            paramMap.put("productInventory", productInventory);
-            //Firebase에 등록된 URL로 변환
-            String updatedDescription = productDescription.replaceAll("<img[^>]*src=[\"']([^\"^']*)[\"'][^>]*>", "<img src=\"" + paramMap.get("fireBaseImageUrl") + "\" />");
-            paramMap.put("productDescription", updatedDescription);
-            paramMapList.add(paramMap);
-        }
+            List<HashMap<String, Object>> paramMapList = new ArrayList<>();
+            HashMap<String, Object> paramMap = new HashMap<>();
+            for (MultipartFile imgFile : imgFiles) {
+                //Firebase에 이미지 저장
+                paramMap = fireBaseService.uploadFiles(imgFile);
+                paramMap.put("productName", productName);
+                paramMap.put("productSort", productSort);
+                paramMap.put("productPrice", productPrice);
+                paramMap.put("productDiscount", productDiscount);
+                paramMap.put("productInventory", productInventory);
+                //Firebase에 등록된 URL로 변환
+                String updatedDescription = productDescription.replaceAll("<img[^>]*src=[\"']([^\"^']*)[\"'][^>]*>", "<img src=\"" + paramMap.get("fireBaseImageUrl") + "\" />");
+                paramMap.put("productDescription", updatedDescription);
+                paramMapList.add(paramMap);
+            }
 
-        paramMap.put("productId", productId);
-        //Product 테이블에 삽입
-        adminService.updateProduct(paramMap);
+            paramMap.put("productId", productId);
+            //Product 테이블에 삽입
+            adminService.updateProduct(paramMap);
 //        //삽입된 상품의 productId 검색
 //        int productId = adminService.selectProductByProductName(productName);
 //        for (HashMap<String, Object> paramMaps : paramMapList) {
@@ -259,8 +295,12 @@ public class AdminController {
 //        log.info("파람리스트:"+paramMapList);
 //        adminService.insertProductImage(paramMapList);
 //        paramMapList.add(paramMap);
-        return 1;
+            return 1;
+        } else {
+            return -1;
+        }
     }
+
 
     @RequestMapping("/selectedSaleStop")
     @ResponseBody
@@ -284,4 +324,78 @@ public class AdminController {
         fireBaseService.deleteImageFiles(paramList);
         return 1;
     }
+
+    //admin - 리뷰
+    @RequestMapping("/review")
+    public String adminReview(HttpSession session, Model model, @RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "5") int pageSize) {
+        if(session.getAttribute("admin_sessionId")!=null) {
+            HashMap<String, Object> paramMap = new HashMap<>();
+            paramMap.put("startPage", pageNum);
+            paramMap.put("pageSize", pageSize);
+
+            //전체 리뷰 리스트
+            List<HashMap<String, Object>> reviewList = adminService.selectReview(paramMap);
+            log.info("리뷰전체리스트: "+reviewList);
+            PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(reviewList);
+            model.addAttribute("pageInfo", pageInfo);
+
+            //리뷰 답변 카운트
+            HashMap<String, Object> countMap = adminService.countReview();
+            log.info("리뷰갯수: " + countMap);
+            model.addAttribute("reviewCountMap", countMap);
+            return "/admin/review";
+        } else {
+            model.addAttribute("adminErrorMessage", "관리자로 로그인 해주세요.");
+            return "/admin/index";
+        }
+
+    }
+
+    /**
+     * 리뷰관리 Axios
+     */
+    @RequestMapping("reviewAxios")
+    @ResponseBody
+    public HashMap<String, Object> reviewAxios(@RequestBody HashMap<String, Object> paramMap){
+        log.info("리뷰파람맵: " + paramMap);
+
+        //조건에 따라 리뷰리스트 검색
+        List<HashMap<String, Object>> reviewList = adminService.selectReview(paramMap);
+        PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(reviewList);
+        log.info("리뷰전체리스트: "+reviewList);
+
+        //조건에따라 나오는 리뷰리스트 갯수
+        int searchReviewCount = adminService.countSearchReview(paramMap);
+        log.info("검색갯수: " + searchReviewCount);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("pageInfo", pageInfo);
+        resultMap.put("searchReviewCount", searchReviewCount);
+
+        return resultMap;
+    }
+
+    /**
+     * 리뷰답글 보기, 쓰기
+     */
+    @RequestMapping("reviewReplyView")
+    @ResponseBody
+    public HashMap<String, Object> reviewReplyView(@RequestBody HashMap<String, Object> paramMap){
+        log.info("리뷰답변 파람맵: "+paramMap);
+        log.info("리뷰답변 리스트: "+adminService.selectReview(paramMap));
+        for(HashMap<String, Object> reviewReplyMap : adminService.selectReview(paramMap)){
+            paramMap.putAll(reviewReplyMap);
+        }
+        log.info("리뷰아이디 리뷰내용 결과값: "+paramMap);
+        return paramMap;
+    }
+
+    @RequestMapping("reviewReplyWrite_ok")
+    @ResponseBody
+    public String reviewReplyWrite_ok(@RequestBody HashMap<String, Object> paramMap){
+        log.info("리뷰답변작성 파람맵: "+paramMap);
+        adminService.insertReviewReply(paramMap);
+        adminService.updateReviewStatus(paramMap);
+        return "성공";
+    }
 }
+

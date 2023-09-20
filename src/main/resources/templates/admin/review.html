@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <th:block th:insert="~{includes/adminHeader}"></th:block>
+    <th:block th:insert="~{includes/library}"></th:block>
+    <th:block th:insert="~{includes/adminStyle}"></th:block>
+    <th:block th:insert="~{includes/adminScripts}"></th:block>
+
+</head>
+
+<body>
+<th:block th:insert="~{includes/adminHeader}"></th:block>
+
+
+    <section id="admin_review">
+        <div class="inner">
+            <div class="title">
+                <h2>리뷰관리</h2>
+            </div>
+
+            <div class="box01">
+                <ul>
+                    <li>
+                        전체리뷰 <span th:text="${reviewCountMap.TOTAL_REVIEW_COUNT}"></span>건
+                    </li>
+                    <li>
+                        답변완료 <span th:text="${reviewCountMap.ANSWERED_REVIEW_COUNT}"></span>건
+                    </li>
+                    <li>
+                        미답변 <span th:text="${reviewCountMap.UNANSWERED_REVIEW_COUNT}"></span>건
+                    </li>
+                </ul>
+            </div>
+
+            <div class="box02">
+                <div class="status">
+                    <span>답변상태</span>
+                    <div class="buttons">
+                        <button class="replyStatus" value="전체">전체</button>
+                        <button class="replyStatus" value="답변완료">답변완료</button>
+                        <button class="replyStatus" value="미답변">미답변</button>
+                    </div>
+                </div>
+
+                <div class="sort">
+                    <span>기간검색</span>
+                    <div class="buttons" id="search__date">
+                        <button class="dateStatus" data-months="0">전체</button>
+                        <button class="dateStatus" data-today="1">당일</button>
+                        <button class="dateStatus" data-week="1">1주</button>
+                        <button class="dateStatus" data-months="1">1개월</button>
+                        <button class="dateStatus" data-months="3">3개월</button>
+                        <button class="dateStatus" data-months="6">6개월</button>
+                    </div>
+                    <input type="date" id="review__date1" value="2023-07-01">
+                    <p>~</p>
+                    <input type="date" id="review__date2" value="2023-07-30">
+                </div>
+
+                <div class="search">
+                    <span>검색</span>
+                    <select name="search" class="review__search__type">
+                        <option value="상품명">상품명</option>
+                        <option value="회원ID">회원ID</option>
+                        <option value="주문번호">주문번호</option>
+                        <option value="작성자명">작성자명</option>
+                    </select>
+                    <input type="text" class="review__search__field" placeholder="상품명 검색">
+                    <div class="buttons">
+                        <button class="review__search__btn">검색</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box03">
+                <div class="left">
+                    <span class="margin">검색결과 <span class="bold" id="search__review__count" th:text="${reviewCountMap.TOTAL_REVIEW_COUNT}"></span>건</span>
+                    <button>선택 게시중지</button>
+                    <button>선택삭제</button>
+                </div>
+
+                <div class="right">
+                    <select name="howmany">
+                        <option value="5">5개씩 보기</option>
+                        <option value="10">10개씩 보기</option>
+                        <option value="30">30개씩 보기</option>
+                        <option value="50">50개씩 보기</option>
+                        <option value="100">100개씩 보기</option>
+                    </select>
+
+                    <button id="excelDownloadBtn">
+                        <span class="material-symbols-outlined">description</span>
+                        <span>엑셀 다운로드</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="box04">
+                <table class="product-table" id="review_table">
+                    <caption class="hidden">리뷰관리</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                <input type="checkbox" id="allCheck">
+                            </th>
+                            <th scope="col">번호</th>
+                            <th scope="col">상태</th>
+                            <th scope="col">상품명</th>
+                            <th scope="col">리뷰내용</th>
+                            <th scope="col">작성자ID</th>
+                            <th scope="col">작성자 닉네임</th>
+                            <th scope="col">등록일</th>
+                            <th scope="col">답변등록</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reviewAxiosBody">
+                        <tr th:each="rList : ${pageInfo.list}">
+                            <td>
+                                <input name="chkStatus" type="checkbox" >
+                            </td>
+                            <input type="hidden" class="review_ORDER_ID" th:value="${rList.ORDER_ID}">
+                            <input type="hidden" class="review_REVIEW_ID" th:value="${rList.REVIEW_ID}">
+                            <td th:text="${rList.REVIEW_ID}"></td>
+                            <td th:text="${rList.REVIEW_REPLY_STATUS}"></td>
+                            <td>
+                                <a th:href="@{user/productDetail(productId=${rList.PRODUCT_ID})}">
+                                    <th:block class="review_PRODUCT_NAME" th:text="${rList.PRODUCT_NAME}"></th:block>
+                                </a>
+                            </td>
+                            <td th:text="${rList.REVIEW_CONT}"></td>
+                            <td th:text="${rList.USER_EMAIL}"></td>
+                            <td th:text="${rList.USER_NAME}"></td>
+                            <td th:text="${rList.REVIEW_DATE}"></td>
+                            <td>
+                                <button th:if="${rList.REVIEW_REPLY_STATUS}=='답변완료'" class="review__reply__view" >답변보기</button>
+                                <button th:if="${rList.REVIEW_REPLY_STATUS}=='미답변'" class="review__reply__write" style="color: white; background-color: #244497;">답변하기</button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+
+
+                <th:block th:if="${pageInfo.hasPreviousPage}">
+                    <a th:href="'#'" id="admin__review__prevBtn" th:value="${pageInfo.prePage}">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </a>
+                </th:block>
+
+
+                <p class="numbers">
+                    <span th:each="pageNumber : ${pageInfo.navigatepageNums}" th:if="${pageNumber <= pageInfo.total}">
+                      <a th:text="${pageNumber}" th:href="'#'" id="admin__review__numberBtn" th:attr="value=${pageNumber}" th:classappend="${pageNumber == pageInfo.pageNum ? 'bold large-text' : ''}"
+                         style="font-size: 16px; font-weight: bold;"></a>
+                    </span>
+                </p>
+
+                <th:block th:if="${pageInfo.hasNextPage}">
+                    <a th:href="'#'" id="admin__review__nextBtn" th:value="${pageInfo.nextPage}">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </a>
+                </th:block>
+            </div>
+
+            <!-- 리뷰관리 답변하기 버튼 클릭시 모달창 -->
+            <div class="admin__review" id="admin__review__write" style="display: none;">
+                <div class="admin__review__inner">
+
+                    <div class="top">
+                        <span class="review_reply_ORDER_ID">주문번호 12345678</span>
+                    </div>
+
+                    <div class="middle">
+                        <p class="review_reply_PRODUCT_NAME">프리미엄 고당도 꿀수박</p>
+                        <input type="text">
+                        <span class="review_reply_USER_NAME__REVIEW_DATE">불타는너구리 | 2023. 07. 01 (13:10:10) 작성</span>
+                        <div class="line"></div>
+                    </div>
+
+
+                    <div class="bottom">
+                        <p>리뷰답변</p>
+                        <input type="text" class="review_reply_REVIEW_REPLY_CONT">
+                        <span>15 / 500</span>
+
+                        <div class="admin__review__buttons">
+                            <button id="review__reply__write__cancel" style="background-color: white; color: black; font-weight: bold; border: 1px solid black;" > 취소하기 </button>
+                            <button id="review__reply__write__confirm" style="color: white; font-weight: bold;"> 답변하기 </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 리뷰관리 답변보기 버튼 클릭시 모달창 -->
+            <div class="admin__review" id="admin__review__view" style="display: none;">
+                <div class="admin__review__inner">
+
+                    <div class="top">
+                        <span class="review_reply_ORDER_ID">주문번호 12345678</span>
+                    </div>
+
+                    <div class="middle">
+                        <p class="review_reply_PRODUCT_NAME">프리미엄 고당도 꿀수박</p>
+                        <input type="text">
+                        <span class="review_reply_USER_NAME__REVIEW_DATE">불타는너구리 | 2023. 07. 01 (13:10:10) 작성</span>
+                        <div class="line"></div>
+                    </div>
+
+
+                    <div class="bottom">
+                        <p>리뷰답변</p>
+                        <input type="text" class="review_reply_REVIEW_REPLY_CONT" readonly>
+                        <span>15 / 500</span>
+
+                        <div class="admin__review__buttons">
+                            <button id="review__reply__view__confirm" style="color: white; font-weight: bold;"> 확인 </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 리뷰 작성 취소하기 버튼 클릭시 모달창 -->
+            <div class="admin__review__cancel" style="display: none;">
+                <div class="admin__review__cancel__inner">
+
+                    <div class="top">
+                        <span>알림</span>
+                    </div>
+
+                    <div class="middle">
+                        <p>작성중인 내용이 모두 삭제됩니다. <br>
+                            취소 하시겠습니까?</p>
+                    </div>
+
+
+                    <div class="bottom">
+                        <button id="admin__review__cancel_btn">취소하기</button>
+                        <button id="admin__review__continue_btn">계속작성</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 리뷰 작성 완료 모달창 -->
+            <div class="admin__review__confirm" style="display: none;">
+                <div class="admin__review__confirm__inner">
+
+                    <div class="top">
+                        <span>알림</span>
+                    </div>
+
+                    <div class="middle">
+                        <p>리뷰답변이 완료 되었습니다.</p>
+                    </div>
+
+
+                    <div class="bottom">
+                        <button class="admin__review__confirm__btn">확인</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+</body>
+
+</html>
