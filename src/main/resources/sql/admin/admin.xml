@@ -259,5 +259,119 @@
             </if>
         </where>
     </select>
+
+<!--    회원목록 select-->
+
+    <select id="adminSelectMember" resultType="HashMap">
+        SELECT
+        U.USER_ID_NO, U.USER_EMAIL, U.USER_NAME, U.USER_STATUS, U.USER_CREATED_AT, U.USER_WITHDRAWAL_DATE,
+        COUNT(O.ORDER_ID) AS ORDER_COUNT
+        FROM USER U
+        LEFT JOIN USER_DELIVER_INFO UDI ON U.USER_ID_NO = UDI.USER_ID_NO
+        LEFT JOIN ORDER_TABLE O ON UDI.DELIVER_ID = O.DELIVER_ID
+        <where>
+            <!-- 회원ID 검색 -->
+            <if test="searchType != null and searchType == '회원ID' and searchField != null and searchField != ''">
+                AND USER_EMAIL LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+            <!-- 닉네임 검색 -->
+            <if test="searchType != null and searchType == '닉네임' and searchField != null and searchField != ''">
+                AND USER_NAME LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+            <!-- 회원 상태 검색 -->
+            <if test="userStatus != null">
+                <if test="userStatus == '전체'">
+                    <!-- 아무 조건 없이 전체 리뷰 검색 -->
+                </if>
+                <if test="userStatus == '활동회원'">
+                    AND USER_STATUS = 1
+                </if>
+                <if test="userStatus == '탈퇴회원'">
+                    AND USER_STATUS = 2
+                </if>
+            </if>
+        </where>
+        GROUP BY U.USER_ID_NO, U.USER_EMAIL, U.USER_NAME, U.USER_STATUS, U.USER_CREATED_AT
+        ORDER BY USER_ID_NO DESC
+    </select>
+
+    <!--    회원상태 갯수-->
+    <select id="countMember" resultType="HashMap">
+        SELECT
+            COUNT(*) AS TOTAL_MEMBER_COUNT,
+            SUM(CASE WHEN USER_STATUS = 1 THEN 1 ELSE 0 END) AS ACTIVATING_USER,
+            SUM(CASE WHEN USER_STATUS = 2 THEN 1 ELSE 0 END) AS NON_ACTIVATING_USER
+        FROM USER
+    </select>
+
+    <!--    회원 목록 검색결과 갯수-->
+    <select id="countSearchMember" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM USER U
+        LEFT JOIN USER_DELIVER_INFO UDI ON U.USER_ID_NO = UDI.USER_ID_NO
+        LEFT JOIN ORDER_TABLE O ON UDI.DELIVER_ID = O.DELIVER_ID
+        <where>
+            <!-- 회원ID 검색 -->
+            <if test="searchType != null and searchType == '회원ID' and searchField != null and searchField != ''">
+                AND USER_EMAIL LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+            <!-- 닉네임 검색 -->
+            <if test="searchType != null and searchType == '닉네임' and searchField != null and searchField != ''">
+                AND USER_NAME LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+            <!-- 회원 상태 검색 -->
+            <if test="userStatus != null">
+                <choose>
+                    <when test="userStatus == '전체'">
+                        <!-- 아무 조건 없이 전체 리뷰 검색 -->
+                    </when>
+                    <when test="userStatus == '활동회원'">
+                        AND USER_STATUS = 1
+                    </when>
+                    <when test="userStatus == '탈퇴회원'">
+                        AND USER_STATUS = 2
+                    </when>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+
+    <!--유저 주문내역-->
+    <select id="adminSelectOrderList" resultType="HashMap">
+        SELECT OP.PRODUCT_ID, OT.ORDER_ID, OT.ORDER_DATE, OT.DELIVER_ID, P.PRODUCT_NAME, OT.ORDER_PRICE, I.IMAGE_URL
+        FROM ORDER_TABLE OT
+        JOIN ORDER_PRODUCT OP ON OT.ORDER_ID = OP.ORDER_ID
+        JOIN USER_DELIVER_INFO UDI ON OT.DELIVER_ID = UDI.DELIVER_ID
+        JOIN PRODUCT P ON OP.PRODUCT_ID = P.PRODUCT_ID
+        JOIN IMAGE I ON I.PRODUCT_ID = P.PRODUCT_ID
+        WHERE UDI.USER_ID_NO = #{USER_ID_NO}
+        ORDER BY OT.ORDER_ID DESC
+    </select>
+
+    <!--    유저탈퇴-->
+    <update id="withdrawalUser">
+        UPDATE USER
+        SET
+        USER_STATUS = 2,
+        USER_WITHDRAWAL_DATE = NOW()
+        WHERE
+        USER_ID_NO IN
+        <foreach collection="selectedUserIdNo" item="USER_ID_NO" open="(" close=")" separator=",">
+            #{USER_ID_NO}
+        </foreach>
+    </update>
+
+    <!--    배너이미지 삽입-->
+    <insert id="insertBanner">
+        INSERT INTO BANNER
+        VALUES (NULL, #{bannerTitle}, #{fireBaseImageUrl}, #{fileDBName} #{bannerStartDate}, #{bannerEndDate})
+    </insert>
 </mapper>
+
 

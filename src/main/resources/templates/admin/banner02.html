@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <th:block th:insert="~{includes/adminHeader}"></th:block>
+    <th:block th:insert="~{includes/library}"></th:block>
+    <th:block th:insert="~{includes/adminStyle}"></th:block>
+    <th:block th:insert="~{includes/adminScripts}"></th:block>
+</head>
+
+<body>
+<th:block th:insert="~{includes/adminHeader}"></th:block>
+
+    <section id="admin_banner02">
+        <div class="inner">
+            <div class="title">
+                <h2>배너등록</h2>
+            </div>
+
+            <div class="admin_product02__wrap">
+                <label for="bannerName" class="bannerName">
+                    <p> 배너제목 </p>
+                    <input name="bannerName" placeholder="배너제목을 입력해주세요." id="bannerName">
+                </label>
+
+                <label for="date" class="date">
+                    <p> 게시일 </p>
+                    <input type="date" id="banner__start__date">
+                    <span>~</span>
+                    <input type="date" id="banner__end__date">
+                    <button id="todayDate">당일</button>
+                    <button id="alwaysDisplay">상시</button>
+                </label>
+
+
+                <label for="howlong" class="howlong">
+                    <p> 게시일수 </p>
+                    <input type="textbox" name="howlong" value="1" id="howlong" readonly>
+                    일
+                    <button id="todayStatusPreBtn" style="display: none; border-radius: 20px; color: white; background-color: black; padding: 5px 20px;">이전</button>
+                </label>
+
+                <label for="time" class="time">
+                    <p> 이미지 노출시간 </p>
+                    <select name="time" id="time">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                    <span>초</span>
+                    <button id="alwaysStatusPreBtn" style="display: none; border-radius: 20px; color: white; background-color: black;  padding: 5px 20px;">이전</button>
+                </label>
+
+                <label for="bannerPicture" class="bannerPicture">
+                    <p> 상품이미지 </p>
+                    <div  class="add-button">+ 추가</div>
+                    <input type="file" name="bannerPicture" id="bannerPicture" accept="image/*">
+                    <img id="banner__img__preview" src="" alt="배너 이미지">
+                    <button id="changeImg" style="display: none">이미지변경</button>
+                </label>
+
+            </div>
+
+            <div class="buttons">
+                <button>취소하기</button>
+                <button class="banner__submit__btn">등록하기</button>
+            </div>
+
+
+            <!--모달창-->
+            <div class="txt04" style="display: none;">
+                <div class="inner">
+                    <h4>알림</h4>
+                    <h5 id="errorMsg">영역</h5>
+                    <button class="confirmButton" onclick='closeModal()';>확인</button> <!-- 추가된 확인 버튼 -->
+                </div>
+            </div>
+
+            <!-- 어드민 배너관리 취소하기 버튼 클릭 시 모달창 -->
+            <div class="admin__banner02" style="display: none;">
+                <div class="admin__banner02__inner">
+
+                    <div class="top">
+                        <span>알림</span>
+                    </div>
+
+                    <div class="middle">
+                        <p>작성중인 내용이 모두 삭제됩니다. <br>
+                            취소하시겠습니까?</p>
+                    </div>
+
+
+                    <div class="bottom">
+                        <button>취소하기</button>
+                        <button>계속작성</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 어드민 배너관리 등록하기 버튼 클릭 시 모달창 -->
+            <div class="admin__banner02__confirm" style="display: none;">
+                <div class="admin__banner02__confirm__inner">
+
+                    <div class="top">
+                        <span>알림</span>
+                    </div>
+
+                    <div class="middle">
+                        <p>배너등록이 완료되었습니다.</p>
+                    </div>
+
+
+                    <div class="bottom">
+                        <button>확인</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+</body>
+
+</html>

@@ -49,6 +49,31 @@ public class FireBaseService {
         return null;
     }
 
+    public HashMap<String, Object> bannerImg(MultipartFile imgFiles) throws IOException {
+
+        if (!imgFiles.isEmpty()) {
+            Calendar cal = Calendar.getInstance();
+            int year = cal.get(Calendar.YEAR);
+            int month = cal.get(Calendar.MONTH) + 1;
+            int date = cal.get(Calendar.DATE);
+
+            String homedir = year + "-" + month + "-" + date + "- 배너이미지";
+            String fileName = "photo" + System.currentTimeMillis() + "_" + imgFiles.getOriginalFilename();
+            String fileDBName = homedir + "/" + fileName;
+            log.info(homedir + ", " + fileName + ", " + fileDBName + ", " + firebaseBucket);
+
+            Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
+            InputStream content = new ByteArrayInputStream(imgFiles.getBytes());
+            Blob blob = bucket.create(fileDBName, content, imgFiles.getContentType());
+
+            HashMap<String, Object> paramMap = new HashMap<>();
+            paramMap.put("fileDBName", fileDBName);
+            paramMap.put("fireBaseImageUrl", blob.getMediaLink());
+            return paramMap;
+        }
+        return null;
+    }
+
     public void deleteImageFiles(List<HashMap<String, Object>> paramList) {
         for (HashMap<String, Object> paramMap : paramList) {
             String filePath = paramMap.get("file_path").toString(); // 파일 경로 키로 변경

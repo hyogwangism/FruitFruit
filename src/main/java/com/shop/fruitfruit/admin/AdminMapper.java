@@ -72,4 +72,16 @@ public interface AdminMapper {
     HashMap<String, Object> countReview();
 
     int countSearchReview(HashMap<String, Object> paramMap);
+
+    List<HashMap<String, Object>> adminSelectMember(HashMap<String, Object> paramMap);
+
+    HashMap<String, Object> countMember();
+
+    int countSearchMember(HashMap<String, Object> paramMap);
+
+    List<HashMap<String, Object>> adminSelectOrderList(HashMap<String, Object> paramMap);
+
+    void withdrawalUser(HashMap<String, Object> userIdNoMap);
+
+    void insertBanner(HashMap<String, Object> paramMap);
 }

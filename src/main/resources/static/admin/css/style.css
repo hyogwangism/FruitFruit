@@ -558,9 +558,8 @@
   padding: 5px 30px;
   border: 1px solid #333;
   cursor: pointer;
-  background-color: #fff;
 }
-#admin_member .inner .box02 .status .buttons button:first-child,
+
 #admin_member .inner .box02 .search .buttons button:first-child {
   background-color: #333;
   color: #fff;
@@ -2124,9 +2123,9 @@
   background-color: #000a25;
   font: 400 12px/1 "Noto Sans";
   padding: 3px 5px;
-  position: relative;
-  top: -45px;
-  right: 85px;
+  position: inherit;
+  /*top: -45px;*/
+  /*right: 85px;*/
   cursor: pointer;
 }
 #admin_banner02 .inner .buttons {

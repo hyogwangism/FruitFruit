@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <th:block th:insert="~{includes/adminHeader}"></th:block>
+    <th:block th:insert="~{includes/library}"></th:block>
+    <th:block th:insert="~{includes/adminStyle}"></th:block>
+    <th:block th:insert="~{includes/adminScripts}"></th:block>
+</head>
+
+<body>
+<th:block th:insert="~{includes/adminHeader}"></th:block>
+
+
+    <section id="admin_bannerEdit">
+        <div class="inner">
+            <div class="title">
+                <h2>배너등록</h2>
+            </div>
+
+            <div class="admin_product02__wrap">
+                <label for="bannerName" class="bannerName">
+                    <p> 배너제목 </p>
+                    <input type="textbox" name="bannerName" value="배너제목을 입력해주세요." id="bannerName">
+                </label>
+
+                <label for="date" class="date">
+                    <p> 게시일 </p>
+                    <input type="date">
+                    <span>~</span>
+                    <input type="date">
+                    <button>당일</button>
+                    <button>상시</button>
+                </label>
+
+                <label for="howlong" class="howlong">
+                    <p> 게시일수 </p>
+                    <input type="textbox" name="howlong" value="1" id="howlong">
+                    일
+                </label>
+
+                <label for="time" class="time">
+                    <p> 이미지 노출시간 </p>
+                    <select name="time" id="time">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                    <span>초</span>
+                </label>
+
+                <label for="bannerPicture" class="bannerPicture">
+                    <p> 상품이미지 </p>
+                    <div>+ 추가</div>
+                    <input type="file" name="bannerPicture" id="bannerPicture" accept="image/*">
+                    <img src="./img/배너수정.png" alt="배너 이미지">
+                    <button>이미지변경</button>
+                </label>
+
+            </div>
+
+            <div class="buttons">
+                <button>취소하기</button>
+                <button>수정하기</button>
+            </div>
+
+
+
+
+            <!-- 어드민 배너관리 배너수정하기 버튼 클릭 시 모달창 -->
+            <div class="admin__banner__edit" style="display: none;">
+                <div class="admin__banner__edit__inner">
+
+                    <div class="top">
+                        <span>알림</span>
+                    </div>
+
+                    <div class="middle">
+                        <p>배너수정이 완료되었습니다.</p>
+                    </div>
+
+
+                    <div class="bottom">
+                        <button>확인</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+</body>
+
+</html>

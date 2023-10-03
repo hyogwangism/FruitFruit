@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <th:block th:insert="~{includes/adminHeader}"></th:block>
+    <th:block th:insert="~{includes/library}"></th:block>
+    <th:block th:insert="~{includes/adminStyle}"></th:block>
+    <th:block th:insert="~{includes/adminScripts}"></th:block>
+</head>
+
+<body>
+<th:block th:insert="~{includes/adminHeader}"></th:block>
+
+
+    <section id="admin_banner">
+        <div class="inner">
+            <div class="title">
+                <h2>배너관리</h2>
+                <button>
+                    <a href="banner/write">배너등록</a>
+                </button>
+            </div>
+
+            <div class="box01">
+                <ul>
+                    <li>
+                        전체배너 <span>5</span>건
+                    </li>
+                    <li>
+                        게시중 <span>3</span>건
+                    </li>
+                    <li>
+                        만료 <span>1</span>건
+                    </li>
+                    <li>
+                        중지 <span>1</span>건
+                    </li>
+                </ul>
+            </div>
+
+            <div class="box02">
+                <div class="status">
+                    <span>게시상태</span>
+                    <div class="buttons">
+                        <button>게시중</button>
+                        <button>만료</button>
+                        <button>중지</button>
+                    </div>
+                </div>
+
+                <div class="search">
+                    <span>검색</span>
+                    <input type="text" placeholder="배너 제목 검색">
+                    <div class="buttons">
+                        <button>검색</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box03">
+                <div class="left">
+                    <span class="margin">검색결과 <span class="bold">5</span>건</span>
+                    <button>선택 게시중지</button>
+                    <button>선택삭제</button>
+                </div>
+
+                <div class="right">
+                    <select name="howmany">
+                        <option value="10개씩 보기">10개씩 보기</option>
+                        <option value="30개씩 보기">30개씩 보기</option>
+                        <option value="50개씩 보기">50개씩 보기</option>
+                        <option value="100개씩 보기">100개씩 보기</option>
+                    </select>
+
+                    <button>
+                        <span class="material-symbols-outlined">description</span>
+                        <span>엑셀 다운로드</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="box04">
+                <table class="product-table">
+                    <caption class="hidden">배너관리</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                <input type="checkbox" checked>
+                            </th>
+                            <th scope="col">번호</th>
+                            <th scope="col">상태</th>
+                            <th scope="col">게시일</th>
+                            <th scope="col">게시일수</th>
+                            <th scope="col">배너제목</th>
+                            <th scope="col">조회수</th>
+                            <th scope="col">이미지 노출시간</th>
+                            <th scope="col">배너이미지</th>
+                            <th scope="col">배너수정</th>
+                            <th scope="col">게시중지</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input type="checkbox">
+                            </td>
+                            <td>05</td>
+                            <td>게시중</td>
+                            <td>2023. 03. 01 ~ 2023. 03. 05</td>
+                            <td>5</td>
+                            <td>여름아 부탁해 배너</td>
+                            <td>2567</td>
+                            <td>3초</td>
+                            <td>
+                                <button>보기</button>
+                            </td>
+                            <td>
+                                <button>수정</button>
+                            </td>
+                            <td>
+                                <button>중지</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <input type="checkbox">
+                            </td>
+                            <td>04</td>
+                            <td>만료</td>
+                            <td>상시</td>
+                            <td>상시</td>
+                            <td>신규회원 15% 할인</td>
+                            <td>589</td>
+                            <td>3초</td>
+                            <td>
+                                <button>보기</button>
+                            </td>
+                            <td>
+                                <button>수정</button>
+                            </td>
+                            <td>
+                                -
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <input type="checkbox">
+                            </td>
+                            <td>03</td>
+                            <td>만료</td>
+                            <td>상시</td>
+                            <td>상시</td>
+                            <td>친구와 함께 할인</td>
+                            <td>26</td>
+                            <td>3초</td>
+                            <td>
+                                <button>보기</button>
+                            </td>
+                            <td>
+                                <button>수정</button>
+                            </td>
+                            <td>
+                                -
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <input type="checkbox">
+                            </td>
+                            <td>02</td>
+                            <td>게시중</td>
+                            <td>2023. 02. 02 ~ 2023. 02. 08</td>
+                            <td>7</td>
+                            <td>가을 제철 과일 총출동</td>
+                            <td>1589</td>
+                            <td>3초</td>
+                            <td>
+                                <button>보기</button>
+                            </td>
+                            <td>
+                                <button>수정</button>
+                            </td>
+                            <td>
+                                <button>중지</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <input type="checkbox">
+                            </td>
+                            <td>01</td>
+                            <td>게시중</td>
+                            <td>2023. 01. 11 ~ 2023. 01. 25</td>
+                            <td>13</td>
+                            <td>과일의 계절</td>
+                            <td>7895</td>
+                            <td>5초</td>
+                            <td>
+                                <button>보기</button>
+                            </td>
+                            <td>
+                                <button>수정</button>
+                            </td>
+                            <td>
+                                2023. 01. 24
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <a href="#" class="prev">
+                    <span class="material-symbols-outlined">
+                        chevron_left
+                    </span>
+                </a>
+
+                <p class="numbers">
+                    <a href="#">1</a>
+                    <a href="#">2</a>
+                    <a href="#">3</a>
+                    <a href="#">
+                        <span class="bold">4</span>
+                    </a>
+                    <a href="#">5</a>
+                </p>
+
+                <a href="#" class="next">
+                    <span class="material-symbols-outlined">
+                        chevron_right
+                    </span>
+                </a>
+            </div>
+
+            <!-- 어드민 배너관리 배너이미지보기 모달창 -->
+            <div class="admin__banner" style="display: none;">
+                <div class="admin__banner__inner">
+
+                    <div class="top">
+                        <span>[여름아부탁해] 이미지</span>
+                    </div>
+
+                    <div class="middle">
+                        <img src="./img/배너이미지.png" alt="배너이미지">
+                    </div>
+
+
+                    <div class="bottom">
+                        <button>닫기</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+</body>
+
+</html>

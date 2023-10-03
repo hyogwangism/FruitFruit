@@ -1,9 +1,11 @@
 package com.shop.fruitfruit.admin;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.shop.fruitfruit.firebase.FireBaseService;
+import com.shop.fruitfruit.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
@@ -19,10 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.net.http.HttpRequest;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -32,6 +32,7 @@ public class AdminController {
 
     private final FireBaseService fireBaseService;
     private final AdminService adminService;
+    private final UserService userService;
 
 
 //    @PostMapping("/files")
@@ -389,6 +390,9 @@ public class AdminController {
         return paramMap;
     }
 
+    /**
+     * 리뷰 답글 작성 ok
+     */
     @RequestMapping("reviewReplyWrite_ok")
     @ResponseBody
     public String reviewReplyWrite_ok(@RequestBody HashMap<String, Object> paramMap){
@@ -397,5 +401,168 @@ public class AdminController {
         adminService.updateReviewStatus(paramMap);
         return "성공";
     }
+
+    /**
+     * 회원관리 페이지 이동
+     */
+    @RequestMapping("/member")
+    public String member(HttpSession session, Model model, @RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "5") int pageSize) {
+        if(session.getAttribute("admin_sessionId")!=null) {
+            HashMap<String, Object> paramMap = new HashMap<>();
+            paramMap.put("startPage", pageNum);
+            paramMap.put("pageSize", pageSize);
+
+            List<HashMap<String, Object>> memberList = adminService.adminSelectMember(paramMap);
+            //전체 회원 리스트
+            log.info("회원전체리스트: "+memberList);
+
+            PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(memberList);
+            log.info("카운트 들어간 페이지인포: "+pageInfo);
+
+            model.addAttribute("pageInfo", pageInfo);
+
+            //회원 상태 카운트
+            HashMap<String, Object> countMap = adminService.countMember();
+            log.info("회원 상태 갯수: " + countMap);
+            model.addAttribute("memberCountMap", countMap);
+
+            return "/admin/member";
+        } else {
+            model.addAttribute("adminErrorMessage", "관리자로 로그인 해주세요.");
+            return "/admin/index";
+        }
+
+    }
+
+    /**
+     * 회원관리 Axios
+     */
+    @RequestMapping("memberAxios")
+    @ResponseBody
+    public HashMap<String, Object> memberAxios(@RequestBody HashMap<String, Object> paramMap) {
+        log.info("멤버파람맵: " + paramMap);
+
+        List<HashMap<String, Object>> memberList = adminService.adminSelectMember(paramMap);
+        //전체 회원 리스트
+        log.info("회원전체리스트: " + memberList);
+
+        PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(memberList);
+        log.info("카운트 들어간 페이지인포: " + pageInfo);
+
+        //조건에따라 나오는 회원명수
+        int searchMemberCount = adminService.countSearchMember(paramMap);
+        log.info("검색갯수: " + searchMemberCount);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("pageInfo", pageInfo);
+        resultMap.put("searchMemberCount", searchMemberCount);
+
+        return resultMap;
+    }
+
+    /**
+     * 멤버 주문내역보기, 쓰기
+     */
+    @RequestMapping("memberOrderListView")
+    public String memberOrderListView(HttpSession session, Model model,
+                                      @RequestParam String USER_ID_NO,
+                                      @RequestParam(defaultValue = "1") int pageNum,
+                                      @RequestParam(defaultValue = "5") int pageSize) {
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("USER_ID_NO", USER_ID_NO);
+        paramMap.put("startPage", pageNum);
+        paramMap.put("pageSize", pageSize);
+
+        log.info("유아넘gg: " + USER_ID_NO);
+
+//            List<HashMap<String, Object>> userOrderList = adminService.adminSelectOrderList(paramMap);
+//
+//            // 중복된 ORDER_ID 처리
+//            Map<String, Integer> productCountMap = new HashMap<>();
+//            for (HashMap<String, Object> order : userOrderList) {
+//                String orderId = order.get("ORDER_ID").toString();
+//                productCountMap.put(orderId, productCountMap.getOrDefault(orderId, 0) + 1);
+//            }
+//
+//            for (HashMap<String, Object> order : userOrderList) {
+//                String orderId = order.get("ORDER_ID").toString();
+//                int orderCount = productCountMap.get(orderId);
+//                order.put("orderCount", orderCount);
+//            }
+//
+//            log.info("유저 오더리스트: " + userOrderList);
+//            PageHelper.startPage(Integer.parseInt(paramMap.get("startPage").toString()), Integer.parseInt(paramMap.get("pageSize").toString()));
+//            PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(userOrderList);
+        PageInfo<HashMap<String, Object>> pageInfo = adminService.userOrderMethod(paramMap);
+
+
+        log.info("유저 페이지리스트: " + pageInfo);
+
+        model.addAttribute("pageInfo", pageInfo); // 수정된 코드로 변경
+
+        return "admin/memberOrderListModal";
+    }
+
+    @RequestMapping("selectedWithdrawal")
+    @ResponseBody
+    public int selectedWithdrawal(@RequestBody HashMap<String, Object> paramMap) {
+        log.info("회원아이디넘버: " + paramMap);
+        adminService.withdrawalUser(paramMap);
+        return 1;
+    }
+
+    @RequestMapping("banner")
+    public String goBanner() {
+
+        return "admin/banner";
+    }
+
+    @RequestMapping("banner/write")
+    public String goBannerWrite(){
+        return "admin/banner02";
+    }
+
+    @RequestMapping("/insertBanner")
+    @ResponseBody
+    @Transactional
+    public int insertProduct(HttpSession session,
+                             @RequestParam("bannerTitle") String bannerTitle,
+                             @RequestParam("bannerStartDate") String bannerStartDate,
+                             @RequestParam("bannerEndDate") String bannerEndDate,
+                             @RequestParam("bannerHowLong") String bannerHowLong,
+                             @RequestParam("bannerShowTime") String bannerShowTime,
+                             @RequestParam("bannerImg") MultipartFile bannerImg
+    ) throws IOException {
+
+        log.info("배너 값 확인 == " + "타이틀 : " + bannerTitle + ", 시작일 : " + bannerStartDate + ", 종료일 : " + bannerEndDate + ", 기간 : " + bannerHowLong + ", 보여지는시간 : " + bannerShowTime + ", 이미지 : " + bannerImg);
+        if (session.getAttribute("admin_sessionId") != null) {
+            HashMap<String, Object> paramMap;
+            //Firebase에 이미지 저장
+            paramMap = fireBaseService.uploadFiles(bannerImg);
+            paramMap.put("bannerTitle", bannerTitle);
+            paramMap.put("bannerStartDate", bannerStartDate);
+            paramMap.put("bannerEndDate", bannerEndDate);
+
+            //banner 테이블에 삽입
+            adminService.insertBanner(paramMap);
+
+            return 1;
+        }
+        return -1;
+    }
+
+
+
+//    /**
+//     * 멤버 주문내역보기, 쓰기
+//     */
+//    @RequestMapping("memberOrderListView")
+//    @ResponseBody
+//    public HashMap<String, Object> memberOrderListView(@RequestBody HashMap<String, Object> paramMap) {
+//        log.info("멤버아이디 파람맵: " + paramMap);
+//        List<HashMap<String, Object>> orderList = adminService.adminSelectOrderList(paramMap);
+//        log.info("유저 오더리스트: " + orderList);
+//
+//        return null;
+//    }
 }
 

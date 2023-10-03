@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <th:block th:insert="~{includes/library}"></th:block>
+    <th:block th:insert="~{includes/adminStyle}"></th:block>
+    <th:block th:insert="~{includes/adminScripts}"></th:block>
+
+</head>
+
+<body>
+
+
+<section id="admin_member">
+
+    <!-- 주소록 보기 버튼 클릭시 모달창 -->
+    <div class="admin__delivery" style="display: none;">
+        <div class="admin__delivery__inner">
+
+            <div class="top">
+                <span>알림</span>
+            </div>
+
+            <div class="middie">
+                <button>01</button>
+                <button>02</button>
+                <button>03</button>
+            </div>
+
+            <div class="bottom">
+                <ul>
+                    <li>
+                        <span>배송지명</span>
+                        <span>우리집</span>
+                    </li>
+                    <li>
+                        <span>수령인</span>
+                        <span>홍길동 팀장</span>
+                    </li>
+                    <li>
+                        <span>연락처</span>
+                        <span>010-1234-5678</span>
+                    </li>
+                    <li>
+                        <span>배송주소</span>
+                        <span>12345 서울시 강남구 강남로 123 강남빌딩</span>
+                    </li>
+                </ul>
+
+
+                <div class="admin__delivery__buttons">
+                    <button>
+                        <a href="#">닫기</a>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 탈퇴 버튼 클릭시 모달창 -->
+    <div class="admin__cancel" style="display: none;">
+        <div class="admin__cancel__inner">
+
+            <div class="top">
+                <span>알림</span>
+            </div>
+
+            <div class="middle">
+                <p>탈퇴된 회원은 복구할 수 없습니다. <br>
+                    fireraccoon@naver.com을 회원탈퇴 하시겠습니까?</p>
+            </div>
+
+
+            <div class="bottom">
+                <button>취소하기</button>
+                <button>탈퇴처리</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 탈퇴처리 버튼 클릭시 탈퇴완료 모달창 -->
+    <div class="admin__cancel__confirm" style="display: none;">
+        <div class="admin__cancel__confirm__inner">
+
+            <div class="top">
+                <span>알림</span>
+            </div>
+
+            <div class="middle">
+                <p>회원 탈퇴처리가 완료되었습니다.</p>
+            </div>
+
+
+            <div class="bottom">
+                <button>확인</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 회원관리 구매수량 버튼 클릭시 모달창 -->
+    <div class="admin__quantity" >
+        <div class="admin__quantity__inner">
+
+            <div class="top">
+                <span>알림</span>
+            </div>
+
+            <div class="middle01">
+                <span>[구매상품 목록]</span>
+                <span>회원ID:
+                        <span>fireraccoon@naver.com</span>
+                    </span>
+            </div>
+
+            <div class="middle02">
+                <div class="bottom__txt">
+                    <span>상품이미지</span>
+                    <span>상품명/구매금액</span>
+                    <span>구매일</span>
+                </div>
+
+                <ul>
+                    <li th:each="orderList : ${pageInfo.list}">
+                        <img th:src="${orderList.IMAGE_URL}" style="width: 100px; height: 100px;" alt="상품이미지">
+                        <div class="li_txt">
+                            <span th:if="${orderList.orderCount > 1}"th:text="${orderList.PRODUCT_NAME + ' 외 ' + (orderList.orderCount - 1) + '개'}" th:remove="tag"></span>
+                            <span th:unless="${orderList.orderCount > 1}" th:text="${orderList.PRODUCT_NAME}"></span>
+                            <span th:text="${orderList.ORDER_PRICE}"></span>
+                        </div>
+                        <span th:text="${orderList.ORDER_DATE}"></span>
+                    </li>
+                </ul>
+
+                <div class="pagination">
+
+                    <th:block th:if="${pageInfo.hasPreviousPage}">
+                        <a th:href="'#'" id="admin__member__orderList__prevBtn" th:value="${pageInfo.prePage}">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </a>
+                    </th:block>
+
+
+                    <p class="numbers">
+                    <span th:each="pageNumber : ${pageInfo.navigatepageNums}" th:if="${pageNumber <= pageInfo.total}">
+                      <a th:text="${pageNumber}" th:href="'#'" id="admin__member__orderList__numberBtn" th:attr="value=${pageNumber}" th:classappend="${pageNumber == pageInfo.pageNum ? 'bold large-text' : ''}"
+                         style="font-size: 16px; font-weight: bold;"></a>
+                    </span>
+                    </p>
+
+                    <th:block th:if="${pageInfo.hasNextPage}">
+                        <a th:href="'#'" id="admin__member__orderList__nextBtn" th:value="${pageInfo.nextPage}">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </a>
+                    </th:block>
+                </div>
+
+                <div class="bottom">
+                    <span>구매금액 합계</span>
+                    <span>150,000원</span>
+                </div>
+            </div>
+
+
+
+
+            <div class="admin__quantity__buttons">
+                <button>
+                    <a href="#">닫기</a>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+</body>
+
+</html>
