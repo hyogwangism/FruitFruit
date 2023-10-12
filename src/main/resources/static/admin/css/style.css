@@ -1631,7 +1631,7 @@
   border: 1px solid #333;
   cursor: pointer;
 }
-#admin_banner .inner .box02 .status .buttons button:first-child,
+
 #admin_banner .inner .box02 .search .buttons button:first-child {
   background-color: #333;
   color: #fff;

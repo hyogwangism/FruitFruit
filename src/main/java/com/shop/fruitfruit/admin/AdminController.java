@@ -11,6 +11,7 @@ import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.apache.ibatis.annotations.Param;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -28,6 +29,8 @@ import java.util.*;
 @RequiredArgsConstructor
 @RequestMapping("admin")
 @Log4j2
+@Transactional
+@EnableScheduling
 public class AdminController {
 
     private final FireBaseService fireBaseService;
@@ -130,7 +133,6 @@ public class AdminController {
      */
     @RequestMapping("/insertProduct")
     @ResponseBody
-    @Transactional
     public int insertProduct(HttpSession session,
                              @RequestParam("productName") String productName,
                              @RequestParam("productSort") String productSort,
@@ -228,7 +230,6 @@ public class AdminController {
 
     @RequestMapping("/saleStop")
     @ResponseBody
-    @Transactional
     public HashMap<String, Object> saleStop(@RequestBody HashMap<String, Object> paramMap){
         log.info("업파람" + paramMap);
         adminService.updateSaleStatusDate(paramMap);
@@ -254,7 +255,6 @@ public class AdminController {
 
     @RequestMapping("/editProduct_ok")
     @ResponseBody
-    @Transactional
     public int editProduct_ok(HttpSession session,
                              @RequestParam("productId") int productId,
                              @RequestParam("productName") String productName,
@@ -305,7 +305,6 @@ public class AdminController {
 
     @RequestMapping("/selectedSaleStop")
     @ResponseBody
-//    @Transactional
     public int selectedSaleStop(@RequestBody HashMap<String, Object> paramMap){
         log.info("선택아이디" + paramMap);
         //상품ID별 판매중지 update
@@ -319,7 +318,6 @@ public class AdminController {
 
     @RequestMapping("/selectedDelete")
     @ResponseBody
-    @Transactional
     public int deleteImageFiles (@RequestBody HashMap<String, Object> paramMap){
         List<HashMap<String, Object>> paramList = adminService.selectSaleStopProducts(paramMap);
         fireBaseService.deleteImageFiles(paramList);
@@ -507,15 +505,94 @@ public class AdminController {
     public int selectedWithdrawal(@RequestBody HashMap<String, Object> paramMap) {
         log.info("회원아이디넘버: " + paramMap);
         adminService.withdrawalUser(paramMap);
+
+
+        log.info("유저아이디 길이 : "+paramMap.get("selectedUserIdNo").toString().length());
+        if(paramMap.get("selectedBannerId").toString().length()==1){
+            List<Integer> selectedUserIdNo = new ArrayList<>();
+            selectedUserIdNo.add(Integer.parseInt(paramMap.get("selectedUserIdNo").toString())); // 예시: 중지하려는 배너 ID를 리스트에 추가
+            paramMap.put("selectedUserIdNo", selectedUserIdNo);
+            log.info("유저아이디: " + paramMap);
+            adminService.withdrawalUser(paramMap);
+
+        } else {
+            log.info("유저아이디: " + paramMap);
+            adminService.withdrawalUser(paramMap);
+        }
         return 1;
     }
 
     @RequestMapping("banner")
-    public String goBanner() {
+    public String goBanner(HttpSession session, Model model, @RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "5") int pageSize ) {
+        if(session.getAttribute("admin_sessionId")!=null) {
+            HashMap<String, Object> paramMap = new HashMap<>();
+            paramMap.put("startPage", pageNum);
+            paramMap.put("pageSize", pageSize);
 
-        return "admin/banner";
+            List<HashMap<String, Object>> bannerList = adminService.adminSelectBanner(paramMap);
+            //전체 배너 리스트
+            log.info("배너전체리스트: " + bannerList);
+
+            PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(bannerList);
+            log.info("카운트 들어간 페이지인포: "+pageInfo);
+
+            model.addAttribute("pageInfo", pageInfo);
+
+            //배너 상태 카운트
+            HashMap<String, Object> countMap = adminService.countBanner();
+            log.info("배너 상태 갯수: " + countMap);
+            model.addAttribute("bannerCountMap", countMap);
+
+            return "/admin/banner";
+        } else {
+            model.addAttribute("adminErrorMessage", "관리자로 로그인 해주세요.");
+            return "/admin/index";
+        }
     }
 
+    /**
+     * 배너관리 Axios
+     */
+    @RequestMapping("bannerAxios")
+    @ResponseBody
+    public HashMap<String, Object> bannerAxios(@RequestBody HashMap<String, Object> paramMap) {
+        log.info("배너파람맵: " + paramMap);
+
+        List<HashMap<String, Object>> bannerList = adminService.adminSelectBanner(paramMap);
+        //전체 회원 리스트
+        log.info("배너전체리스트: " + bannerList);
+
+        PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(bannerList);
+        log.info("카운트 들어간 페이지인포: " + pageInfo);
+
+        //조건에따라 나오는 회원명수
+        int searchBannerCount = adminService.countSearchBanner(paramMap);
+        log.info("검색갯수: " + searchBannerCount);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("pageInfo", pageInfo);
+        resultMap.put("searchBannerCount", searchBannerCount);
+
+        return resultMap;
+    }
+
+    /**
+     * 배너관리 Axios
+     */
+    @RequestMapping("showBannerImg")
+    @ResponseBody
+    public HashMap<String, Object> showBannerImg(@RequestBody HashMap<String, Object> paramMap) {
+        log.info("배너아이디: " + paramMap);
+
+        HashMap<String, Object> selectBannerMap = adminService.adminSelectBannerByBannerId(paramMap);
+        //전체 회원 리스트
+        log.info("선택배너맵: " + selectBannerMap);
+
+        return selectBannerMap;
+    }
+
+    /**
+     * 배너 작성
+     */
     @RequestMapping("banner/write")
     public String goBannerWrite(){
         return "admin/banner02";
@@ -523,7 +600,6 @@ public class AdminController {
 
     @RequestMapping("/insertBanner")
     @ResponseBody
-    @Transactional
     public int insertProduct(HttpSession session,
                              @RequestParam("bannerTitle") String bannerTitle,
                              @RequestParam("bannerStartDate") String bannerStartDate,
@@ -537,10 +613,12 @@ public class AdminController {
         if (session.getAttribute("admin_sessionId") != null) {
             HashMap<String, Object> paramMap;
             //Firebase에 이미지 저장
-            paramMap = fireBaseService.uploadFiles(bannerImg);
+            paramMap = fireBaseService.bannerImg(bannerImg);
             paramMap.put("bannerTitle", bannerTitle);
             paramMap.put("bannerStartDate", bannerStartDate);
             paramMap.put("bannerEndDate", bannerEndDate);
+            paramMap.put("bannerHowLong", bannerHowLong);
+            paramMap.put("bannerShowTime", bannerShowTime);
 
             //banner 테이블에 삽입
             adminService.insertBanner(paramMap);
@@ -551,6 +629,88 @@ public class AdminController {
     }
 
 
+    /**
+     * 배너 수정
+     */
+    @RequestMapping("/banner/edit")
+    public String goBannerEdit(HttpSession session, Model model, @Param(value = "bannerId") int bannerId) {
+        log.info("배너아이디: " + bannerId);
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("BANNER_ID", bannerId);
+
+        //세션 아이디가 없을 때 = 로그인 하지 않았을 때
+        if (session.getAttribute("admin_sessionId") != null) {
+
+            //배너Id 기준으로 상품 정보 select
+            HashMap<String, Object> selectBannerMap = adminService.adminSelectBannerByBannerId(paramMap);
+            log.info("배너아이디기준 배너정보:" + selectBannerMap);
+
+            model.addAttribute("selectBannerMap", selectBannerMap);
+
+            return "admin/bannerEdit";
+
+            //로그인이 되었을 때
+        } else {
+            model.addAttribute("adminErrorMessage", "관리자로 로그인 해주세요.");
+            return "/admin/index";
+        }
+
+    }
+
+    @RequestMapping("/editBanner")
+    @ResponseBody
+    public int editBanner(HttpSession session,
+                             @RequestParam("BANNER_ID") String BANNER_ID,
+                             @RequestParam("bannerTitle") String bannerTitle,
+                             @RequestParam("bannerStartDate") String bannerStartDate,
+                             @RequestParam("bannerEndDate") String bannerEndDate,
+                             @RequestParam("bannerHowLong") String bannerHowLong,
+                             @RequestParam("bannerShowTime") String bannerShowTime,
+                             @RequestParam(value = "bannerEditImg", required = false) MultipartFile bannerEditImg
+    ) throws IOException {
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("BANNER_ID", BANNER_ID);
+        paramMap.put("bannerTitle", bannerTitle);
+        paramMap.put("bannerStartDate", bannerStartDate);
+        paramMap.put("bannerEndDate", bannerEndDate);
+        paramMap.put("bannerHowLong", bannerHowLong);
+        paramMap.put("bannerShowTime", bannerShowTime);
+        paramMap.put("bannerEditImg", bannerEditImg);
+
+        if(bannerEditImg != null) {
+            log.info("배너 값 확인(이미지변경) == " + "타이틀 : " + bannerTitle + ", 시작일 : " + bannerStartDate + ", 종료일 : " + bannerEndDate + ", 기간 : "
+                    + bannerHowLong + ", 보여지는시간 : " + bannerShowTime + ", 이미지 : " + bannerEditImg);
+            paramMap.putAll(fireBaseService.bannerImg(bannerEditImg));
+            adminService.editBannerChangeImg(paramMap);
+
+        } else{
+            log.info("배너 값 확인(이미지그대로) == " + "타이틀 : " + bannerTitle + ", 시작일 : " + bannerStartDate + ", 종료일 : " + bannerEndDate + ", 기간 : "
+                    + bannerHowLong + ", 보여지는시간 : " + bannerShowTime + ", 이미지 : " + bannerEditImg);
+            adminService.editBannerNONChangeImg(paramMap);
+        }
+        return 1;
+    }
+
+    @RequestMapping("selectedBannerStop")
+    @ResponseBody
+    public int selectedBannerStop(@RequestBody HashMap<String, Object> paramMap){
+//        log.info("게시중지 배너아이디 확인 : " + paramMap);
+//        adminService.selectedBannerStop(paramMap);
+
+        log.info("배너아이디 길이 : "+paramMap.get("selectedBannerId").toString().length());
+        if(paramMap.get("selectedBannerId").toString().length()==1){
+            List<Integer> selectedBannerId = new ArrayList<>();
+            selectedBannerId.add(Integer.parseInt(paramMap.get("selectedBannerId").toString())); // 예시: 중지하려는 배너 ID를 리스트에 추가
+            paramMap.put("selectedBannerId", selectedBannerId);
+            log.info("배너아이디: " + paramMap);
+            adminService.selectedBannerStop(paramMap);
+
+        } else {
+            log.info("배너아이디: " + paramMap);
+            adminService.selectedBannerStop(paramMap);
+        }
+        return 1;
+    }
 
 //    /**
 //     * 멤버 주문내역보기, 쓰기

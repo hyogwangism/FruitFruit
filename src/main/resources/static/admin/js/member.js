@@ -253,9 +253,36 @@ $(document).ready(function() {
                 headers: {'Content-Type': 'application/json'}
             }).then(res => {
                 if (res.data == 1) {
-                    location.href = "member";
+                    location.href = "/admin/member";
                 }
             });
         }
     });
+});
+
+
+$(document).ready(function() {
+    let selectedWithdrawalValues;
+    $(document).on('click', '.withdrawal_btn', function (){
+        const withdrawalConfirmed = confirm("선택한 회원을 탈퇴 시키겠습니까?");
+        if (withdrawalConfirmed) {
+            selectedWithdrawalValues = $(this).closest('tr').find('.member__USER_ID_NO').val()
+        }
+
+        console.log("셀중지벨륭s:" + selectedWithdrawalValues);
+
+        axios({
+            method: "post",
+            url: "/admin/selectedWithdrawal",
+            data: {
+                "selectedBannerId" : selectedWithdrawalValues
+            },
+            dataType: "json",
+            headers: {'Content-Type': 'application/json'}
+        }).then(res => {
+            if (res.data == 1) {
+                location.href = "/admin/member";
+            }
+        });
+    })
 });

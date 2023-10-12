@@ -41,11 +41,21 @@ public class MainController {
         paramMap.put("pageSize", pageSize);
 
         if (session.getAttribute("sessionId") == null) {
+            paramMap.put("bannerStatus", "게시중");
+            List<HashMap<String, Object>> bannerList = adminService.adminSelectBanner(paramMap);
+            model.addAttribute("bannerList", bannerList);
+            log.info("배너리스트 : " + bannerList);
+
+
             List<HashMap<String, Object>> productList = mainService.selectAllProductInfo(paramMap);
             PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(productList);
 
             model.addAttribute("pageInfo", pageInfo);
         } else if (session.getAttribute("sessionId") != null) {
+            paramMap.put("bannerStatus", "게시중");
+            List<HashMap<String, Object>> bannerList = adminService.adminSelectBanner(paramMap);
+            log.info("배너리스트 : " + bannerList);
+            model.addAttribute("bannerList", bannerList);
 
             paramMap.put("id", session.getAttribute("sessionId").toString());
 //            paramMap.put("cartData", cartArry);

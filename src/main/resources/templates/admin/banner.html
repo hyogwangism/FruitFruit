@@ -42,37 +42,38 @@
                 <div class="status">
                     <span>게시상태</span>
                     <div class="buttons">
-                        <button>게시중</button>
-                        <button>만료</button>
-                        <button>중지</button>
+                        <button value="전체" class="banner__status">전체</button>
+                        <button value="게시중" class="banner__status">게시중</button>
+                        <button value="만료" class="banner__status">만료</button>
+                        <button value="중지" class="banner__status">중지</button>
                     </div>
                 </div>
 
                 <div class="search">
                     <span>검색</span>
-                    <input type="text" placeholder="배너 제목 검색">
+                    <input type="text" class="banner__search__field" placeholder="배너 제목 검색">
                     <div class="buttons">
-                        <button>검색</button>
+                        <button class="banner__search__btn">검색</button>
                     </div>
                 </div>
             </div>
 
             <div class="box03">
                 <div class="left">
-                    <span class="margin">검색결과 <span class="bold">5</span>건</span>
-                    <button>선택 게시중지</button>
-                    <button>선택삭제</button>
+                    <span class="margin">검색결과 <span class="bold" id="search__banner__count" th:text="${bannerCountMap.TOTAL_BANNER_COUNT}">5</span>건</span>
+                    <button class="selected__banner__stop">선택 게시중지</button>
                 </div>
 
                 <div class="right">
                     <select name="howmany">
-                        <option value="10개씩 보기">10개씩 보기</option>
-                        <option value="30개씩 보기">30개씩 보기</option>
-                        <option value="50개씩 보기">50개씩 보기</option>
-                        <option value="100개씩 보기">100개씩 보기</option>
+                        <option value="5">5개씩 보기</option>
+                        <option value="10">10개씩 보기</option>
+                        <option value="30">30개씩 보기</option>
+                        <option value="50">50개씩 보기</option>
+                        <option value="100">100개씩 보기</option>
                     </select>
 
-                    <button>
+                    <button id="excelDownloadBtn">
                         <span class="material-symbols-outlined">description</span>
                         <span>엑셀 다운로드</span>
                     </button>
@@ -80,161 +81,73 @@
             </div>
 
             <div class="box04">
-                <table class="product-table">
+                <table class="product-table" id="banner_table">
                     <caption class="hidden">배너관리</caption>
                     <thead>
                         <tr>
                             <th scope="col">
-                                <input type="checkbox" checked>
+                                <input type="checkbox" id="allCheck">
                             </th>
                             <th scope="col">번호</th>
                             <th scope="col">상태</th>
                             <th scope="col">게시일</th>
                             <th scope="col">게시일수</th>
                             <th scope="col">배너제목</th>
-                            <th scope="col">조회수</th>
                             <th scope="col">이미지 노출시간</th>
                             <th scope="col">배너이미지</th>
                             <th scope="col">배너수정</th>
                             <th scope="col">게시중지</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
+                    <tbody id="bannerAxiosBody">
+                        <tr th:each="bannerList : ${pageInfo.list}">
                             <td>
-                                <input type="checkbox">
+                                <input type="checkbox" name="chkStatus" id="banner_id" th:value="${bannerList.BANNER_ID}">
                             </td>
-                            <td>05</td>
-                            <td>게시중</td>
-                            <td>2023. 03. 01 ~ 2023. 03. 05</td>
-                            <td>5</td>
-                            <td>여름아 부탁해 배너</td>
-                            <td>2567</td>
-                            <td>3초</td>
+                            <td th:text="${bannerList.BANNER_ID}">05</td>
+                            <td th:text="${bannerList.BANNER_STATUS}">게시중</td>
+                            <td th:text="${bannerList.BANNER_START_DATE} + ' ~ ' + ${bannerList.BANNER_END_DATE}">2023. 03. 01 ~ 2023. 03. 05</td>
+                            <td th:text="${bannerList.BANNER_HOWLONG}">5</td>
+                            <td th:text="${bannerList.BANNER_TITLE}">여름아 부탁해 배너</td>
+                            <td th:text="${bannerList.BANNER_SHOWTIME}+'초'">3초</td>
                             <td>
-                                <button>보기</button>
-                            </td>
-                            <td>
-                                <button>수정</button>
+                                <button class="show__banner__img">보기</button>
                             </td>
                             <td>
-                                <button>중지</button>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <input type="checkbox">
-                            </td>
-                            <td>04</td>
-                            <td>만료</td>
-                            <td>상시</td>
-                            <td>상시</td>
-                            <td>신규회원 15% 할인</td>
-                            <td>589</td>
-                            <td>3초</td>
-                            <td>
-                                <button>보기</button>
+                                <button class="go__edit__page">수정</button>
                             </td>
                             <td>
-                                <button>수정</button>
-                            </td>
-                            <td>
-                                -
+                                <button th:if="${bannerList.BANNER_STATUS}=='게시중'" class="banner__stop">중지</button>
+                                <span th:if="${bannerList.BANNER_STATUS}=='중지'" th:text="${bannerList.BANNER_UPDATED_AT}"></span>
+                                <span th:if="${bannerList.BANNER_STATUS}=='만료'">-</span>
                             </td>
                         </tr>
 
-                        <tr>
-                            <td>
-                                <input type="checkbox">
-                            </td>
-                            <td>03</td>
-                            <td>만료</td>
-                            <td>상시</td>
-                            <td>상시</td>
-                            <td>친구와 함께 할인</td>
-                            <td>26</td>
-                            <td>3초</td>
-                            <td>
-                                <button>보기</button>
-                            </td>
-                            <td>
-                                <button>수정</button>
-                            </td>
-                            <td>
-                                -
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <input type="checkbox">
-                            </td>
-                            <td>02</td>
-                            <td>게시중</td>
-                            <td>2023. 02. 02 ~ 2023. 02. 08</td>
-                            <td>7</td>
-                            <td>가을 제철 과일 총출동</td>
-                            <td>1589</td>
-                            <td>3초</td>
-                            <td>
-                                <button>보기</button>
-                            </td>
-                            <td>
-                                <button>수정</button>
-                            </td>
-                            <td>
-                                <button>중지</button>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <input type="checkbox">
-                            </td>
-                            <td>01</td>
-                            <td>게시중</td>
-                            <td>2023. 01. 11 ~ 2023. 01. 25</td>
-                            <td>13</td>
-                            <td>과일의 계절</td>
-                            <td>7895</td>
-                            <td>5초</td>
-                            <td>
-                                <button>보기</button>
-                            </td>
-                            <td>
-                                <button>수정</button>
-                            </td>
-                            <td>
-                                2023. 01. 24
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
 
             <div class="pagination">
-                <a href="#" class="prev">
-                    <span class="material-symbols-outlined">
-                        chevron_left
-                    </span>
-                </a>
+
+                <th:block th:if="${pageInfo.hasPreviousPage}">
+                    <a th:href="'#'" id="admin__banner__prevBtn" th:value="${pageInfo.prePage}">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </a>
+                </th:block>
+
 
                 <p class="numbers">
-                    <a href="#">1</a>
-                    <a href="#">2</a>
-                    <a href="#">3</a>
-                    <a href="#">
-                        <span class="bold">4</span>
-                    </a>
-                    <a href="#">5</a>
+                    <span th:each="pageNumber : ${pageInfo.navigatepageNums}" th:if="${pageNumber <= pageInfo.total}">
+                      <a th:text="${pageNumber}" th:href="'#'" id="admin__banner__numberBtn" th:attr="value=${pageNumber}" th:classappend="${pageNumber == pageInfo.pageNum ? 'bold large-text' : ''}"
+                         style="font-size: 16px; font-weight: bold;"></a>
+                    </span>
                 </p>
 
-                <a href="#" class="next">
-                    <span class="material-symbols-outlined">
-                        chevron_right
-                    </span>
-                </a>
+                <th:block th:if="${pageInfo.hasNextPage}">
+                    <a th:href="'#'" id="admin__banner__nextBtn" th:value="${pageInfo.nextPage}">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </a>
+                </th:block>
             </div>
 
             <!-- 어드민 배너관리 배너이미지보기 모달창 -->
@@ -242,16 +155,16 @@
                 <div class="admin__banner__inner">
 
                     <div class="top">
-                        <span>[여름아부탁해] 이미지</span>
+                        <span class="modal__banner__title">[여름아부탁해] 이미지</span>
                     </div>
 
                     <div class="middle">
-                        <img src="./img/배너이미지.png" alt="배너이미지">
+                        <img class="modal__banner__img" style="width: 100%; height: 80%; " src="./img/배너이미지.png" alt="배너이미지">
                     </div>
 
 
                     <div class="bottom">
-                        <button>닫기</button>
+                        <button class="img__modal__close__btn">닫기</button>
                     </div>
                 </div>
 

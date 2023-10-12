@@ -260,7 +260,7 @@
         </where>
     </select>
 
-<!--    회원목록 select-->
+    <!--    회원목록 select-->
 
     <select id="adminSelectMember" resultType="HashMap">
         SELECT
@@ -370,8 +370,136 @@
     <!--    배너이미지 삽입-->
     <insert id="insertBanner">
         INSERT INTO BANNER
-        VALUES (NULL, #{bannerTitle}, #{fireBaseImageUrl}, #{fileDBName} #{bannerStartDate}, #{bannerEndDate})
+        VALUES (NULL, #{bannerTitle}, #{fireBaseImageUrl}, #{fileDBName}, #{bannerShowTime}, #{bannerStartDate}, #{bannerEndDate}, #{bannerHowLong}, NOW(), NULL, '게시중')
     </insert>
+
+    <!--    배너목록 select-->
+    <select id="adminSelectBanner" resultType="HashMap">
+        SELECT *
+        FROM BANNER
+        <where>
+            <!-- 배너제목 검색 -->
+            <if test="searchField != null and searchField != ''">
+                AND BANNER_TITLE LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+            <!-- 게시상태 검색 -->
+            <if test="bannerStatus != null">
+                <if test="bannerStatus == '전체'">
+                    <!-- 아무 조건 없이 전체 리뷰 검색 -->
+                </if>
+                <if test="bannerStatus == '게시중'">
+                    AND BANNER_STATUS = '게시중'
+                </if>
+                <if test="bannerStatus == '만료'">
+                    AND BANNER_STATUS = '만료'
+                </if>
+                <if test="bannerStatus == '중지'">
+                    AND BANNER_STATUS = '중지'
+                </if>
+            </if>
+        </where>
+        ORDER BY BANNER_ID DESC
+    </select>
+
+    <!--    배너상태 갯수-->
+    <select id="countBanner" resultType="HashMap">
+        SELECT
+            COUNT(*) AS TOTAL_BANNER_COUNT,
+            SUM(CASE WHEN BANNER_STATUS = '게시중' THEN 1 ELSE 0 END) AS ACTIVATING_BANNER,
+            SUM(CASE WHEN BANNER_STATUS = '만료' THEN 1 ELSE 0 END) AS NON_ACTIVATING_BANNER,
+            SUM(CASE WHEN BANNER_STATUS = '중지' THEN 1 ELSE 0 END) AS STOP_BANNER
+        FROM BANNER
+    </select>
+
+    <!--    배너목록 검색결과 갯수-->
+    <select id="countSearchBanner" resultType="int">
+        SELECT COUNT(*)
+        FROM BANNER
+        <where>
+            <!-- 배너제목 검색 -->
+            <if test="searchField != null and searchField != ''">
+                AND BANNER_TITLE LIKE CONCAT('%', #{searchField}, '%')
+            </if>
+
+            <!-- 게시상태 검색 -->
+            <if test="bannerStatus != null">
+                <if test="bannerStatus == '전체'">
+                    <!-- 아무 조건 없이 전체 리뷰 검색 -->
+                </if>
+                <if test="bannerStatus == '게시중'">
+                    AND BANNER_STATUS = '게시중'
+                </if>
+                <if test="bannerStatus == '만료'">
+                    AND BANNER_STATUS = '만료'
+                </if>
+                <if test="bannerStatus == '중지'">
+                    AND BANNER_STATUS = '중지'
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!--    배너아이디 조건 select-->
+    <select id="adminSelectBannerByBannerId" resultType="HashMap">
+        SELECT *
+        FROM BANNER
+        WHERE BANNER_ID=#{BANNER_ID}
+    </select>
+
+    <!--    배너이미지 변경후 edit-->
+    <update id="editBannerChangeImg">
+        UPDATE BANNER
+        SET
+            BANNER_TITLE=#{bannerTitle}
+          , BANNER_IMG_URL=#{fireBaseImageUrl}
+          , BANNER_IMAGE_PATH=#{fileDBName}
+          , BANNER_SHOWTIME=#{bannerShowTime}
+          , BANNER_START_DATE=#{bannerStartDate}
+          , BANNER_END_DATE=#{bannerEndDate}
+          , BANNER_HOWLONG=#{bannerHowLong}
+          , BANNER_UPDATED_AT = NOW()
+        WHERE BANNER_ID=#{BANNER_ID}
+    </update>
+
+    <!--    배너이미지 그대로 edit-->
+    <update id="editBannerNONChangeImg">
+        UPDATE BANNER
+        SET
+            BANNER_TITLE=#{bannerTitle}
+          , BANNER_SHOWTIME=#{bannerShowTime}
+          , BANNER_START_DATE=#{bannerStartDate}
+          , BANNER_END_DATE=#{bannerEndDate}
+          , BANNER_HOWLONG=#{bannerHowLong}
+          , BANNER_UPDATED_AT = NOW()
+        WHERE BANNER_ID=#{BANNER_ID}
+    </update>
+
+    <!--    배너 중지-->
+    <update id="selectedBannerStop">
+        UPDATE BANNER
+        SET
+        BANNER_STATUS = '중지'
+        , BANNER_UPDATED_AT = NOW()
+        WHERE
+        BANNER_ID IN
+        <foreach collection="selectedBannerId" item="BANNER_ID" open="(" close=")" separator=",">
+            #{BANNER_ID}
+        </foreach>
+    </update>
+
+
+    <select id="findExpiredBannersAsMap" resultType="java.util.HashMap">
+        SELECT BANNER_ID AS bannerId, BANNER_TITLE AS bannerTitle, BANNER_END_DATE AS bannerEndDate
+        FROM BANNER
+        WHERE BANNER_END_DATE &lt;= #{today}
+    </select>
+
+    <update id="updateBannerStatus" parameterType="java.util.HashMap">
+        UPDATE BANNER
+        SET BANNER_STATUS = #{status}
+        WHERE BANNER_ID = #{bannerId}
+    </update>
 </mapper>
 
 

@@ -57,7 +57,7 @@ public class FireBaseService {
             int month = cal.get(Calendar.MONTH) + 1;
             int date = cal.get(Calendar.DATE);
 
-            String homedir = year + "-" + month + "-" + date + "- 배너이미지";
+            String homedir = year + "-" + month + "-" + date + "-배너이미지";
             String fileName = "photo" + System.currentTimeMillis() + "_" + imgFiles.getOriginalFilename();
             String fileDBName = homedir + "/" + fileName;
             log.info(homedir + ", " + fileName + ", " + fileDBName + ", " + firebaseBucket);

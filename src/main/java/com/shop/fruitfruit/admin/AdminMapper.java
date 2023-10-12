@@ -2,6 +2,7 @@ package com.shop.fruitfruit.admin;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
@@ -84,4 +85,22 @@ public interface AdminMapper {
     void withdrawalUser(HashMap<String, Object> userIdNoMap);
 
     void insertBanner(HashMap<String, Object> paramMap);
+
+    List<HashMap<String, Object>> adminSelectBanner(HashMap<String, Object> paramMap);
+
+    HashMap<String, Object> countBanner();
+
+    int countSearchBanner(HashMap<String, Object> paramMap);
+
+    HashMap<String, Object> adminSelectBannerByBannerId(HashMap<String, Object> paramMap);
+
+    void editBannerChangeImg(HashMap<String, Object> paramMap);
+
+    void editBannerNONChangeImg(HashMap<String, Object> paramMap);
+
+    void selectedBannerStop(HashMap<String, Object> paramMap);
+
+    List<HashMap<String, Object>> findExpiredBannersAsMap(LocalDate today);
+
+    void updateBannerStatus(HashMap<String, Object> bannerMap);
 }

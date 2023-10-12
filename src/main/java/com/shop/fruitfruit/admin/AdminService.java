@@ -6,9 +6,12 @@ import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.Map;
 @Transactional
 @RequiredArgsConstructor
 @Log4j2
+@EnableScheduling
 public class AdminService implements AdminMapper {
 
     private final AdminMapper adminMapper;
@@ -176,6 +180,55 @@ public class AdminService implements AdminMapper {
         adminMapper.insertBanner(paramMap);
     }
 
+    @Override
+    public List<HashMap<String, Object>> adminSelectBanner(HashMap<String, Object> paramMap) {
+        return adminMapper.adminSelectBanner(paramMap);
+    }
+
+    @Override
+    public HashMap<String, Object> countBanner() {
+        return adminMapper.countBanner();
+    }
+
+    @Override
+    public int countSearchBanner(HashMap<String, Object> paramMap) {
+        return adminMapper.countSearchBanner(paramMap);
+    }
+
+    @Override
+    public HashMap<String, Object> adminSelectBannerByBannerId(HashMap<String, Object> paramMap) {
+        return adminMapper.adminSelectBannerByBannerId(paramMap);
+    }
+
+    @Override
+    public void editBannerChangeImg(HashMap<String, Object> paramMap) {
+        adminMapper.editBannerChangeImg(paramMap);
+    }
+
+    @Override
+    public void editBannerNONChangeImg(HashMap<String, Object> paramMap) {
+        adminMapper.editBannerNONChangeImg(paramMap);
+    }
+
+    @Override
+    public void selectedBannerStop(HashMap<String, Object> paramMap) {
+        adminMapper.selectedBannerStop(paramMap);
+    }
+
+    @Override
+    public List<HashMap<String, Object>> findExpiredBannersAsMap(LocalDate today) {
+        return adminMapper.findExpiredBannersAsMap(today);
+    }
+
+    @Override
+    public void updateBannerStatus(HashMap<String, Object> bannerMap) {
+        adminMapper.updateBannerStatus(bannerMap);
+    }
+
+    /**
+     *
+     * 회원 주문목록
+     */
     public PageInfo<HashMap<String, Object>> userOrderMethod(HashMap<String, Object> paramMap){
         PageHelper.startPage(Integer.parseInt(paramMap.get("startPage").toString()), Integer.parseInt(paramMap.get("pageSize").toString()));
 
@@ -199,6 +252,25 @@ public class AdminService implements AdminMapper {
 
         return pageInfo;
 
+    }
+
+
+    /**
+     * 배너 게시 만료
+     */
+    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
+    public void checkBannerExpiry() {
+        LocalDate today = LocalDate.now();
+
+        // 배너 테이블에서 만료일이 오늘보다 이전인 배너를 조회
+        List<HashMap<String, Object>> expiredBanners = adminMapper.findExpiredBannersAsMap(today);
+        log.info("만료배너 : " + expiredBanners);
+
+        // 조회된 배너를 게시중지 상태로 변경
+        for (HashMap<String, Object> bannerMap : expiredBanners) {
+            bannerMap.put("status", "만료");
+            adminMapper.updateBannerStatus(bannerMap);
+        }
     }
 
 }

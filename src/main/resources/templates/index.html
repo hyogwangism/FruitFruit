@@ -17,23 +17,8 @@
     <div class="promotion">
         <div class="swiper">
             <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                    <img src="/user/img/1.png" alt="1번 슬라이드" />
-                </div>
-                <div class="swiper-slide">
-                    <img src="/user/img/2.png" alt="2번 슬라이드" />
-                </div>
-                <div class="swiper-slide">
-                    <img src="/user/img/3.png" alt="3번 슬라이드" />
-                </div>
-                <div class="swiper-slide">
-                    <img src="/user/img/4.png" alt="4번 슬라이드" />
-                </div>
-                <div class="swiper-slide">
-                    <img src="/user/img/5.png" alt="5번 슬라이드" />
-                </div>
-                <div class="swiper-slide">
-                    <img src="/user/img/6.png" alt="6번 슬라이드" />
+                <div class="swiper-slide" th:each="bList : ${bannerList}" th:data-autoplay="${bList.BANNER_SHOWTIME}">
+                    <img th:src="${bList.BANNER_IMG_URL}" alt="배너 슬라이드" style="width: 1525px; height: 517px;" />
                 </div>
             </div>
         </div>
