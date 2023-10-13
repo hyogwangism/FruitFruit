@@ -24,6 +24,9 @@ public class FireBaseService {
     //    @Value("${firebase.bucket}")
     private String firebaseBucket = "fruit-281de.appspot.com";
 
+    /**
+     * 상품이미지 파이어베이스 저장
+     */
     public HashMap<String, Object> uploadFiles(MultipartFile imgFiles) throws IOException {
 
         if (!imgFiles.isEmpty()) {
@@ -49,6 +52,9 @@ public class FireBaseService {
         return null;
     }
 
+    /**
+     * 배너이미지 파이어베이스 저장
+     */
     public HashMap<String, Object> bannerImg(MultipartFile imgFiles) throws IOException {
 
         if (!imgFiles.isEmpty()) {
@@ -74,6 +80,9 @@ public class FireBaseService {
         return null;
     }
 
+    /**
+     *  파이어베이스 이미지 삭제
+     */
     public void deleteImageFiles(List<HashMap<String, Object>> paramList) {
         for (HashMap<String, Object> paramMap : paramList) {
             String filePath = paramMap.get("file_path").toString(); // 파일 경로 키로 변경

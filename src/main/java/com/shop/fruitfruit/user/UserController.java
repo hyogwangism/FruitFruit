@@ -35,8 +35,11 @@ public class UserController {
     private final AdminService adminService;
     private final MainService mainService;
 
-    private final static String sessionId = "sessionId";
-
+    /**
+     * @author 황호준
+     *
+     * 페이지 이동(회원가입, 로그인, 비밀번호 찾기,  비밀번호 변경)
+     */
 
     @RequestMapping("join")
     public String Join(){
@@ -59,6 +62,7 @@ public class UserController {
         return "user/changePw";
     }
 
+
     /**
      * @author 황호준
      *
@@ -67,6 +71,7 @@ public class UserController {
      * @param {string} 테이블 이름 user
      * {
      *   HashMap<String, Object> paramMap => Input에 입력된 회원정보 저장
+     *   (아이디, 비번, 이름, 연락처, 선택약관 동의여부)
      *   JoinMethod =>
      *    1. 사용자 입력비번 암호화
      *    2. 암호화 비번 HashMap에 추가
@@ -87,7 +92,8 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 회원가입시 확인페이지
+     *
+     * 회원가입 후 확인페이지
      */
     @RequestMapping("joinConfirm")
     public String JoinConfirm(Model model, @RequestParam(value = "userId") String userEmailId){
@@ -98,32 +104,52 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 아이디 중복체크
+     *
+     * 아이디 중복체크 비동기
+     *
+     * @param {string} 테이블 이름 user
+     * @param
+                         data: {
+                                 "id" 유저 아이디
+                                 },
+     *
+     * @returns 성공시 1, 실패시 -1반환
      */
     @RequestMapping("/idChk")
     @ResponseBody
     public int idChk(@RequestBody HashMap<String, Object> paramMap) throws Exception {
-        int re = 1;
         String id = paramMap.get("id").toString();
         // userService.loginUserChk(id)에서 반환된 결과를 먼저 검증
         HashMap<String, Object> userMap = userService.loginUserChk(id);
 
         if (userMap != null && id.equals(userMap.get("USER_EMAIL").toString())) {
-            return re;
+            return 1;
         } else {
-            re = -1;
-            return re;
+            return -1;
         }
     }
 
+
     /**
      * @author 황호준
-     * 닉네임 중복체크
+     *
+     * 닉네임(이름) 중복체크 비동기
+     *
+     * @param {string} 테이블 이름 user
+     * @param
+                       data: {
+                              "id" : $id, 아이디
+                              "name": $name 이름
+                            },
+     *
+     * @returns 성공시 1, 실패시 -1반환
      */
     @RequestMapping("/nameChk")
     @ResponseBody
     public int nameChk(Model model, @RequestBody HashMap<String, Object> paramMap) throws Exception {
         String name = paramMap.get("name").toString();
+
+        //이름 기준 회원정보 select
         HashMap<String, Object> userMap = userService.joinNameChk(name);
 
         if (userMap != null && name.equals(userMap.get("USER_NAME").toString())) {
@@ -135,21 +161,32 @@ public class UserController {
 
     /**
      * @author 황호준
+     *
      * DB에 저장되어진 회원 데이터와 비교해서 로그인
+     *
+     * @param {string} 테이블 이름 user
+     * @param
+            id - input에 입력한 회원 id
+            pw - input에 입력한 회원 비번
+     *
+     * @returns 성공시 1, 실패시 -1반환
      */
     @RequestMapping("/login_ok")
-    public String Login_ok(Model model, HttpServletRequest request, HttpSession session ,@RequestParam("id") String id, @RequestParam("pw") String pw){
+    public String Login_ok(Model model, HttpSession session ,@RequestParam("id") String id, @RequestParam("pw") String pw){
+        //아이디가 존재하면 실행
         if(userService.loginUserChk(id)!=null){
+            //입력된 아이디와 비번(BCrypt)를 이용해 같은지 체크하고 로그인 완료 시킨 후 세션에 로그인 된 아이디 저장
             if(id.equals(userService.loginUserChk(id).get("USER_EMAIL").toString()) && BCrypt.checkpw(pw, userService.loginUserChk(id).get("USER_PWD").toString())){
-                session.setAttribute(sessionId, id);
+                session.setAttribute("sessionId", id);
                 return "redirect:/";
             } else {
                 model.addAttribute("errorMessage", "아이디 또는 비밀번호가 틀렸습니다.");
                 return "/user/login";
             }
 
+        //아이디가 존재하지 않을때 실행
         } else {
-            model.addAttribute("errorMessage", "아이디 또는 비밀번호가 틀렸습니다.");
+            model.addAttribute("errorMessage", "아이디가 존재하지 않습니다");
 
             return "/user/login";
         }
@@ -173,7 +210,10 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 이메일 아이디 검색
+     *
+     * @param {string} 테이블 이름 user
+     * 이메일 아이디로 비번변경 위한 회원정보 검색
+     *
      */
     @RequestMapping("/findPwd")
     @ResponseBody
@@ -190,7 +230,17 @@ public class UserController {
 
     /**
      * @author 황호준
+     *
      * 비밀번호 변경
+     *
+     * @param {string} 테이블 이름 user
+     * @param
+                data: {
+                        "newpw": $.trim($("#newpw").val()), 새 비밀번호 값
+                        "id": idValue 아이디
+                        },
+     *
+     * @returns 변경 성공시 1, 실패시(비번이 이전과 동일하면) -1반환
      */
     @RequestMapping("/changePwd")
     @ResponseBody
@@ -211,9 +261,14 @@ public class UserController {
         }
     }
 
+
     /**
      * @author 황호준
+     *
      * 상품 상세정보
+     *
+     * @param {string} 테이블 이름 PRODUCT
+     * @param productId 상품아이디
      */
 
     @RequestMapping("/productDetail")
@@ -236,6 +291,7 @@ public class UserController {
         } else {
             String sessionId = session.getAttribute("sessionId").toString();
             paramMap.put("id", sessionId);
+
             //상품Id 기준으로 상품정보 select
             HashMap<String, Object> productDetail = adminService.selectProductbyProductId(productId);
             log.info("프로덕트 아이디기준 상품정보:" + productDetail);
@@ -244,6 +300,7 @@ public class UserController {
             paramMap.putAll(userService.selectUser(paramMap));
             log.info("유저정보 담은 파람맵:"+paramMap);
             log.info("USER_ID_NO입니당:"+Integer.parseInt(paramMap.get("USER_ID_NO").toString()));
+
             //유저Id 기준으로 찜list select
             List<HashMap<String, Object>> likeList = mainService.selectProductLikeListByUserId(paramMap);
 
@@ -258,6 +315,19 @@ public class UserController {
 
     }
 
+    /**
+     * @author 황호준
+     *
+     * 최근 본 상품 세션 저장
+     *
+     * @param {string} 테이블 이름 PRODUCT
+     * @param
+                    data: {
+                          "productId": productIdVal
+                           },
+     *
+     * @returns 세션저장 성공시 '성공' 반환
+     */
     @RequestMapping("currentProductAxios")
     @ResponseBody
     public String currentProductAxios(@RequestBody HashMap<String, Object> paramMap,  HttpSession session) {
@@ -288,7 +358,17 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 상세페이지 찜하기 axios
+     *
+     * 상세페이지 찜하기 비동기
+     *
+     * @param {string} 테이블 이름 PRODUCT_LIKE
+     * @param
+                  data: {
+                         "productLikeId": productId, 상품아이디
+                         "USER_ID_NO" : userIdNo 유저아이디넘버
+                        },
+     *
+     * @returns 해당 상품이 좋아요가 되어있는지 boolean값 반환
      */
     @RequestMapping("/detailLikeAxios")
     @ResponseBody
@@ -350,7 +430,11 @@ public class UserController {
 
     /**
      * @author 황호준
+     *
      * 장바구니 페이지 이동
+     *
+     * @param 로컬스토리지를 통해 전달된 데이터를 세션에 저장한 데이터(장바구니 목록)
+     *
      */
     @RequestMapping("/cart")
     public String cart( Model model, HttpSession session) {
@@ -444,6 +528,7 @@ public class UserController {
 
         return "user/payment";
     }
+
 
     /**
      * @author 황호준

@@ -42,37 +42,38 @@ public class MainController {
 
         if (session.getAttribute("sessionId") == null) {
             paramMap.put("bannerStatus", "게시중");
+
+            //게시중인 배너 리스트 조회
             List<HashMap<String, Object>> bannerList = adminService.adminSelectBanner(paramMap);
             model.addAttribute("bannerList", bannerList);
             log.info("배너리스트 : " + bannerList);
 
-
+            //전체 상품리스트 조회
             List<HashMap<String, Object>> productList = mainService.selectAllProductInfo(paramMap);
             PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(productList);
 
             model.addAttribute("pageInfo", pageInfo);
+
         } else if (session.getAttribute("sessionId") != null) {
             paramMap.put("bannerStatus", "게시중");
+
+            //게시중인 배너 리스트 조회
             List<HashMap<String, Object>> bannerList = adminService.adminSelectBanner(paramMap);
             log.info("배너리스트 : " + bannerList);
             model.addAttribute("bannerList", bannerList);
 
             paramMap.put("id", session.getAttribute("sessionId").toString());
-//            paramMap.put("cartData", cartArry);
             paramMap.putAll(userService.selectUser(paramMap));
 
+            //전체 상품리스트 조회
             List<HashMap<String, Object>> productList = mainService.selectAllProductInfo(paramMap);
             log.info("메인 프리스트:" + productList);
 
             PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(productList);
 
-
-
+            //현재 로그인 된 유저의 찜목록 조회
             List<HashMap<String,Object>> likeList= mainService.selectProductLikeListByUserId(paramMap);
             log.info("라사이:"+ likeList.size());
-
-//            log.info("모델카트 배열: "+cartArryLength);
-//            model.addAttribute("cartArryLength", cartArryLength);
 
             model.addAttribute("pageInfo", pageInfo);
             model.addAttribute("likeCount", likeList.size());
@@ -85,7 +86,13 @@ public class MainController {
     }
 
 
-
+    /**
+     * @author 황호준
+     *
+     * 장바구니에 담긴 갯수 조회
+     *
+     * @returns 장바구니에 담긴 size
+     */
     @RequestMapping("mainCartAxios")
     @ResponseBody
     public String cartAxios(@RequestBody HashMap<String, Object> cartArryLength) {
@@ -94,6 +101,20 @@ public class MainController {
         return cartArryLength.get("cartArryLength").toString();
     }
 
+    /**
+     * @author 황호준
+     *
+     * 메인페이지 비동기 데이터
+     *
+     * @param      data: {
+     *                 "productSort": productSortVal, 상품분류
+     *                 "searchField": searchFieldVal, 검색어
+     *                 'productIdVal' : productIdVal, 상품 아이디
+     *                 "startPage": currentPage, 페이징 현재페이지
+     *                 "pageSize": pageSizeVal 페이징 한 페이지에 보여질 개수
+     *             }
+     * @returns 검색조건에 따른 상품리스트
+     */
     @RequestMapping("/mainPageAxios")
     @ResponseBody
     public HashMap<String,Object> productAxios(HttpSession session, @RequestBody HashMap<String, Object> paramMap) {
@@ -125,6 +146,16 @@ public class MainController {
         return null;
     }
 
+    /**
+     * @author 황호준
+     *
+     * 찜하기, 취소하기 비동기
+     *
+     * @param  data: {
+     *                 "productLikeId": productLikeId 상품아이디
+     *             },
+     * @returns 좋아요가 되어있는지 판단 => boolean
+     */
     @RequestMapping("/productLikeAxios")
     @ResponseBody
     @Transactional

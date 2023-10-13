@@ -50,6 +50,9 @@ $(document).on('click', 'a#productCart', function () {
     $('.cart__count').text(cartArryLength);
 });
 
+
+
+
 function addToCartOrIncreaseQuantity(cartArray, cartItem) {
     let found = false;
 

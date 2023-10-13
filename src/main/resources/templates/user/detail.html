@@ -21,12 +21,7 @@
                 </div>
 
                 <div class="right">
-                    <input type="hidden" id="productId" th:value="${productDetail.PRODUCT_ID}">
-                    <input type="hidden" class="detailDiscount" th:value="${productDetail.PRODUCT_DISCOUNT}">
-                    <input type="hidden" class="detailInitPrice" th:value="${productDetail.PRODUCT_PRICE}">
-                    <input type="hidden" class="detailDiscountPrice" th:value="${productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT }/ 100">
-                    <input type="hidden" class="detailDiscountedPrice" th:value="${productDetail.PRODUCT_PRICE - (productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100)}">
-                    <input type="hidden" id="userIdNo" th:value="${userIdNo}">
+
                     <div class="right__txt01">
                         <h2 class="detailName" th:text="${productDetail.PRODUCT_NAME}"></h2>
                         <span id="detailLike" class="material-icons" th:classappend="${isLiked} ? 'red__heart' : 'material-symbols-outlined'">
@@ -54,6 +49,16 @@
                         <!-- 장바구니 클릭 시 수량 증감버튼 -->
                         <div class="cart">
                             <div class="inner">
+                                <form action="orderNow" method="post">
+                                    <input type="hidden" id="productQuantity">
+                                    <input type="hidden" id="productId" th:value="${productDetail.PRODUCT_ID}">
+                                    <input type="hidden" id="productImg" th:value="${productDetail.IMAGE_URL}">
+                                    <input type="hidden" class="detailDiscount" th:value="${productDetail.PRODUCT_DISCOUNT}">
+                                    <input type="hidden" class="detailInitPrice" th:value="${productDetail.PRODUCT_PRICE}">
+                                    <input type="hidden" class="detailDiscountPrice" th:value="${productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT }/ 100">
+                                    <input type="hidden" class="detailDiscountedPrice" th:value="${productDetail.PRODUCT_PRICE - (productDetail.PRODUCT_PRICE * productDetail.PRODUCT_DISCOUNT / 100)}">
+                                    <input type="hidden" id="userIdNo" th:value="${userIdNo}">
+                                </form>
                                 <button class="quantityMinusBtn">-</button>
                                 <input type="text" id="quantityInput" value="1">
                                 <button class="quantityPlusBtn">+</button>
@@ -76,7 +81,7 @@
 
                     <div class="right__buttons">
                         <button class="detailCart">장바구니</button>
-                        <button>바로구매</button>
+                        <button class="order__now__btn">바로구매</button>
                     </div>
 
                     <!-- 장바구니에 담겼습니다. 모달 창 -->

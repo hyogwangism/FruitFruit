@@ -48,7 +48,7 @@ public class AdminController {
     /**
      * @author 황호준
      *
-     * 페이지 이동
+     * 페이지 이동(관리자 - 로그인 페이지, 메인(대쉬보드), 상품등록
      *
      */
 
@@ -130,6 +130,8 @@ public class AdminController {
      *   List<MultipartFile> imgFiles => 상품 메인이미지, 상세 이미지
      *   String productDescription => 상품 상세설명(HTML 형식)
      * }
+     *
+     * @returns 성공시 1, 실패시 -1 반환
      */
     @RequestMapping("/insertProduct")
     @ResponseBody
@@ -179,7 +181,11 @@ public class AdminController {
     }
 
     /**
-     * admin - 상품관리
+     * @author 황호준
+     *
+     * 상품 관리
+     *
+     * @param {string} 테이블 이름 Product
      */
 
     @RequestMapping("product")
@@ -215,6 +221,23 @@ public class AdminController {
         }
     }
 
+    /**
+     * @author 황호준
+     *
+     * 상품관리 비동기
+     *
+     * @param {string} 테이블 이름 Product
+     * @param
+             data: {
+                    "productSaleStatus": productSaleStatusVal, 판매상태(판매중, 중지, 품절)
+                    "productSort": productSortVal, 상품 분류
+                    "searchField": searchFieldVal, 검색어
+                    "startPage": currentPage, 현재페이지
+                    "pageSize": pageSizeVal 한 페이지에 보여질 개수
+                    },
+     *
+     * @returns 상품리스트
+     */
     @RequestMapping("/productAxios")
     @ResponseBody
     public PageInfo<HashMap<String, Object>> productAxios(@RequestBody HashMap<String, Object> paramMap){
@@ -228,16 +251,43 @@ public class AdminController {
         return pageInfo;
     }
 
+    /**
+     * @author 황호준
+     *
+     * 판매중지 비동기
+     *
+     * @param {string} 테이블 이름 Product
+     * @param
+                    data: {
+                             productId: productId, 상품아이디
+                             status: "판매중지"
+                            },
+     *
+     * @returns 중지된 상품 정보
+     */
     @RequestMapping("/saleStop")
     @ResponseBody
     public HashMap<String, Object> saleStop(@RequestBody HashMap<String, Object> paramMap){
         log.info("업파람" + paramMap);
+
+        // 선택상품 상품중지 후 상품중지일 update
         adminService.updateSaleStatusDate(paramMap);
+
+        // 중지된 선택상품 정보 select
         HashMap<String, Object> updatedSaleStatusDate = adminService.updatedSaleStatusDate(paramMap);
         log.info("업뎃셀력" + updatedSaleStatusDate);
         return updatedSaleStatusDate;
     }
 
+    /**
+     * @author 황호준
+     *
+     * 상품수정
+     *
+     * @param {string} 테이블 이름 Product, Image
+     * @param productId 상품아이디
+     *
+     */
     @RequestMapping("/editProduct")
     public String editProduct(HttpSession session, Model model, int productId) {
         if (session.getAttribute("admin_sessionId") != null) {
@@ -253,6 +303,24 @@ public class AdminController {
         }
     }
 
+    /**
+     * @author 황호준
+     *
+     * 상품수정 ok 비동기
+     *
+     * @param {string} 테이블 이름 Product
+     * @param
+             @RequestParam("productId") int productId, 상품아이디
+             @RequestParam("productName") String productName, 상품명
+             @RequestParam("productSort") String productSort, 상품분류
+             @RequestParam("productPrice") String productPrice, 상품가격
+             @RequestParam("productDiscount") String productDiscount, 상품할인율
+             @RequestParam("productInventory") String productInventory, 상품재고
+             @RequestParam("imgFiles") List<MultipartFile> imgFiles, 상품이미지
+             @RequestParam("productDescription") String productDescription 상품상세설명
+     *
+     * @returns 수정 성공시 1, 실패시 -1 반환
+     */
     @RequestMapping("/editProduct_ok")
     @ResponseBody
     public int editProduct_ok(HttpSession session,
@@ -302,7 +370,19 @@ public class AdminController {
         }
     }
 
-
+    /**
+     * @author 황호준
+     *
+     * 선택 상품 판매 중지 비동기
+     *
+     * @param {string} 테이블 이름 Product
+     * @param
+                  data: {
+                           "selectedProductId" : selectedStopValues 선택된 상품아이디 배열
+                          },
+      *
+      * @returns 성공시 1반환
+     */
     @RequestMapping("/selectedSaleStop")
     @ResponseBody
     public int selectedSaleStop(@RequestBody HashMap<String, Object> paramMap){
@@ -316,6 +396,19 @@ public class AdminController {
         return 1;
     }
 
+    /**
+     * @author 황호준
+     *
+     * 선택 상품 판매 삭제 비동기
+     *
+     * @param {string} 테이블 이름 Product
+     * @param
+    data: {
+    "selectedProductId" : selectedStopValues 선택된 상품아이디 배열
+    },
+     *
+     * @returns 성공시 1반환
+     */
     @RequestMapping("/selectedDelete")
     @ResponseBody
     public int deleteImageFiles (@RequestBody HashMap<String, Object> paramMap){
@@ -324,7 +417,13 @@ public class AdminController {
         return 1;
     }
 
-    //admin - 리뷰
+    /**
+     * @author 황호준
+     *
+     * 리뷰관리 페이지
+     *
+     * @param {string} 테이블 이름 review, review_reply
+     */
     @RequestMapping("/review")
     public String adminReview(HttpSession session, Model model, @RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "5") int pageSize) {
         if(session.getAttribute("admin_sessionId")!=null) {
@@ -338,7 +437,13 @@ public class AdminController {
             PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(reviewList);
             model.addAttribute("pageInfo", pageInfo);
 
-            //리뷰 답변 카운트
+            /**
+             * 리뷰 개수 카운트
+             * @returns
+             * TOTAL_REVIEW_COUNT 전체 리뷰수
+             * UNANSWERED_REVIEW_COUNT 답변 X 개수
+             * ANSWERED_REVIEW_COUNT 답변 O 개수
+             */
             HashMap<String, Object> countMap = adminService.countReview();
             log.info("리뷰갯수: " + countMap);
             model.addAttribute("reviewCountMap", countMap);
@@ -351,7 +456,23 @@ public class AdminController {
     }
 
     /**
-     * 리뷰관리 Axios
+     * @author 황호준
+     *
+     * 리뷰관리 페이지 비동기
+     *
+     * @param {string} 테이블 이름 review, review_reply
+     * @param
+     *             data: {
+                            'replyStatus' : replyStatusVal, 답변상태
+                            'searchType' : searchTypeVal, 검색종류
+                            "searchField": searchFieldVal, 검색어
+                            "startDate": startDateValue, 기간검색 시작일
+                            "endDate": endDateValue, 기간검색 종료일
+                            "startPage": currentPage, 현재페이지
+                            "pageSize": pageSizeVal 한 페이지에 보여질 개수
+                        },
+     *
+     * @returns Map(리뷰리스트, 검색결과 리스트 개수)
      */
     @RequestMapping("reviewAxios")
     @ResponseBody
@@ -374,7 +495,20 @@ public class AdminController {
     }
 
     /**
-     * 리뷰답글 보기, 쓰기
+     * @author 황호준
+     *
+     * 리뷰관리 답글 보기, 쓰기
+     *
+     * @param {string} 테이블 이름 review, review_reply
+     * @param
+                    data: {
+                             'REVIEW_ID': REVIEW_ID, 리뷰아이디
+                             'ORDER_ID': ORDER_ID, 주문아이디
+                             'startPage': currentPage, 현재페이지
+                             'pageSize': pageSizeVal 현제페이지에 보여줄 개수
+                             },
+     *
+     * @returns Map(해당 리뷰, 리뷰답변 정보)
      */
     @RequestMapping("reviewReplyView")
     @ResponseBody
@@ -389,7 +523,18 @@ public class AdminController {
     }
 
     /**
-     * 리뷰 답글 작성 ok
+     * @author 황호준
+     *
+     * 리뷰답글 작성 ok
+     *
+     * @param {string} 테이블 이름 review_reply
+     * @param
+                 data: {
+                         'REVIEW_ID': review_id, 리뷰아이디
+                         'REVIEW_REPLY_CONT': review_reply_cont 리뷰 답글 내용
+                        },
+     *
+     * @returns 성공시 '성공' 반환
      */
     @RequestMapping("reviewReplyWrite_ok")
     @ResponseBody
@@ -401,7 +546,11 @@ public class AdminController {
     }
 
     /**
-     * 회원관리 페이지 이동
+     * @author 황호준
+     *
+     * 회원관리 페이지
+     *
+     * @param {string} 테이블 이름 USER
      */
     @RequestMapping("/member")
     public String member(HttpSession session, Model model, @RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "5") int pageSize) {
@@ -419,7 +568,13 @@ public class AdminController {
 
             model.addAttribute("pageInfo", pageInfo);
 
-            //회원 상태 카운트
+            /**
+             * 회원 상태 카운트
+             * @returns
+             * TOTAL_MEMBER_COUNT 전체 회원수
+             * ACTIVATING_USER 활동중 회원수
+             * NON_ACTIVATING_USER 탈퇴 회원수
+             */
             HashMap<String, Object> countMap = adminService.countMember();
             log.info("회원 상태 갯수: " + countMap);
             model.addAttribute("memberCountMap", countMap);
@@ -433,7 +588,21 @@ public class AdminController {
     }
 
     /**
-     * 회원관리 Axios
+     * @author 황호준
+     *
+     * 회원관리 페이지 비동기
+     *
+     * @param {string} 테이블 이름 USER
+     *
+     * @param
+     *             data: {
+     *                 'userStatus' : userStatusVal, 회원상태
+     *                 'searchType' : searchTypeVal, 검색어 종류
+     *                 "searchField": searchFieldVal, 검색어
+     *                 "startPage": currentPage, 현재페이지
+     *                 "pageSize": pageSizeVal 현재페이지에 보여질 개수
+     *             },
+     * @returns Map(회원리스트, 검색조건에 따라 검색되는 회원수)
      */
     @RequestMapping("memberAxios")
     @ResponseBody
@@ -458,7 +627,12 @@ public class AdminController {
     }
 
     /**
-     * 멤버 주문내역보기, 쓰기
+     * @author 황호준
+     *
+     * 멤버 주문내역 보기
+     *
+     * @param {string} 테이블 이름 - ORDER_TABLE, ORDER_PRODUCT, USER_DELIVER_INFO, PRODUCT, IMAGE
+     *
      */
     @RequestMapping("memberOrderListView")
     public String memberOrderListView(HttpSession session, Model model,
@@ -472,24 +646,6 @@ public class AdminController {
 
         log.info("유아넘gg: " + USER_ID_NO);
 
-//            List<HashMap<String, Object>> userOrderList = adminService.adminSelectOrderList(paramMap);
-//
-//            // 중복된 ORDER_ID 처리
-//            Map<String, Integer> productCountMap = new HashMap<>();
-//            for (HashMap<String, Object> order : userOrderList) {
-//                String orderId = order.get("ORDER_ID").toString();
-//                productCountMap.put(orderId, productCountMap.getOrDefault(orderId, 0) + 1);
-//            }
-//
-//            for (HashMap<String, Object> order : userOrderList) {
-//                String orderId = order.get("ORDER_ID").toString();
-//                int orderCount = productCountMap.get(orderId);
-//                order.put("orderCount", orderCount);
-//            }
-//
-//            log.info("유저 오더리스트: " + userOrderList);
-//            PageHelper.startPage(Integer.parseInt(paramMap.get("startPage").toString()), Integer.parseInt(paramMap.get("pageSize").toString()));
-//            PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(userOrderList);
         PageInfo<HashMap<String, Object>> pageInfo = adminService.userOrderMethod(paramMap);
 
 
@@ -500,14 +656,31 @@ public class AdminController {
         return "admin/memberOrderListModal";
     }
 
+    /**
+     * @author 황호준
+     *
+     * 선택된 유저 탈퇴
+     *
+     * @param {string} 테이블 이름 USER
+     *
+     * @param
+     *            data: {
+     *                  "selectedUserIdNo" : selectedWithdrawalValues 선택된 유저 아이디 배열
+     *                  },
+     *
+     * @returns 성공시 1 반환
+     */
     @RequestMapping("selectedWithdrawal")
     @ResponseBody
     public int selectedWithdrawal(@RequestBody HashMap<String, Object> paramMap) {
         log.info("회원아이디넘버: " + paramMap);
+
+        //선택아이디 탈퇴
         adminService.withdrawalUser(paramMap);
 
-
         log.info("유저아이디 길이 : "+paramMap.get("selectedUserIdNo").toString().length());
+
+        //선택된 아이디가 1개 일때(중지 버튼 누를때)
         if(paramMap.get("selectedBannerId").toString().length()==1){
             List<Integer> selectedUserIdNo = new ArrayList<>();
             selectedUserIdNo.add(Integer.parseInt(paramMap.get("selectedUserIdNo").toString())); // 예시: 중지하려는 배너 ID를 리스트에 추가
@@ -522,6 +695,15 @@ public class AdminController {
         return 1;
     }
 
+    /**
+     * @author 황호준
+     *
+     * 배너관리 페이지
+     *
+     * @param {string} 테이블 이름 BANNER
+     *
+     * @returns 성공시 1 반환
+     */
     @RequestMapping("banner")
     public String goBanner(HttpSession session, Model model, @RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "5") int pageSize ) {
         if(session.getAttribute("admin_sessionId")!=null) {
@@ -529,8 +711,8 @@ public class AdminController {
             paramMap.put("startPage", pageNum);
             paramMap.put("pageSize", pageSize);
 
-            List<HashMap<String, Object>> bannerList = adminService.adminSelectBanner(paramMap);
             //전체 배너 리스트
+            List<HashMap<String, Object>> bannerList = adminService.adminSelectBanner(paramMap);
             log.info("배너전체리스트: " + bannerList);
 
             PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(bannerList);
@@ -551,21 +733,35 @@ public class AdminController {
     }
 
     /**
-     * 배너관리 Axios
+     * @author 황호준
+     *
+     * 배너관리 페이지 비동기
+     *
+     * @param {string} 테이블 이름 BANNER
+     *
+     * @param
+                      data: {
+                              'bannerStatus' : bannerStatusVal, 배너 게시상태
+                              "searchField": searchFieldVal, 검색어
+                              "startPage": currentPage, 현재 페이지 넘버
+                              "pageSize": pageSizeVal 현재 페이지에 보여줄 목록 수
+                             },
+     *
+     * @returns 조건에 따른 배너리스트, 리스트 개수
      */
     @RequestMapping("bannerAxios")
     @ResponseBody
     public HashMap<String, Object> bannerAxios(@RequestBody HashMap<String, Object> paramMap) {
         log.info("배너파람맵: " + paramMap);
 
+        //전체 배너 리스트
         List<HashMap<String, Object>> bannerList = adminService.adminSelectBanner(paramMap);
-        //전체 회원 리스트
         log.info("배너전체리스트: " + bannerList);
 
         PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(bannerList);
         log.info("카운트 들어간 페이지인포: " + pageInfo);
 
-        //조건에따라 나오는 회원명수
+        //조건에따라 나오는 배너수
         int searchBannerCount = adminService.countSearchBanner(paramMap);
         log.info("검색갯수: " + searchBannerCount);
         HashMap<String, Object> resultMap = new HashMap<>();
@@ -576,28 +772,58 @@ public class AdminController {
     }
 
     /**
-     * 배너관리 Axios
+     * @author 황호준
+     *
+     * 배너관리 페이지 배너 이미지보기 비동기
+     *
+     * @param {string} 테이블 이름 BANNER
+     *
+     * @param
+                      data: {
+                            'BANNER_ID': bannerId 배너아이디
+                              },
+     *
+     * @returns 배너아이디 조건 해당 배너 정보
      */
     @RequestMapping("showBannerImg")
     @ResponseBody
     public HashMap<String, Object> showBannerImg(@RequestBody HashMap<String, Object> paramMap) {
         log.info("배너아이디: " + paramMap);
 
+        //배너아이디 조건 해당 배너 정보
         HashMap<String, Object> selectBannerMap = adminService.adminSelectBannerByBannerId(paramMap);
-        //전체 회원 리스트
         log.info("선택배너맵: " + selectBannerMap);
 
         return selectBannerMap;
     }
 
     /**
-     * 배너 작성
+     * @author 황호준
+     *
+     * 배너등록 페이지 이동
      */
     @RequestMapping("banner/write")
     public String goBannerWrite(){
         return "admin/banner02";
     }
 
+    /**
+     * @author 황호준
+     *
+     * 배너등록 ok
+     *
+     * @param {string} 테이블 이름 BANNER
+     *
+     * @param
+                @RequestParam("bannerTitle") String bannerTitle, 배너 제목
+                @RequestParam("bannerStartDate") String bannerStartDate, 배너 게시시작일
+                @RequestParam("bannerEndDate") String bannerEndDate, 배너 게시종료일
+                @RequestParam("bannerHowLong") String bannerHowLong, 배너 게시기간
+                @RequestParam("bannerShowTime") String bannerShowTime, 배너 홈페이지에 보여지는 시간초
+                @RequestParam("bannerImg") MultipartFile bannerImg 배너 이미지
+     *
+     * @returns 등록 성공시 1, 실패시 -1 반환
+     */
     @RequestMapping("/insertBanner")
     @ResponseBody
     public int insertProduct(HttpSession session,
@@ -630,7 +856,14 @@ public class AdminController {
 
 
     /**
-     * 배너 수정
+     * @author 황호준
+     *
+     * 배너수정 페이지 이동
+     *
+     * @param {string} 테이블 이름 BANNER
+     *
+     * @param BANNER_ID 배너 아이디
+     *
      */
     @RequestMapping("/banner/edit")
     public String goBannerEdit(HttpSession session, Model model, @Param(value = "bannerId") int bannerId) {
@@ -657,6 +890,23 @@ public class AdminController {
 
     }
 
+    /**
+     * @author 황호준
+     *
+     * 배너수정 ok
+     *
+     * @param {string} 테이블 이름 BANNER
+     * @param
+                @RequestParam("BANNER_ID") String BANNER_ID, 배너 아이디
+                @RequestParam("bannerTitle") String bannerTitle, 배너 제목
+                @RequestParam("bannerStartDate") String bannerStartDate, 배너 게시 시작일
+                @RequestParam("bannerEndDate") String bannerEndDate, 배너 게시 종료일
+                @RequestParam("bannerHowLong") String bannerHowLong, 배너 게시기간
+                @RequestParam("bannerShowTime") String bannerShowTime, 배너 홈페이지 게시 시간초
+                @RequestParam(value = "bannerEditImg", required = false) MultipartFile bannerEditImg 배너 이미지
+     *
+     * @returns 성공시 1반환
+     */
     @RequestMapping("/editBanner")
     @ResponseBody
     public int editBanner(HttpSession session,
@@ -677,27 +927,48 @@ public class AdminController {
         paramMap.put("bannerShowTime", bannerShowTime);
         paramMap.put("bannerEditImg", bannerEditImg);
 
+        //배너이미지가 변경되었을때
         if(bannerEditImg != null) {
             log.info("배너 값 확인(이미지변경) == " + "타이틀 : " + bannerTitle + ", 시작일 : " + bannerStartDate + ", 종료일 : " + bannerEndDate + ", 기간 : "
                     + bannerHowLong + ", 보여지는시간 : " + bannerShowTime + ", 이미지 : " + bannerEditImg);
+
+            //firebase에 업로드 후 URL과 저장경로 담기
             paramMap.putAll(fireBaseService.bannerImg(bannerEditImg));
+
+            //배너 정보 변경
             adminService.editBannerChangeImg(paramMap);
 
+        //배너이미지가 이전과 동일할 떄
         } else{
             log.info("배너 값 확인(이미지그대로) == " + "타이틀 : " + bannerTitle + ", 시작일 : " + bannerStartDate + ", 종료일 : " + bannerEndDate + ", 기간 : "
                     + bannerHowLong + ", 보여지는시간 : " + bannerShowTime + ", 이미지 : " + bannerEditImg);
+
+            //배너 정보 변경
             adminService.editBannerNONChangeImg(paramMap);
         }
         return 1;
     }
 
+    /**
+     * @author 황호준
+     *
+     * 배너게시 중지 비동기
+     *
+     * @param {string} 테이블 이름 BANNER
+     * @param
+                        data: {
+                                 "selectedBannerId" : selectedBannerStopValues 배너 아이디 배열
+                              },
+      *
+      * @returns 성공시 1반환
+     */
     @RequestMapping("selectedBannerStop")
     @ResponseBody
     public int selectedBannerStop(@RequestBody HashMap<String, Object> paramMap){
-//        log.info("게시중지 배너아이디 확인 : " + paramMap);
-//        adminService.selectedBannerStop(paramMap);
 
         log.info("배너아이디 길이 : "+paramMap.get("selectedBannerId").toString().length());
+
+        //선택된 배너 아아디가 1개일떄
         if(paramMap.get("selectedBannerId").toString().length()==1){
             List<Integer> selectedBannerId = new ArrayList<>();
             selectedBannerId.add(Integer.parseInt(paramMap.get("selectedBannerId").toString())); // 예시: 중지하려는 배너 ID를 리스트에 추가
@@ -705,6 +976,7 @@ public class AdminController {
             log.info("배너아이디: " + paramMap);
             adminService.selectedBannerStop(paramMap);
 
+        // 선택된 배너 아이디가 여러개일떄
         } else {
             log.info("배너아이디: " + paramMap);
             adminService.selectedBannerStop(paramMap);

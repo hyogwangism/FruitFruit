@@ -1,6 +1,11 @@
 $(document).ready(function () {
     $('#paymentBtn').off('click'); // 기존에 등록된 클릭 이벤트 핸들러를 제거합니다.
     $('#paymentBtn').click(goPaymentPage); // 클릭 이벤트 핸들러를 다시 등록합니다.
+
+    $("#quantityInput").on("input", function() {
+        // quantityInput 값에 기반하여 productQuantity의 값을 업데이트합니다.
+        $("#productQuantity").val($(this).val());
+    });
 });
 
 function goPaymentPage() {

@@ -18,7 +18,7 @@
         <div class="swiper">
             <div class="swiper-wrapper">
                 <div class="swiper-slide" th:each="bList : ${bannerList}" th:data-autoplay="${bList.BANNER_SHOWTIME}">
-                    <img th:src="${bList.BANNER_IMG_URL}" alt="배너 슬라이드" style="width: 1525px; height: 517px;" />
+                    <img th:src="${bList.BANNER_IMG_URL}" alt="배너 슬라이드" style="width: 100%; height: 517px;" />
                 </div>
             </div>
         </div>

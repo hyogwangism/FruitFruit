@@ -91,7 +91,6 @@ $(document).ready(function () {
                 "searchField": searchFieldVal,
                 "startPage": currentPage,
                 "pageSize": pageSizeVal
-
             },
             dataType: "JSON",
             headers: {
