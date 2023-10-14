@@ -1,6 +1,10 @@
+/**
+ * @author 황호준
+ * 대시보드 차트 API
+ */
 $(document).ready(function() {
     // 첫 번째 차트를 생성
-    const ctx = document.getElementById('myChart').getContext('2d');
+    const ctx = $('#myChart')[0].getContext('2d');
     const myChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -33,32 +37,32 @@ $(document).ready(function() {
     });
 
     // 두 번째 차트를 생성
-    const ctx2 = document.getElementById('myChart2').getContext('2d');
+    const ctx2 = $('#myChart2')[0].getContext('2d');
     const myChart2 = new Chart(ctx2, {
         type: 'bar',
         data: {
             labels: ['2023. 10. 01', '2023. 10. 02', '2023. 10. 03', '2023. 10. 04', '2023. 10. 05', '2023. 10. 06', '2023. 10. 07'],
             datasets: [
                 {
-                    label: '상품등록',  // 다른 레이블로 변경
-                    data: [50, 80, 60, 40, 70, 90, 60],  // 다른 데이터로 변경
+                    label: '상품등록',
+                    data: [50, 80, 60, 40, 70, 90, 60],
                     borderWidth: 2,
-                    borderColor: '#FF5733',  // 다른 색상으로 변경
-                    backgroundColor: '#FFB1C1',  // 다른 배경색으로 변경
+                    borderColor: '#FF5733',
+                    backgroundColor: '#FFB1C1'
                 },
                 {
-                    label: '상품판매',  // 다른 레이블로 변경
-                    data: [30, 40, 35, 20, 45, 60, 35],  // 다른 데이터로 변경
+                    label: '상품판매',
+                    data: [30, 40, 35, 20, 45, 60, 35],
                     borderWidth: 2,
-                    borderColor: '#FDB307',  // 다른 색상으로 변경
-                    backgroundColor: '#FFD700',  // 다른 배경색으로 변경
+                    borderColor: '#FDB307',
+                    backgroundColor: '#FFD700'
                 },
                 {
-                    label: '품절상품',  // 다른 레이블로 변경
-                    data: [30, 40, 35, 20, 45, 60, 35],  // 다른 데이터로 변경
+                    label: '품절상품',
+                    data: [30, 40, 35, 20, 45, 60, 35],
                     borderWidth: 2,
-                    borderColor: '#00CC00',  // 다른 색상으로 변경
-                    backgroundColor: '#00FF00',  // 다른 배경색으로 변경
+                    borderColor: '#00CC00',
+                    backgroundColor: '#00FF00'
                 }
             ]
         },

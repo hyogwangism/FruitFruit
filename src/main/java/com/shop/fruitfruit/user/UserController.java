@@ -446,7 +446,15 @@ public class UserController {
 
     /**
      * @author 황호준
+     *
      * 장바구니페이지에서 쓰일 LocalStorage에 담긴 장바구니 리스트 세션 저장 Axios
+     *
+     * @param
+     *         data: {
+     *                "cartArry": JSON.stringify(cartAddArry) 로컬스토리지 cartAddArry에 담긴 값들
+     *                }
+     *
+     * @returns 세션 저장 성공시 "성공" 반환
      */
     @RequestMapping("cartAxios")
     @ResponseBody
@@ -458,10 +466,12 @@ public class UserController {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
+        // JSON 데이터(cartData)를 List.class의 Java 객체로 변환합니다.
         List<HashMap<String, Object>> cartList = objectMapper.readValue(cartData, List.class);
 
         log.info("액쇼스카트리스트:"+cartList);
 
+        //세션에 장바구니 리스트 저장
         session.setAttribute("cartList", cartList);
 
         log.info("세션카드: " + session.getAttribute("cartList").toString());
@@ -469,9 +479,18 @@ public class UserController {
         return "성공";
     }
 
+
     /**
      * @author 황호준
+     *
      * 장바구니페이지에서 수량 변경시 LocalStorage에 담긴 장바구니 리스트 업데이트 Axios
+     *
+     * @param
+     *         data: {
+     *                "cartArry": JSON.stringify(cartAddArry) 로컬스토리지 cartAddArry에 담긴 값들
+     *                }
+     *
+     * @returns 세션 저장 성공시 "성공" 반환
      */
     @RequestMapping("cartPageUpdateAxios")
     @ResponseBody
@@ -496,7 +515,68 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 상품 결제 페이지 이동
+     *
+     * 장바구니 페이지에서 체크된 값들만 결제페이지로 이동시키기 위해 Session 저장 Axios
+     *
+     * @param
+     *              data: {
+     *                     "selectedIds": selectedIds 선택된 상품 ID
+     *                    }
+     *
+     */
+    @RequestMapping("selectedCartIdAxios")
+    @ResponseBody
+    public String selectedCartIdAxios(@RequestBody HashMap<String, Object> paramMap, HttpSession session) {
+        log.info("셀렉트아이디: " + paramMap);
+
+        //세션에 저장된 장바구니 목록
+        List<HashMap<String, Object>> cartSessionList = (List<HashMap<String, Object>>) session.getAttribute("cartList");
+        log.info("세션 카트아이디입니다:" + cartSessionList);
+        List<HashMap<String, Object>> updatedCartList = new ArrayList<>();
+
+        //Axios에서 보내진 선택된 상품 ID값
+        List<String> selectedIdStrings = (List<String>) paramMap.get("selectedIds");
+        List<Integer> selectedIds = selectedIdStrings.stream()
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+
+        log.info("셀렉아이디 끄집어내기:" + selectedIds);
+
+
+        if (cartSessionList != null) {
+            //세션 장바구니목록에 저장된 배열을 하나씩 꺼내어 선택된 상품ID와 비교하여 같은 배열을 updatedCartList에 저장
+            for (HashMap<String, Object> updateData : cartSessionList) {
+                Integer productId = Integer.parseInt(updateData.get("productId").toString());
+                log.info("셀렉아이디 클래스: " + selectedIds.get(0).getClass());
+                log.info("포러덕트아디 클래스: " + productId.getClass());
+
+                log.info("포러덕트아디: " + productId);
+                log.info("있니?: " + selectedIds.contains(productId));
+                if (selectedIds.contains(productId)) {
+                    log.info("있니?: " + selectedIds.contains(productId));
+                    log.info("세션리스트에 있는 포러덕트아디: " + productId);
+                    log.info("세션리스트에 있는 포러덕트아디별 리스트: " + updateData);
+                    updatedCartList.add(updateData);
+                }
+            }
+        }
+
+        log.info("업뎃된 카트리스트: " + updatedCartList);
+
+        // 저장된 선택 상품들을 결제페이지로 넘기기위해 세션에 저장
+        session.setAttribute("paymentCartList", updatedCartList);
+
+        return "성공";
+    }
+
+
+    /**
+     * @author 황호준
+     *
+     * 상품 결제페이지 이동
+     *
+     * @param 장바구니에서 선택된 상품들 정보
+     *
      */
     @RequestMapping("payment")
     public String payment (Model model, HttpSession session){
@@ -532,52 +612,54 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 장바구니 페이지에서 체크된 값들만 결제페이지로 이동시키기 위해 Session 저장 Axios
+     *
+     * 상품결제 완료 Axios
+     *
+     * @param {string} 테이블 이름 USER, USER_DELIVER_INFO, ORDER_TABLE, ORDER_PRODUCT
+     *
+     * @return 구매자 회원정보, 배송지 정보, 주문내역
      */
-    @RequestMapping("selectedCartIdAxios")
+    @RequestMapping("paymentOkAxios")
     @ResponseBody
-    public String selectedCartIdAxios(@RequestBody HashMap<String, Object> paramMap, HttpSession session) {
-        log.info("셀렉트아이디: " + paramMap);
-        List<HashMap<String, Object>> cartSessionList = (List<HashMap<String, Object>>) session.getAttribute("cartList");
-        log.info("세션 카트아이디입니다:" + cartSessionList);
-        List<HashMap<String, Object>> updatedCartList = new ArrayList<>();
+    public HashMap<String, Object> paymentOkAxios (Model model, HttpSession session, @RequestBody HashMap<String, Object> paramMap){
+        if(session.getAttribute("sessionId") != null) {
+            paramMap.put("sessionId", session.getAttribute("sessionId").toString());
 
-        List<String> selectedIdStrings = (List<String>) paramMap.get("selectedIds");
-        List<Integer> selectedIds = selectedIdStrings.stream()
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
+            List<HashMap<String, Object>> paymentCartSessionList = (List<HashMap<String, Object>>) session.getAttribute("paymentCartList");
+            paramMap.put("paymentCartSessionList", paymentCartSessionList);
 
-        log.info("셀렉아이디 끄집어내기:" + selectedIds);
-
-
-        if (cartSessionList != null) {
-            for (HashMap<String, Object> updateData : cartSessionList) {
-                Integer productId = Integer.parseInt(updateData.get("productId").toString());
-                log.info("셀렉아이디 클래스: " + selectedIds.get(0).getClass());
-                log.info("포러덕트아디 클래스: " + productId.getClass());
-
-                log.info("포러덕트아디: " + productId);
-                log.info("있니?: " + selectedIds.contains(productId));
-                if (selectedIds.contains(productId)) {
-                    log.info("있니?: " + selectedIds.contains(productId));
-                    log.info("세션리스트에 있는 포러덕트아디: " + productId);
-                    log.info("세션리스트에 있는 포러덕트아디별 리스트: " + updateData);
-                    updatedCartList.add(updateData);
-                }
-            }
+            /**
+             * 결제 로직
+             * 1. SessionId를 기준으로 유저 검색을 해서 USER_ID_NO를 가져온다
+             * 2. paramMap에 담긴 정보들로 배송자 정보를 저장한다.
+             * 3. 저장된 배송자정보중 user_id_no를 기준으로 user_deliver_info 테이블에서 가장 최근에 주문한 Deliver_ID를 가져온다. -> deliver_id를 paramMap에 put
+             * 4. paramMap에 담긴 결제정보(deliver_id, 카드결제, 개인카드/법인카드, 카드사, 총 가격, 주문날짜, 결제상태)를 order_table에 저장한다.
+             * 5. 저장된 Order_table에서 deliver_id를 기준으로 ORDER_TABLE에서 ORDER_ID를 가져온다 -> ORDER_ID를 paramMap에 PUT
+             * 6. ORDER_PRODUCT테이블에 상세 주문정보(ORDER_ID, PRODUCT_ID, PRODUCT_QUANTITY, PRODUCT_PRICE(구매당시 해당물폼 총가격), REVIEW_STATUS)를 저장
+             */
+            paramMap.putAll(userService.OrderMethod(paramMap));
+            log.info("결제완료 파람맵:"+paramMap);
+            paramMap.put("yesLogin", "yesLogin");
+            return paramMap;
+        } else if(session.getAttribute("sessionId") == null) {
+            paramMap.clear();
+            return paramMap;
         }
 
-        log.info("업뎃된 카트리스트: " + updatedCartList);
-
-        session.setAttribute("paymentCartList", updatedCartList);
-
-        return "성공";
+        return null;
     }
-
 
     /**
      * @author 황호준
-     * 상품 결제 완료 페이지 이동
+     *
+     * 상품결제 완료 페이지 이동
+     *
+     * @param
+                @RequestParam(value = "orderId") String orderId, 주문 ID
+                @RequestParam(value = "orderPrice") String orderPrice, 결제금액
+                @RequestParam(value = "cardType") String cardType, 카드종류(개인카드 OR 법인카드)
+                @RequestParam(value = "cardMonthlyInstallments") String cardMonthlyInstallments 카드 할부개월
+     *
      */
     @RequestMapping("paymentSuccess")
     public String paymentSuccess( Model model,
@@ -601,32 +683,10 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 결제 완료 페이지 이동
-     */
-    @RequestMapping("paymentOkAxios")
-    @ResponseBody
-    public HashMap<String, Object> paymentOkAxios (Model model, HttpSession session, @RequestBody HashMap<String, Object> paramMap){
-        if(session.getAttribute("sessionId") != null) {
-            paramMap.put("sessionId", session.getAttribute("sessionId").toString());
-
-            List<HashMap<String, Object>> paymentCartSessionList = (List<HashMap<String, Object>>) session.getAttribute("paymentCartList");
-            paramMap.put("paymentCartSessionList", paymentCartSessionList);
-
-            paramMap.putAll(userService.OrderMethod(paramMap));
-            log.info("결제완료 파람맵:"+paramMap);
-            paramMap.put("yesLogin", "yesLogin");
-            return paramMap;
-        } else if(session.getAttribute("sessionId") == null) {
-            paramMap.clear();
-            return paramMap;
-        }
-
-        return null;
-    }
-
-    /**
-     * @author 황호준
+     *
      * 마이페이지 구매내역 페이지 이동
+     *
+     * @param {string} 테이블 이름 USER, PRODUCT, IMAGE, USER_DELIVER_INFO, ORDER_TABLE, ORDER_PRODUCT
      */
     @RequestMapping("mypageMain")
     public String mypageMain (Model model, HttpSession session,
@@ -635,10 +695,12 @@ public class UserController {
         if(session.getAttribute("sessionId") != null) {
             HashMap<String, Object> paramMap = new HashMap<>();
             paramMap.put("id", session.getAttribute("sessionId").toString());
+            // 로그인 유저정보 SELECT
             paramMap.putAll(userService.selectUser(paramMap));
             paramMap.put("startPage", startPage);
             paramMap.put("pageSize", pageSize);
 
+            // 해당유저 전체 주문내역
             List<HashMap<String, Object>> orderList = userService.selectOrderList(paramMap);
             PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(orderList);
 
@@ -655,14 +717,35 @@ public class UserController {
 
     /**
      * @author 황호준
-     * mypage 구매목록 Axios
+     *
+     * 마이페이지 구매내역 비동기
+     *
+     * @param {string} 테이블 이름 USER, PRODUCT, IMAGE, USER_DELIVER_INFO, ORDER_TABLE, ORDER_PRODUCT
+     *
+     * @param
+     *             data: {
+     *                    "startDate": startDateValue, 검색 설정 시작일
+     *                    "endDate": endDateValue, 검색 설정 종료일
+     *                    "searchType": searchType, 검색어 종류
+     *                    "searchField": searchField, 검색어
+     *                    "startPage": currentPage, 현재 페이지
+     *                     "pageSize": pageSizeVal, 현재 페이지에서 보여질 목록개수
+     *                    "USER_ID_NO": $('#USER_ID_NO').val() 유저 ID NO
+     *                    },
+     *
+     * @return 주문내역
      */
     @RequestMapping("mypageAxios")
     @ResponseBody
     public PageInfo<HashMap<String, Object>> mypageAxios (HttpSession session, @RequestBody HashMap<String, Object> paramMap){
         log.info("마이페이지 데이터: " + paramMap);
+
         paramMap.put("id", session.getAttribute("sessionId").toString());
+
+        // 로그인 유저정보 SELECT
         paramMap.putAll(userService.selectUser(paramMap));
+
+        // 해당유저 전체 주문내역 SELECT
         List<HashMap<String, Object>> orderList = userService.selectOrderList(paramMap);
         PageInfo<HashMap<String, Object>> pageInfo = new PageInfo<>(orderList);
         log.info("주문목록: " + orderList);
@@ -672,15 +755,31 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 재구매 Axios
+     *
+     * 마이페이지 재구매 비동기
+     *
+     * @param {string} 테이블 이름 PRODUCT, IMAGE
+     *
+     * @param
+                 data: {
+                        "order_product_name": $('#order_product_name').val(), 주문하고 싶은 상품 이름
+                        'PRUDUCT_QUANTITY': $('#order_product_quantity').val() 주문하고 싶은 수량
+                        }
+     *
+     * @return 주문하고 싶은 상품정보
      */
     @RequestMapping("rePurchaseAxios")
     @ResponseBody
     public HashMap<String, Object> rePurchaseAxios (HttpSession session, @RequestBody HashMap<String, Object> paramMap){
         if(session.getAttribute("sessionId") != null) {
             paramMap.put("sessionId", session.getAttribute("sessionId").toString());
+
+            // 상품 이름으로 상품 ID SELECT
             paramMap.putAll(userService.selectOrderProductId(paramMap));
+
             int productId = Integer.parseInt(paramMap.get("PRODUCT_ID").toString());
+
+            // 상품ID로 해당상품정보 SELECT
             paramMap.putAll(adminService.selectProductbyProductId(productId));
             log.info("프로덕트 확인:" + paramMap);
             paramMap.put("yesLogin", "yesLogin");
@@ -695,7 +794,12 @@ public class UserController {
 
     /**
      * @author 황호준
+     *
      * 마이페이지 배송지관리 페이지 이동
+     *
+     * @param {string} 테이블 이름 USER_DELIVERY_ADDRESS
+     *
+     * @return 주문하고 싶은 상품정보
      */
     @RequestMapping("mypageDelivery")
     public String mypageDelivery (Model model, HttpSession session){
@@ -703,12 +807,16 @@ public class UserController {
             HashMap<String, Object> paramMap = new HashMap<>();
             String sessionId = session.getAttribute("sessionId").toString();
             paramMap.put("id", sessionId);
+
+            // 로그인 된 유저 정보 SELECT
             paramMap.putAll(userService.selectUser(paramMap));
             log.info("유저 아이디 넘버:"+paramMap);
 
+            // 로그인된 유저 배송지 LIST SELECT
             List<HashMap<String, Object>> userDeliveryAddressList = userService.selectUserDeliveryAddressList(paramMap);
             log.info("유저 배송지정보:"+ userDeliveryAddressList);
 
+            // 로그인된 유저 배송지 저장개수
             int addressCount = userService.selectUserDeliveryAddressCount(paramMap);
             log.info("어드카운트:"+addressCount);
             model.addAttribute("userDeliveryAddressList", userDeliveryAddressList);
@@ -722,7 +830,21 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 마이페이지 배송지추가 Axios
+     *
+     * 마이페이지 배송지추가 비동기
+     *
+     * @param {string} 테이블 이름 USER, USER_DELIVERY_ADDRESS
+     *
+     * @param
+              const formData = {
+                                'deliverPlace' : $('#add_title').val(), 배송지 이름
+                                'deliverReceiverName' : $('#add_name').val(), 수령인
+                                'deliverPhone' : $('#add_phone1').val() + $('#add_phone2').val(), 연락처
+                                'deliverPostalCode' : $('.postalCode').val(), 우편번호
+                                'deliverAddress' : $('#sample6_address').val() + ' ' + $('#sample6_detailAddress').val() 주소
+                                };
+     *
+     * @return 저장 성공시 "배송지 추가 성공" 반환
      */
     @RequestMapping("mypageAddDeliveryAxios")
     @ResponseBody
@@ -731,7 +853,11 @@ public class UserController {
         if(session.getAttribute("sessionId") != null) {
             String sessionId = session.getAttribute("sessionId").toString();
             paramMap.put("id", sessionId);
+
+            // 로그인 된 사용자 정보 SELECT
             paramMap.putAll(userService.selectUser(paramMap));
+
+            // 배송지 정보 저장
             userService.insertUserDeliveryAddressInfo(paramMap);
             return "배송지 추가 성공";
         } else {
@@ -741,7 +867,21 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 마이페이지 배송지수정 Axios
+     *
+     * 마이페이지 배송지수정 비동기
+     *
+     * @param {string} 테이블 이름 USER, USER_DELIVERY_ADDRESS
+     *
+     * @param
+                      const formData = {
+                                        'deliverPlace' : $('#add_title').val(), 배송지 이름
+                                        'deliverReceiverName' : $('#add_name').val(), 수령인
+                                        'deliverPhone' : $('#add_phone1').val() + $('#add_phone2').val(), 연락처
+                                        'deliverPostalCode' : $('.postalCode').val(), 우편번호
+                                        'deliverAddress' : $('#sample6_address').val() + ' ' + $('#sample6_detailAddress').val() 주소
+                                        };
+     *
+     * @return 저장 성공시 "배송지 수정 성공" 반환
      */
     @RequestMapping("mypageEditDeliveryAxios")
     @ResponseBody
@@ -750,7 +890,11 @@ public class UserController {
         if(session.getAttribute("sessionId") != null) {
             String sessionId = session.getAttribute("sessionId").toString();
             paramMap.put("id", sessionId);
+
+            // 로그인 된 유저 정보 SELECT
             paramMap.putAll(userService.selectUser(paramMap));
+
+            // 배송지 수정
             userService.updateUserDeliveryAddressInfo(paramMap);
             return "배송지 수정 성공";
         } else {
@@ -760,13 +904,25 @@ public class UserController {
 
     /**
      * @author 황호준
+     *
      * 마이페이지 배송지삭제 Axios
+     *
+     * @param {string} 테이블 이름 USER, USER_DELIVERY_ADDRESS
+     *
+     * @param
+                    data:
+                         {
+                            'deliverId': $('#USER_DELIVERY_ID').val() 배송지 ID
+                          },
+     *
+     * @return 저장 성공시 "배송지 삭제 성공" 반환
      */
     @RequestMapping("mypageDeleteDeliveryAxios")
     @ResponseBody
     public String mypageDeleteDeliveryAxios (HttpSession session, @RequestBody HashMap<String, Object> paramMap){
         log.info("삭제배달지정보 확인:" + paramMap);
         if(session.getAttribute("sessionId") != null) {
+            // 배송지 삭제
             userService.deleteUserDeliveryAddressInfo(paramMap);
             return "배송지 삭제 성공";
         } else {
@@ -776,7 +932,8 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 마이페이지 회원정보수정 페이지 이동
+     *
+     * 마이페이지 회원정보 수정 페이지 이동
      */
     @RequestMapping("mypageEdit")
     public String mypageEdit (Model model, HttpSession session){
@@ -790,7 +947,12 @@ public class UserController {
 
     /**
      * @author 황호준
+     *
      * 마이페이지 회원정보수정2 페이지 이동전 비번확인 Axios
+     *
+     * @param {string} 테이블 이름 USER
+     *
+     * @return 일치하면 일치하는 Map, 불일치하면 불일치하는 Map 반환
      */
     @RequestMapping("editPwdChk")
     @ResponseBody
@@ -825,6 +987,7 @@ public class UserController {
     /**
      * @author 황호준
      * 마이페이지 회원정보수정2 페이지 이동
+     *
      */
     @RequestMapping("mypageEdit2")
     public String mypageEdit2 (Model model, HttpSession session){
@@ -843,12 +1006,24 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 수정페이지 닉네임 중복체크
+     *
+     * 회원정보 수정 ok 비동기
+     *
+     * @param {string} 테이블 이름 USER
+     *
+     * @param
+     *         data: {
+     *                  "newpw": $.trim($("#newPwd").val()), 새 비밀번호
+     *                  "id": $id, 아이디
+     *                  "name" : $.trim($("#editName").val()), 이름
+     *                  "phone" : $.trim($("#editPhone").val()) 연락처
+     *               }, // id 값 추가
      */
     @RequestMapping("/edit_ok")
     @ResponseBody
     public int edit_ok(@RequestBody HashMap<String, Object> paramMap) throws Exception {
         log.info("수정정보확인:"+paramMap);
+        // 회원정보 update
         userService.updateUserInfo(paramMap);
         return 1;
     }
@@ -856,9 +1031,13 @@ public class UserController {
 
     /**
      * @author 황호준
-     * 상품 리뷰페이지
+     *
+     * 상품 리뷰 페이지
+     *
+     * @param {string} 테이블 이름 REVIEW, REVIEW_REPLY
+     *
+     * @param productId 상품아이디
      */
-
     @RequestMapping("/productReview")
     public String productReview(HttpSession session, Model model, @Param(value = "productId") int productId,
                                 @RequestParam(defaultValue = "1") int startPage,
@@ -955,7 +1134,38 @@ public class UserController {
 
     /**
      * @author 황호준
+     * 리뷰페이지 Axios
+     *
+     * @param
+                     data: {
+                             "productId": productId, 상품ID
+                             "startPage": currentPage, 현재 페이지 수
+                             "pageSize": pageSizeVal, 현재 페이지에 보여질 목록수
+                            },
+     * @return 리뷰목록
+     */
+
+    @RequestMapping("reviewPageAxios")
+    @ResponseBody
+    public PageInfo<HashMap<String, Object>> reviewPageAxios (@RequestBody HashMap<String, Object> paramMap){
+        List<HashMap<String,Object>> reviewList = userService.reviewListByProductId(paramMap);
+        log.info("리뷰리스트아쇽: " + reviewList);
+
+        PageInfo<HashMap<String,Object>> reviewPageInfo = new PageInfo<>(reviewList);
+        return reviewPageInfo;
+    }
+
+    /**
+     * @author 황호준
      * 리뷰등록 Axios
+     *
+     * @param
+     *             data: {
+     *                    "ORDER_PRODUCT_ID": $('#ORDER_PRODUCT_ID').val(), 주문한 상품 ID
+     *                    "USER_ID_NO": $('#userIdNo').val(), 유저 ID NO
+     *                    "REVIEW_CONT": $('#cont').val() 리뷰 내용
+     *                    },
+     * @return 리뷰등록 성공시 1반환
      */
     @RequestMapping("/review_ok")
     @ResponseBody
@@ -971,23 +1181,21 @@ public class UserController {
     /**
      * @author 황호준
      * 리뷰수정 Axios
+     *
+     * @param
+     *             data: {
+     *                    "ORDER_PRODUCT_ID": $('#ORDER_PRODUCT_ID').val(), 주문한 상품 ID
+     *                    "REVIEW_CONT": $('#cont').val() 리뷰 내용
+     *                    },
+     * @return 리뷰등록 성공시 1반환
      */
     @RequestMapping("/review_edit_ok")
     @ResponseBody
     public int review_edit_ok(@RequestBody HashMap<String, Object> paramMap){
         log.info("리뷰정보확인:"+paramMap);
-        //상품리뷰 등록
+        //상품리뷰 수정
         userService.updateReview(paramMap);
         return 1;
     }
 
-    @RequestMapping("reviewPageAxios")
-    @ResponseBody
-    public PageInfo<HashMap<String, Object>> reviewPageAxios (@RequestBody HashMap<String, Object> paramMap){
-        List<HashMap<String,Object>> reviewList = userService.reviewListByProductId(paramMap);
-        log.info("리뷰리스트아쇽: " + reviewList);
-
-        PageInfo<HashMap<String,Object>> reviewPageInfo = new PageInfo<>(reviewList);
-        return reviewPageInfo;
-    }
 }

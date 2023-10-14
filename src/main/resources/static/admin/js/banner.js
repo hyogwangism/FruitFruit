@@ -1,5 +1,11 @@
 let formData = new FormData();
 let bannerTitle, bannerStartDate, bannerEndDate, bannerHowLong, bannerShowTime;
+
+/**
+ * @author 황호준
+ * 오늘 날짜 함수
+ * @return YY-MM-DD
+ */
 function getTodayDate() {
     const today = new Date();
     const year = today.getFullYear();
@@ -7,13 +13,14 @@ function getTodayDate() {
     const day = String(today.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+
+/**
+ * @author 황호준
+ * 배너 등록
+ */
 $(document).ready(function() {
 
 
-    // 오늘의 날짜를 yyyy-mm-dd 형식으로 가져오는 함수
-
-
-    // banner__start__date에서 과거 날짜를 선택하지 못하게 함
     const today = getTodayDate();
     $('#banner__start__date').attr('min', today);
     $('#banner__start__date').val(today);
@@ -66,7 +73,6 @@ $(document).ready(function() {
     })
 
 
-
     // When an image is added
     $('#bannerPicture').on('change', function() {
         const fileInput = $(this);
@@ -110,6 +116,10 @@ $(document).ready(function() {
 
 });
 
+/**
+ * @author 황호준
+ * 배너 등록시 비동기로 정보 보내는 함수
+ */
 function bannerSubmitForm() {
 
     bannerTitle = $('#bannerName').val();
@@ -143,39 +153,44 @@ function bannerSubmitForm() {
     });
 }
 
+/**
+ * @author 황호준
+ * 모달 버튼클릭시 동작 모음
+ */
 $(document).ready(function (){
-    // "취소하기" 버튼을 클릭할 때
+    // "취소하기" 버튼을 클릭할 때 모달오픈
     $('.banner__write__cancel').on('click', function() {
         $('.admin__banner02').show();
     });
 
+    // 오픈된 모달 취소확인시 배너페이지 이동
     $('.banner__cancel__confirm').on('click', function() {
         $('.admin__banner02').hide();
         location.href = '/admin/banner';
     });
 
+    // 계속작성 클릭시 모달 숨김
     $('.banner__write__continue').on('click', function() {
         $('.admin__banner02').hide();
     });
 
+    // 배너등록 완료 메세지모달 확인버튼 클릭시 배너 메인페이지 이동
     $('.writeConfirmButton').on('click', function() {
         $('.txt05').hide();
         location.href = '/admin/banner';
     });
 
+    // 배너이미지 보기 모달 닫기버튼 클릭시 이미지모달 숨기기
     $('.img__modal__close__btn').on('click', function() {
         $('.admin__banner').hide();
-    });
-
-    $(document).on('click','.go__edit__page', function() {
-        location.href='/admin/banner/edit?bannerId=' + $(this).closest('tr').find('#banner_id').val();
     });
 
 })
 
 
 /**
- * 배너 목록 Axios
+ * @author 황호준
+ * 배너 목록 보기 Axios
  */
 $(document).ready(function () {
     let searchFieldVal;
@@ -183,7 +198,7 @@ $(document).ready(function () {
     let currentPage = 1;
     let pageSizeVal = 5;
 
-    // productSaleStatus 버튼 클릭 시
+    // productSaleStatus 버튼 클릭 시 버튼 스타일 변경
     $(document).on('click', '.banner__status', function () {
         // 모든 버튼 스타일 초기화
         $('.banner__status').removeClass('clicked');
@@ -197,13 +212,13 @@ $(document).ready(function () {
         sendAxiosRequest_banner();
     });
 
-    // 검색 버튼 클릭 시
+    // 검색 버튼 클릭 시 검색어 값
     $('.banner__search__btn').click(function () {
         searchFieldVal = $('.banner__search__field').val();
         sendAxiosRequest_banner();
     });
 
-    // pageSize 선택 시
+    // pageSize 선택 시 한 화면에 보여질 목록개수
     $('select[name="howmany"]').change(function () {
         pageSizeVal = $(this).val(); // 선택한 값 가져오기
         console.log('하우매니: '+ pageSizeVal)
@@ -246,7 +261,10 @@ $(document).ready(function () {
         link.click();
     });
 
-
+    /**
+     * @author 황호준
+     * 배너 목록 보기 비동기함수
+     */
     function sendAxiosRequest_banner() {
         // console.log(searchFieldVal);
         // console.log(pageSizeVal);
@@ -364,6 +382,10 @@ $(document).ready(function () {
     }
 });
 
+/**
+ * @author 황호준
+ * 이미지보기 모달 비동기
+ */
 $(document).ready(function () {
     let bannerId;
 
@@ -392,15 +414,24 @@ $(document).ready(function () {
         });
     })
 
+})
+
+/**
+ * @author 황호준
+ * 배너수정 페이지
+ */
+$(document).ready(function (){
+
+    // 배너수정버튼 클릭시 페이지 이동
+    $(document).on('click','.go__edit__page', function() {
+        location.href='/admin/banner/edit?bannerId=' + $(this).closest('tr').find('#banner_id').val();
+    });
+
     // banner__start__date에서 과거 날짜를 선택하지 못하게 함
     const today = getTodayDate();
     $('.banner__edit__start__date').attr('min', today);
     $('.banner__edit__start__date').val(today);
 
-
-})
-
-$(document).ready(function (){
     $(document).on('click', '.banner__edit__btn', function () {
         if($.trim($("#bannerName").val())==""){
             $(".txt04").show();
@@ -409,7 +440,7 @@ $(document).ready(function (){
             return false;
         }
 
-        const isConfirmed = confirm("배너를 등록하시겠습니까?");
+        const isConfirmed = confirm("배너를 수정하시겠습니까?");
         if (!isConfirmed) {
             return false;
         }
@@ -417,11 +448,16 @@ $(document).ready(function (){
         return bannerEditForm();
     });
 
+    //배너 수정완료 모달 확인 클릭시 배너 목록 페이지 이동
     $(document).on('click', '.banner__edit__confirm__btn', function (){
         location.href='/admin/banner';
     })
 })
 
+/**
+ * @author 황호준
+ * 배너수정 Axios
+ */
 function bannerEditForm() {
     bannerTitle = $('#bannerName').val();
     bannerStartDate = $('.banner__edit__start__date').val();
@@ -447,7 +483,6 @@ function bannerEditForm() {
     }
 
 
-
     axios({
         method: 'POST',
         url: '/admin/editBanner',
@@ -466,9 +501,9 @@ function bannerEditForm() {
 }
 
 /**
- * 선택배너 중지
+ * @author 황호준
+ * 선택배너 게시중지 Axios
  */
-//선택된 배너 중지
 $(document).ready(function() {
     let selectedBannerStopValues = [];
     $(document).on('click', '.selected__banner__stop', function (){
@@ -496,6 +531,7 @@ $(document).ready(function() {
             });
     });
 });
+
 
 $(document).ready(function() {
     let selectedBannerStopValues;

@@ -1,11 +1,11 @@
+/**
+ * @author 황호준
+ * 장바구니페이지 구매하기 버튼 클릭시 선택된 상품ID Axios 전달
+ */
 $(document).ready(function () {
     $('#paymentBtn').off('click'); // 기존에 등록된 클릭 이벤트 핸들러를 제거합니다.
     $('#paymentBtn').click(goPaymentPage); // 클릭 이벤트 핸들러를 다시 등록합니다.
 
-    $("#quantityInput").on("input", function() {
-        // quantityInput 값에 기반하여 productQuantity의 값을 업데이트합니다.
-        $("#productQuantity").val($(this).val());
-    });
 });
 
 function goPaymentPage() {
@@ -34,7 +34,10 @@ function goPaymentPage() {
     }
 }
 
-
+/**
+ * @author 황호준
+ * 결제페이지에서 상품가격, 결제금액 표시
+ */
 $(document).ready(function () {
 
     let paymentTotalProductInitPrice = 0;
@@ -79,6 +82,10 @@ $(document).ready(function () {
     console.log("주문가격: " + $('#finalOrderPrice').text());
 })
 
+/**
+ * @author 황호준
+ * 전체동의 클릭시 모든 체크박스 클릭
+ */
 $(document).ready(function () {
     $("#전체동의").click(function () {
         const isChecked = $(this).prop("checked");
@@ -87,6 +94,10 @@ $(document).ready(function () {
     });
 });
 
+/**
+ * @author 황호준
+ * 결제하기 클릭시 유효성 검증
+ */
 $(document).on('click', '#payment_ok', () => {
 
     if ($.trim($("#receiverName").val()) === '') {
@@ -133,7 +144,10 @@ $(document).on('click', '#payment_ok', () => {
 });
 
 
-
+/**
+ * @author 황호준
+ * 결제하기 클릭시 Axios 함수
+ */
 function payment_ok() {
     let deliverRequirement;
      if($('#ask').val()==='직접입력'){
@@ -187,6 +201,10 @@ function payment_ok() {
         });
 }
 
+/**
+ * @author 황호준
+ * 요청사항 선택시 해당값 설정
+ */
 $(document).ready(function () {
     $('#ask').on('change', function () {
         const selectedOption = $(this).val();

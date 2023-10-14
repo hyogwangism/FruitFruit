@@ -1,8 +1,6 @@
 /**
- *
- */
-/**
- * join.js
+ * @author 황호준
+ * 회원가입 유효성 검증
  */
 //유효성 검증
 $(document).on('click', '#JoinBtn', () => {
@@ -121,7 +119,9 @@ $(document).on('click', '#JoinBtn', () => {
     return submitForm();
 });
 
-/*
+
+/**
+ * @author 황호준
  * 중복아이디 검색
  */
 $(document).on('click', '#idChkBtn', () => {
@@ -166,7 +166,8 @@ $(document).on('click', '#idChkBtn', () => {
     }
 }); //end ID Check
 
-/*
+/**
+ * @author 황호준
  * 중복닉네임 검색
  */
 $(document).on('click', '#nameChkBtn', () => {
@@ -216,7 +217,10 @@ $(document).on('click', '#nameChkBtn', () => {
 }); //end ID Check
 
 
-
+/**
+ * @author 황호준
+ * 회원가입 버튼클릭시 Axios 함수
+ */
 function submitForm() {
 
     const formData = {
@@ -242,8 +246,9 @@ function submitForm() {
     });
 }
 
-/*
- * 모두 동의 클릭시 전체 클릭되게
+/**
+ * @author 황호준
+ * 약관동의 모두체크
  */
 $(document).ready(function() {
     // chk1 체크박스를 클릭했을 때 이벤트 핸들러 추가
@@ -261,6 +266,10 @@ $(document).ready(function() {
     });
 });
 
+/**
+ * @author 황호준
+ * 비밀번호, 비밀번호 확인 입력필드에 입력된값 확인하고 일치여부
+ */
 $(document).ready(function() {
     // #pw2 입력박스에서 포커스를 벗어났을 때 이벤트 처리
     $("#pw2").on("blur", function() {
@@ -276,6 +285,10 @@ $(document).ready(function() {
     });
 });
 
+/**
+ * @author 황호준
+ * 연락처 입력 하지않을시
+ */
 $(document).ready(function() {
     // #pw2 입력박스에서 포커스를 벗어났을 때 이벤트 처리
     $("#phone").on("blur", function() {

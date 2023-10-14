@@ -1,3 +1,7 @@
+/**
+ * @author 황호준
+ * 회원 목록 Axios
+ */
 $(document).ready(function () {
     let searchFieldVal;
     let userStatusVal="전체"
@@ -78,6 +82,10 @@ $(document).ready(function () {
     });
 
 
+    /**
+     * @author 황호준
+     * 회원목록 Axios 함수
+     */
     function sendAxiosRequest_member() {
         // console.log(searchFieldVal);
         // console.log(pageSizeVal);
@@ -200,6 +208,10 @@ $(document).ready(function () {
     }
 });
 
+/**
+ * @author 황호준
+ * 특정 유저 주문내역 보기
+ */
 $(document).ready(function () {
     // 보기 버튼 클릭 이벤트 처리
     $(document).on('click', '.user__order__list', function (e) {
@@ -229,7 +241,10 @@ $(document).ready(function () {
     });
 });
 
-//선택된 회원 탈퇴처리
+/**
+ * @author 황호준
+ * 선택회원 탈퇴처리
+ */
 $(document).ready(function() {
     $('#selected__member__withdrawalBtn').click(function() {
         const withdrawalConfirmed = confirm("선택한 회원을 탈퇴시키겠습니까?");

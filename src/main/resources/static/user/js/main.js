@@ -1,4 +1,7 @@
-
+/**
+ * @author 황호준
+ * 배너 Swiper API
+ */
 new Swiper('.promotion .swiper', {
     slidesPerView: 1, // 한 번에 보여 줄 슬라이드 개수
     spaceBetween: 10, // 슬라이드 사이 여백 (10px)

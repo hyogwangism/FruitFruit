@@ -1,3 +1,7 @@
+/**
+ * @author 황호준
+ * 입력된 비밀번호 확인후 회원정보 수정페이지로 이동
+ */
 $(document).ready(function (){
     $('#pwdCheckBtn').click(function (){
         editPwdCheck()
@@ -34,6 +38,10 @@ function editPwdCheck() {
     });
 }
 
+/**
+ * @author 황호준
+ * 닉네임 중복 확인
+ */
 $(document).on('click', '#userNameChkBtn', () => {
 
     /* copy begin */
@@ -49,7 +57,6 @@ $(document).on('click', '#userNameChkBtn', () => {
         return false;
     } else {
 
-        //아이디 중복확인
         axios({//$는 jQuery란 뜻. $.ajax 뜻은 jQuery 내의 아작스 실행
             method: "POST", //데이터를 서버로 보내는 방법
             url: "/user/nameChk", //url 패턴 매핑주소 경로
@@ -80,32 +87,40 @@ $(document).on('click', '#userNameChkBtn', () => {
     }
 }); //end Name Check
 
+/**
+ * @author 황호준
+ * 비밀번호 변경하기, 변경하기 취소 클릭시
+ * 회원정보 취소하기, 계속하기 클릭시
+ */
 $(document).ready( function (){
+    // 비민번호 변경하기 취소
     $('#pwdChangeBtnCancel').click(function() {
         $('.change__PW__button').hide();
         $('.change__PW').show();
     });
 
+    // 비민번호 변경하기
     $('#pwdChangeBtn').click(function() {
         $('.change__PW__button').show();
         $('.change__PW').hide();
     })
-})
 
-// 'editConfirmBtn' 버튼을 클릭했을 때의 처리
-$(document).ready( function (){
+    // 회원정보 수정 취소
     $('#editCancelBtn').click(function() {
         $('.mypageEdit__cancel').show();
     });
 
+    // 회원정보 수정 계속하기
     $('#continueBtn').click(function() {
         $('.mypageEdit__cancel').hide();
     });
 
 })
 
-
-// 'editConfirmBtn' 버튼을 클릭했을 때의 처리
+/**
+ * @author 황호준
+ * 회원정보 수정완료 클릭시 Axios
+ */
 $(document).on('click', '#editConfirmBtn', () => {
     let regexPassword = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+\\\|\[\]{};:'",.<>\/?])(?!.*\s).{8,20}$/;
     if(!regexPassword.test($("#newPwd").val())) {
@@ -147,7 +162,10 @@ $(document).on('click', '#editConfirmBtn', () => {
 });
 
 
-
+/**
+ * @author 황호준
+ * 입력된 비밀번호, 새 비밀번호 입력필드 비교
+ */
 $(document).ready(function() {
     // #pw2 입력박스에서 포커스를 벗어났을 때 이벤트 처리
     $("#newPwd2").on("blur", function() {
@@ -164,7 +182,10 @@ $(document).ready(function() {
     });
 });
 
-
+/**
+ * @author 황호준
+ * 입력된 비밀번호, 새 비밀번호 입력필드 눈모양 클릭시 보이기/감추기
+ */
 $(document).ready(function() {
     // 눈표시 클릭 시 패스워드 보이기
     $('#togglePassword1').on('click', function() {

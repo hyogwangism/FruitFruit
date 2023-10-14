@@ -1,3 +1,7 @@
+/**
+ * @author 황호준
+ * 마이페이지 메인 주문내역 Axios
+ */
 $(document).ready(function () {
     let startDateValue, endDateValue, searchType, searchField;
     let currentPage = 1;
@@ -84,6 +88,10 @@ $(document).ready(function () {
         sendAxiosRequest_mypage();
     });
 
+    /**
+     * @author 황호준
+     * 마이페이지 메인 주문내역 Axios 함수
+     */
     function sendAxiosRequest_mypage() {
         axios({
             method: 'post',
@@ -236,9 +244,11 @@ $(document).ready(function () {
     $('#date2').val(getCurrentDate());
 })
 
-
+/**
+ * @author 황호준
+ * 재구매버튼 클릭시 Axios
+ */
 $(document).on('click', '.rePurchase', function () {
-
 
     axios({
         method: 'post',
@@ -304,6 +314,10 @@ function rePurchaseCart(cartArray, cartItem) {
     return cartArray;
 }
 
+/**
+ * @author 황호준
+ * 구매목록중 리뷰쓰기
+ */
 $(document).ready(function () {
     $(document).on('click', '#review_write_btn', function () {
         const orderProductId = $(this).closest('li').find('.order_product_id').val();
@@ -314,15 +328,18 @@ $(document).ready(function () {
         $('.txt05').show();
     });
 
+    // 모달 취소하기버튼 클릭시 진짜 취소하시겠습니까 모달 띄우기
     $(document).on('click', '#review_write_btn_cancel', function () {
         $('.txt05').hide();
         $('.txt06').show();
     });
 
+    // 진짜 취소 클릭시 모달 닫기
     $(document).on('click', '#review_write_cancel', function () {
         $('.txt06').hide();
     });
 
+    // 계속작성 클릭시 리뷰모달 다시 띄우기
     $(document).on('click', '#review__continue', function () {
         $('.txt06').hide();
         $('.txt05').show();
@@ -342,7 +359,10 @@ $(document).ready(function () {
         }
     });
 
-    // 리뷰 등록 버튼 클릭 시 리뷰 작성을 서버에 전송
+    /**
+     * @author 황호준
+     * 리뷰등록 버튼 클릭시 Axios
+     */
     $(document).on('click', '#review_write_btn_ok', function () {
         console.log('찐오프아: ' + $('#review_write_btn').closest('li').find('.order_product_id').val())
         axios({

@@ -1,16 +1,14 @@
+/**
+ * @author 황호준
+ * 메인페이지 상품목록
+ */
 $(document).ready(function () {
     let productSortVal, productIdVal, searchFieldVal;
     let currentPage = 1;
     let pageSizeVal = 9;
 
-    // productSaleStatus 버튼 클릭 시
+    // 상품분류 버튼 클릭 시 상품분류값 전송
     $('.productSort').click(function () {
-        // 모든 버튼 스타일 초기화
-        $('.productSort').removeClass('clicked');
-
-        // 현재 클릭된 버튼 스타일 변경
-        $(this).addClass('clicked');
-
         productSortVal = $(this).val();
 
         sendAxiosRequest_mainPage();
@@ -41,6 +39,10 @@ $(document).ready(function () {
         sendAxiosRequest_mainPage();
     });
 
+    /**
+     * @author 황호준
+     * 메인페이지 상품목록 Axios 함수
+     */
     function sendAxiosRequest_mainPage() {
         console.log(productSortVal);
         console.log(searchFieldVal);
@@ -208,6 +210,10 @@ $(document).ready(function () {
     }
 });
 
+/**
+ * @author 황호준
+ * 상품분류 클릭시 버튼 스타일 변경
+ */
 $(document).ready(function () {
     // 버튼 클릭 이벤트 처리
     $(".productSort").click(function () {
@@ -216,11 +222,13 @@ $(document).ready(function () {
         // 클릭한 버튼에 active 클래스 추가
         $(this).addClass("active");
 
-        // 여기에 버튼을 클릭했을 때의 추가 동작을 작성할 수 있습니다.
-        // 예를 들어, 필터링된 상품 리스트를 업데이트하거나 다른 동작을 수행할 수 있습니다.
     });
 });
 
+/**
+ * @author 황호준
+ * 상품 찜
+ */
 $(document).ready(function() {
     let productLikeId;
     // 상품 좋아요 버튼 클릭 시

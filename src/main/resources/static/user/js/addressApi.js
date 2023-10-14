@@ -1,3 +1,6 @@
+/**
+ * 카카오 주소 API
+ */
 function sample6_execDaumPostcode() {
     new daum.Postcode({
         oncomplete: function (data) {
@@ -94,13 +97,18 @@ function sample7_execDaumPostcode() {
     }).open();
 }
 
+/**
+ * 결제페이지에서 신규배송지 클릭시 모달 오픈
+ */
 $(document).ready(function(){
     $("#newAddressBtn").click(function(){
         $(".delivery__add").show();
     });
 });
 
-
+/**
+ * 결제페이지에서 신규배송지 추가시 API를 통한 정보 입력
+ */
 $(document).ready(function() {
     // 작성취소 버튼 클릭 이벤트
     $('.delivery__add__cancel').click(function() {
@@ -129,8 +137,6 @@ $(document).ready(function() {
             $('input[name="add2"]').eq(0).attr('value', address + ' ' + detailAddress);
 
             $('.delivery__add').hide();   // 모달창 닫기
-
-
 
     });
 });

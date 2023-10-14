@@ -1,23 +1,31 @@
+/**
+ * @author 황호준
+ * 리뷰등록
+ */
 $(document).ready(function () {
+    // 리뷰등록 클릭시 모달 오픈
     $(document).on('click', '#review_write_btn', function () {
         $('.review__modal').show();
     });
 
+    // 취소하기 누를시 진짜 취소하시겠습니까 모달 오픈
     $(document).on('click', '.review__cancel', function () {
         $('.review__modal').hide();
         $('.review__cancel__modal').show();
     });
 
+    // 진짜 취소버튼 클릭시 모달 닫기
     $(document).on('click', '#review__cancel__modal__cancel', function () {
         $('.review__cancel__modal').hide();
     });
 
+    // 게속작성 클릭시 리뷰등록 모달 오픈
     $(document).on('click', '#review__continue', function () {
         $('.review__cancel__modal').hide();
         $('.review__modal').show();
     });
 
-// reply_view_btn 클릭 시
+    // 답변보기 클릭 시
     $(document).on('click', 'button#reply_view_btn', function () {
         // 현재 버튼이 속한 <ul> 요소 찾기
         const parentUl = $(this).closest('ul');
@@ -30,7 +38,7 @@ $(document).ready(function () {
         parentUl.find('button#reply_view_cancel_btn').show();
     });
 
-// reply_view_cancel_btn 클릭 시
+    // 답변닫기 클릭 시
     $(document).on('click', 'button#reply_view_cancel_btn', function () {
         // 현재 버튼이 속한 <ul> 요소 찾기
         const parentUl = $(this).closest('ul');
@@ -58,7 +66,10 @@ $(document).ready(function () {
     });
 
 
-    // 리뷰 등록 버튼 클릭 시 리뷰 작성을 서버에 전송
+    /**
+     * @author 황호준
+     * 리뷰등록 버튼 클릭시 Axios
+     */
     $(document).on('click', '#review__confirm__ok', function () {
 
         axios({
@@ -80,9 +91,13 @@ $(document).ready(function () {
     });
 })
 
-//리뷰 수정
+/**
+ * @author 황호준
+ * 리뷰 수정
+ */
 $(document).ready(function () {
     let reviewId;
+    // 리뷰 수정버튼 클릭시 내용 담긴 모달 오픈
     $(document).on('click', '#review_edit_btn', function () {
         // data-review-id 속성을 읽어와서 REVIEW_ID 값을 가져옵니다.
         reviewId = $(this).data('review-id');
@@ -105,7 +120,10 @@ $(document).ready(function () {
         }
     });
 
-    // 리뷰 수정 버튼 클릭 시 리뷰 작성을 서버에 전송
+    /**
+     * @author 황호준
+     * 리뷰 수정 완료 Axios
+     */
     $(document).on('click', '#review__edit__ok', function () {
 
         axios({
@@ -127,7 +145,8 @@ $(document).ready(function () {
 })
 
 /**
- * 리뷰페이지 Axios
+ * @author 황호준
+ * 리뷰 목록보기
  */
 $(document).ready(function () {
     let productId = $('#productId').val();
@@ -152,6 +171,10 @@ $(document).ready(function () {
         sendAxiosRequest_reviewPage();
     });
 
+    /**
+     * @author 황호준
+     * 해당상품 리뷰목록 Axios 함수
+     */
     function sendAxiosRequest_reviewPage() {
         axios({
             method: 'post',
@@ -172,71 +195,6 @@ $(document).ready(function () {
 
             console.log('페인:' + pageInfo);
             console.log('리리:' + reviewList);
-            // $('#reviewPageAxiosBody').empty();
-            // for (let i = 0; i < reviewList.length; i++) {
-            //     const ulElement = $('<ul>').css('margin-bottom', '10px'); // 수정: box03 클래스 추가
-            //     const liElement = $('<li>');
-            //     const idSpan = $('<span>').addClass('id').text(reviewList[i].USER_EMAIL);
-            //     const dateSpan = $('<span>').addClass('date').text(reviewList[i].REVIEW_DATE);
-            //     const pElement = $('<p>');
-            //     const reviewContSpan = $('<span>').text(reviewList[i].REVIEW_CONT);
-            //
-            //     pElement.append(reviewContSpan);
-            //
-            //     // 조건부로 버튼 추가
-            //     if (reviewList[i].USER_ID_NO == $('#userIdNo').val()) {
-            //         const reviewEditBtn = $('<button>')
-            //             .attr('id', 'review_edit_btn')
-            //             .css({
-            //                 'color': 'black',
-            //                 'background-color': 'white',
-            //                 'font-weight': 'bold'
-            //             })
-            //             .text('수정하기')
-            //             .attr('data-review-id', reviewList[i].REVIEW_ID); // 수정: Thymeleaf 데이터 속성 추가
-            //         pElement.append(reviewEditBtn);
-            //     }
-            //
-            //     const replyViewBtn = $('<button>').attr('id', 'reply_view_btn').text('답글보기');
-            //     const replyViewCancelBtn = $('<button>').attr('id', 'reply_view_cancel_btn').css('display', 'none').text('답글닫기');
-            //
-            //     pElement.append(replyViewBtn, replyViewCancelBtn);
-            //     liElement.append(idSpan, dateSpan, pElement);
-            //
-            //     const reviewReplyContUL = $('<ul>').addClass('review__reply__cont');
-            //
-            //     // 조건부로 리뷰 답글 렌더링
-            //     if (reviewList[i].REVIEW_REPLY_CONT == null) {
-            //         const reviewReplyContLi = $('<li>')
-            //             .css({
-            //                 'display': 'none',
-            //                 'margin-bottom': '30px',
-            //                 'text-align': 'right',
-            //                 'background-color': '#F6F6F6'
-            //             }); // 스타일 추가
-            //         const redSpan = $('<span>').css('color', 'red').text('아직 답변되지 않은 리뷰입니다.');
-            //         reviewReplyContLi.append(redSpan);
-            //         reviewReplyContUL.append(reviewReplyContLi);
-            //     } else {
-            //         const reviewReplyContLi = $('<li>')
-            //             .css({
-            //                 'display': 'none',
-            //                 'margin-bottom': '30px',
-            //                 'text-align': 'right',
-            //                 'background-color': '#F6F6F6'
-            //             }); // 스타일 추가;
-            //         const blueSpan = $('<span>').css('color', 'blue').text('판매자');
-            //         const reviewReplyContSpan = $('<span>').css('color', 'black').text(reviewList[i].REVIEW_REPLY_CONT);
-            //         const reviewReplyDateSpan = $('<span>').css('color', 'black').text(reviewList[i].REVIEW_REPLY_DATE);
-            //         reviewReplyContLi.append(blueSpan, $('<br>'), reviewReplyContSpan, reviewReplyDateSpan);
-            //         reviewReplyContUL.append(reviewReplyContLi);
-            //     }
-            //
-            //     ulElement.append(liElement);
-            //     ulElement.append(reviewReplyContUL);
-            //
-            //     $('#reviewPageAxiosBody').append(ulElement);
-            // }
 
             $('#reviewPageAxiosBody').empty();
             for (let i = 0; i < reviewList.length; i++) {
@@ -314,7 +272,6 @@ $(document).ready(function () {
                     .html('<span class="material-symbols-outlined">chevron_right</span>');
                 paginationDiv.append(nextBtn);
             }
-
 
         });
     }

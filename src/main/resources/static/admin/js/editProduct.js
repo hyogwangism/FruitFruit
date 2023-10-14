@@ -1,7 +1,9 @@
 let editImageFiles = [];
 let editFormData = new FormData();
+
 /**
- * 상품등록 유효성 검증
+ * @author 황호준
+ * 상품수정 유효성 검증
  */
 $(document).on('click', '#editProductSubmitBtn', () => {
     if($.trim($("#productName").val())===""){
@@ -41,14 +43,6 @@ $(document).on('click', '#editProductSubmitBtn', () => {
         return false;
     }
 
-    // if($.trim($("#productDescription").val())==""){
-    //     // 아이디를 입력하지 않은 경우 모달창 띄우기
-    //     $(".txt04").show();
-    //     $("#errorMsg").text("상품 상세정보를 입력해주세요.");
-    //     $("#productDescription").val('').focus();
-    //     return false;
-    // }
-
     const isConfirmed = confirm("상품을 수정하시겠습니까?");
     if (!isConfirmed) {
         return false;
@@ -77,6 +71,12 @@ tinymce.init({
         }
     }
 });
+
+
+/**
+ * @author 황호준
+ * 상품수정 Axios
+ */
 function editProductSubmitForm() {
 
     editFormData.append("productId", $("#productId").val());

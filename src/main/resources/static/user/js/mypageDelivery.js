@@ -1,8 +1,9 @@
 /**
+ * @author 황호준
  * 배송지 추가
  */
 $(document).ready(function () {
-    // 첫 번째 모달 열기
+    // 배송지 추가 모달 오픈
     $(".addDeliveryAddress").click(function () {
         if(parseInt($('#addressCount').val()) < 3 ){
         $(".delivery__add").show();
@@ -11,23 +12,24 @@ $(document).ready(function () {
         }
     });
 
-    // 첫 번째 모달 닫기
+    // 취소버튼 클릭스 진짜 취소하시겠습니까 모달 오픈
+    $(".delivery__add__cancel").click(function () {
+        $(".delivery__add__calcel").show();
+    });
+
+    // 진짜 취소클릭시 모든 모달 닫기
     $(".cancel_modal_ok").click(function () {
         $(".delivery__add__calcel").hide();
         $(".delivery__add").hide();
     });
 
-    // 추가 모달 열기
-    $(".delivery__add__cancel").click(function () {
-        $(".delivery__add__calcel").show();
-    });
-
-    // 추가 모달 닫기
+    // 계속작성 클릭시 배송지 추가 모달 오픈
     $(".continueBtn").click(function () {
         $(".delivery__add__calcel").hide();
         $(".delivery__add").show();
     });
 
+    // 배송지 추가 완료 모달 확인 클릭시 배송지추가 페이지 이동
     $('.delivery__add__confirm__ok').click(function (){
         location.href='mypageDelivery';
     })
@@ -35,10 +37,11 @@ $(document).ready(function () {
 });
 
 /**
+ * @author 황호준
  * 배송지 수정
  */
 $(document).ready(function () {
-    // 첫 번째 모달 열기
+    // 배송지 수정 모달 오픈
     $(".Delivery_Edit_Btn").click(function () {
         $(".delivery__edit").show();
         $("#edit_title").val($('#USER_DELIVERY_PLACE').val())
@@ -47,28 +50,28 @@ $(document).ready(function () {
         $("#edit_phone2").val($('#DELIVER_PHONE').val().substring(3))
     });
 
-    // 첫 번째 모달 닫기
+    // 취소하기 버튼 클릭시 모달 닫기
     $(".cancel_modal_ok").click(function () {
         $(".delivery__edit").hide();
         $(".delivery__add__calcel").hide();
     });
 
-    // 추가 모달 열기
+    // 배송지 수정 모달 닫기
     $(".delivery__edit__cancel").click(function () {
         $(".delivery__edit").hide();
     });
 
-    // // 추가 모달 닫기
-    // $(".continueBtn").click(function () {
-    //     $(".delivery__add__calcel").hide();
-    //     $(".delivery__edit").show();
-    // });
-
+    // 수정완료 모달 확인버튼 클릭시 마이페이지 배송지 페이지로 이동
     $('.delivery__add__confirm__ok').click(function (){
         location.href='mypageDelivery';
     })
 
 });
+
+/**
+ * @author 황호준
+ * 배송지 추가 등록 유효성 검증
+ */
 $(document).on('click', '#delivery__add__confirm_ok', function (){
     if ($.trim($("#add_title").val()) === '') {
         alert('배송지명을 입력해주세요')
@@ -108,6 +111,10 @@ $(document).on('click', '#delivery__add__confirm_ok', function (){
     return delivery_add_ok();
 })
 
+/**
+ * @author 황호준
+ * 배송지 추가 등록 Axios 함수
+ */
 function delivery_add_ok() {
 
     const formData = {
@@ -132,6 +139,10 @@ function delivery_add_ok() {
     });
 }
 
+/**
+ * @author 황호준
+ * 배송지 수정 유효성 검증
+ */
 $(document).on('click', '.delivery__edit__confirm', function (){
     if ($.trim($("#edit_title").val()) === '') {
         alert('배송지명을 입력해주세요')
@@ -171,6 +182,10 @@ $(document).on('click', '.delivery__edit__confirm', function (){
     return delivery_edit_ok();
 })
 
+/**
+ * @author 황호준
+ * 배송지 수정 Axios 함수
+ */
 function delivery_edit_ok() {
 
     const formData = {
@@ -207,6 +222,7 @@ $(document).ready(function() {
 });
 
 /**
+ * @author 황호준
  * 배송지 삭제
  */
 $(document).ready(function (){
@@ -225,7 +241,10 @@ $(document).ready(function (){
 })
 
 
-
+/**
+ * @author 황호준
+ * 배송지 삭제 Axios 함수
+ */
     function delivery_delete_ok() {
         axios({
             method: 'post',

@@ -1,4 +1,5 @@
 /**
+ * @author 황호준
  * 메인페이지에서 장바구니아이콘 클릭시 해당 상품정보 Localstorage에 추가되는 함수
  */
 const now = new Date();
@@ -50,9 +51,10 @@ $(document).on('click', 'a#productCart', function () {
     $('.cart__count').text(cartArryLength);
 });
 
-
-
-
+/**
+ * @author 황호준
+ * 장바구니 아이콘 재클릭시 이미 담겨있다면 수량 및 가격만 변동
+ */
 function addToCartOrIncreaseQuantity(cartArray, cartItem) {
     let found = false;
 
@@ -79,6 +81,7 @@ function addToCartOrIncreaseQuantity(cartArray, cartItem) {
 }
 
 /**
+ * @author 황호준
  * 상세페이지에서 장바구니아이콘 클릭시 해당 상품정보 Localstorage에 추가되는 함수
  */
 $(document).on('click', '.detailCart', function () {
@@ -120,7 +123,10 @@ $(document).on('click', '.detailCart', function () {
     console.log('상품최종장비구니:' + JSON.stringify(cartAddArry));
 });
 
-
+/**
+ * @author 황호준
+ * 상세페이지에서 장바구니담기 클릭시 이미 담겨있다면 수량 및 가격만 변동
+ */
 function addToDetailCartOrIncreaseQuantity(cartArray, cartItem) {
     let found = false;
 
@@ -148,8 +154,8 @@ function addToDetailCartOrIncreaseQuantity(cartArray, cartItem) {
 
 
 /**
- * 장바구니에서 갯수 변경하면 Localstorage에서도 변경되는 코드
- * @constructor 황호준
+ * @author 황호준
+ * 장바구니 페이지에서 갯수 변경하면 Localstorage에서도 변경
  */
 $(document).ready(function () {
     let cartId, cartProductImage, cartProductName, cartProductInitPrice, cartDiscount, cartProductDiscountPrice,
@@ -305,8 +311,6 @@ $(document).ready(function () {
             'ProductTotalDiscountPrice': ((cartProductDiscountPrice * cartProductQuantity) + cartProductDiscountPrice), // 상품 할인 총 가격
             'productTotalPrice': ((cartProductDiscountedPrice * cartProductQuantity) + cartProductDiscountedPrice), // 상품 할인 적용된 총 가격
             'productQuantity': cartProductQuantity,
-            expiration: now.getTime() + 1440 * 60 * 1000 // 현재 시간에 유효 기간을 더한 값
-
         };
 
         updatedCart = CartPlusMinusQuantity(cartAddArry, cartItem);
@@ -383,11 +387,8 @@ $(document).ready(function () {
 
 
 /**
- * 장바구니에서 갯수 변경하면 Localstorage에서도 변경되는 코드
- * @param cartArray
- * @param cartItem
- * @returns {cartArray}
- * @constructor 황호준
+ * @author 황호준
+ * 장바구니에서 갯수 변경하면 Localstorage에서도 변경
  */
 function CartPlusMinusQuantity(cartArray, cartItem) {
     let found = false;
@@ -414,7 +415,8 @@ function CartPlusMinusQuantity(cartArray, cartItem) {
 }
 
 /**
- * 해당 상품 삭제
+ * @author 황호준
+ * 장바구니에 담긴 상품들중 삭제버튼 클릭시 해당상품 삭제
  */
 $(document).on('click', '.cartProductCancelBtn', function () {
     const $parentRow = $(this).closest('tr');
@@ -432,8 +434,10 @@ $(document).on('click', '.cartProductCancelBtn', function () {
     // 삭제한 상품을 화면에서 제거합니다.
     $parentRow.remove();
 });
+
 /**
- * 장바구니페이지 이동시 로컬스토리지에 저장된 값들을 보내는 함수
+ * @author 황호준
+ * 장바구니페이지 이동시 로컬스토리지에 저장된 값들을 보내는 Axios
  */
 $(document).on('click', 'a#rightCart, #menuCart, .goCart', function () {
     const cartAddArry = JSON.parse(localStorage.getItem('cartAddArry')) || [];
@@ -456,6 +460,7 @@ $(document).on('click', 'a#rightCart, #menuCart, .goCart', function () {
 
 
 /**
+ * @author 황호준
  * 메인페이지 장바구니 개수 Axios
  */
 $(document).ready(function () {
@@ -469,7 +474,6 @@ $(document).ready(function () {
         console.error('Error parsing JSON:', error);
         cartArryLength = 0;
     }
-
 
     console.log("배열개수:" + cartArryLength);
 
@@ -490,6 +494,7 @@ $(document).ready(function () {
 
 
 /**
+ * @author 황호준
  * 전체선택 체크박스 클릭했을 때 모두 체크되게 하는 함수
  */
 // 모두 체크
@@ -501,7 +506,8 @@ $(document).ready(function () {
 });
 
 /**
- * 체크박스에 체크 된 값들만 총액에 표현하는 함수
+ * @author 황호준
+ * 체크박스에 체크 된 값들만 총액에 표현
  */
 $(document).ready(function () {
     // 체크박스 클릭 시 이벤트 핸들러

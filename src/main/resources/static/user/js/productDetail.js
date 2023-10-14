@@ -18,7 +18,10 @@ $(document).ready(function() {
         console.log("커밸플후:"+currentValue);
     });
 
-
+    $("#quantityInput").on("input", function() {
+        // quantityInput 값에 기반하여 productQuantity의 값을 업데이트합니다.
+        $("#productQuantity").val($(this).val());
+    });
 
 });
 

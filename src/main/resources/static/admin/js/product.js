@@ -1,4 +1,5 @@
 /**
+ * @author 황호준
  * 이미지 파일 미리보기
  */
 $(document).ready(function() {
@@ -39,6 +40,7 @@ $(document).ready(function() {
 });
 
 /**
+ * @author 황호준
  * 상품등록 유효성 검증
  */
 $(document).on('click', '#productSubmitBtn', () => {
@@ -79,14 +81,6 @@ $(document).on('click', '#productSubmitBtn', () => {
         return false;
     }
 
-    // if($.trim($("#productDescription").val())==""){
-    //     // 아이디를 입력하지 않은 경우 모달창 띄우기
-    //     $(".txt04").show();
-    //     $("#errorMsg").text("상품 상세정보를 입력해주세요.");
-    //     $("#productDescription").val('').focus();
-    //     return false;
-    // }
-
     const isConfirmed = confirm("상품을 등록하시겠습니까?");
     if (!isConfirmed) {
         return false;
@@ -96,6 +90,7 @@ $(document).on('click', '#productSubmitBtn', () => {
 });
 
 /**
+ * @author 황호준
  * 모달 닫기
  */
 function closeModal() {
@@ -103,7 +98,10 @@ function closeModal() {
     $(".txt05").hide();
 }
 
-// '등록취소' 버튼을 클릭했을 때 모달창을 열고 처리
+/**
+ * @author 황호준
+ * '등록취소' 버튼을 클릭했을 때 모달창을 열고 처리
+ */
 $(document).ready(function() {
 
     $('#productCancelBtn').on('click', function() {
@@ -128,6 +126,29 @@ $(document).ready(function() {
     // closeModal 함수를 정의합니다.
 
 });
+
+
+/**
+ * @author 황호준
+ * 입력 필드의 값이 변경될 때마다 자동으로 계산하도록 이벤트 핸들러를 등록합니다.
+ */
+$(document).ready(function () {
+    $("#productPrice, #productDiscount").on("input", function () {
+        // 상품금액과 상품할인율 입력 필드의 값을 가져옵니다.
+        let productPrice = parseFloat($("#productPrice").val()) || 0;
+        let productDiscount = parseFloat($("#productDiscount").val()) || 0;
+
+        // 할인 적용 후 금액 계산
+        let totalPrice = productPrice * (100 - productDiscount) / 100;
+
+        // 소수점 이하는 버리고 정수로 표시합니다.
+        totalPrice = Math.floor(totalPrice);
+
+        // 계산 결과를 할인적용 후 금액 입력 필드에 자동으로 입력합니다.
+        $("#totalPrice").val(totalPrice);
+    });
+});
+
 
 /**
  * 상품금액 원화 단위로 , 찍고 할인금액 자동 입력
@@ -168,24 +189,6 @@ $(document).ready(function() {
 //     $("#productPrice, #productDiscount").on('input', calculateTotalPrice);
 //     $("#productPrice, #productDiscount").on('change', calculateTotalPrice);
 // });
-
-$(document).ready(function () {
-    // 입력 필드의 값이 변경될 때마다 자동으로 계산하도록 이벤트 핸들러를 등록합니다.
-    $("#productPrice, #productDiscount").on("input", function () {
-        // 상품금액과 상품할인율 입력 필드의 값을 가져옵니다.
-        let productPrice = parseFloat($("#productPrice").val()) || 0;
-        let productDiscount = parseFloat($("#productDiscount").val()) || 0;
-
-        // 할인 적용 후 금액 계산
-        let totalPrice = productPrice * (100 - productDiscount) / 100;
-
-        // 소수점 이하는 버리고 정수로 표시합니다.
-        totalPrice = Math.floor(totalPrice);
-
-        // 계산 결과를 할인적용 후 금액 입력 필드에 자동으로 입력합니다.
-        $("#totalPrice").val(totalPrice);
-    });
-});
 
 
 

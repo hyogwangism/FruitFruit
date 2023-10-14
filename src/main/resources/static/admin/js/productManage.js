@@ -1,3 +1,7 @@
+/**
+ * @author 황호준
+ * 상품목록 Axios
+ */
 $(document).ready(function () {
     let productSaleStatusVal;
     let productSortVal;
@@ -87,7 +91,10 @@ $(document).ready(function () {
         link.click();
     });
 
-
+    /**
+     * @author 황호준
+     * 상품목록 Axios 함수
+     */
     function sendAxiosRequest() {
         console.log(productSaleStatusVal);
         console.log(productSortVal);
@@ -200,43 +207,11 @@ $(document).ready(function () {
     }
 });
 
+
 /**
+ * @author 황호준
  * 판매 중지 버튼 클릭 이벤트
  */
-// 판매 중지 버튼 클릭 이벤트
-
-// $(document).on("click", ".stopSaleBtn", function (e) {
-//     let productId;
-//     const btn = $(e.currentTarget);
-//         const row = btn.closest('tr');
-//         productId = row.find('input[type="checkbox"]').val();
-//
-//     axios({
-//         method: "post",
-//         url: "/admin/saleStop",
-//         data: {
-//             productId: productId,
-//             status: "판매중지"
-//         },
-//         dataType: "json",
-//         headers: {'Content-Type': 'application/json'}
-//     }).then(res => {
-//         const updatedTime = res.data
-//         btn.hide();
-//         const timeSpan = btn.closest('td').find(".updateTime");
-//         const formattedTime = formatDate(updatedTime.PRODUCT_UPDATED_AT);
-//         timeSpan.text(formattedTime);
-//         timeSpan.show();
-//
-//         const productStatus = btn.closest('tr').find('.productStatus');
-//         productStatus.text("판매중지");
-//
-//         localStorage.setItem(productId, "판매중지");
-//         localStorage.setItem(`updatedTime-${productId}`, formattedTime);
-//     })
-// });
-
-// 판매 중지 버튼 클릭 이벤트
 $(document).on("click", ".stopSaleBtn", (e) => {
     const btn = $(e.currentTarget);
     const productId = btn.val();
@@ -266,6 +241,11 @@ $(document).on("click", ".stopSaleBtn", (e) => {
     })
 });
 
+/**
+ * @author 황호준
+ *  상품 가격 천자리 구분 기호 표시
+ *  새로 고침 시에도 판매 중지 열의 시간 표시
+ */
 $(() => {
     // 상품 가격 천자리 구분 기호 표시
     $(".productPrice").each((i, e) => {
@@ -300,7 +280,8 @@ function formatDate(date) {
 }
 
 /**
- * 클릭된 체크박스 productId값 넘기는 코드
+ * @author 황호준
+ * 선택상품들 판매중지 Axios
  */
 $(document).ready(function() {
     $('#selectedSaleStopBtn').click(function() {
@@ -332,6 +313,10 @@ $(document).ready(function() {
     });
 });
 
+/**
+ * @author 황호준
+ * 선택상품들 삭제 Axios
+ */
 $(document).ready(function() {
     $('#selectedDeleteProductBtn').click(function() {
         const userConfirmed = confirm("선택한 상품을 삭제하시겠습니까?");

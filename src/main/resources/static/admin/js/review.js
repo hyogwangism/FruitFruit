@@ -1,11 +1,13 @@
+/**
+ * @author 황호준
+ * 리뷰목록 Axios
+ */
 $(document).ready(function () {
     let startDateValue, endDateValue, searchFieldVal;
     let replyStatusVal="전체"
     let searchTypeVal= $('.review__search__type').val();
     let currentPage = 1;
     let pageSizeVal = 5;
-
-
 
     // productSaleStatus 버튼 클릭 시
     $(document).on('click', '.replyStatus', function () {
@@ -148,7 +150,10 @@ $(document).ready(function () {
         link.click();
     });
 
-
+    /**
+     * @author 황호준
+     * 리뷰목록 Axios 함수
+     */
     function sendAxiosRequest_review() {
         // console.log(searchFieldVal);
         // console.log(pageSizeVal);
@@ -255,6 +260,7 @@ $(document).ready(function () {
 });
 
 
+
 function reviewMonthDate(date) {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -262,21 +268,30 @@ function reviewMonthDate(date) {
     return `${year}-${month}-${day}`;
 }
 
-// 답변하기 창 띄우기
+/**
+ * @author 황호준
+ * 답변하기 모달 오픈
+ */
 $(document).ready(function () {
     let currentPage = 1;
     let pageSizeVal = 5;
 
+    // 모달 취소하기버튼 클릭시 진짜 취소하시겠습니까 모달 오픈
     $(document).on('click', '#review__reply__write__cancel', function () {
         $('#admin__review__write').hide();
         $('.admin__review__cancel').show();
     })
 
+    // 진짜 취소하시겠습니까 모달 취소하기버튼 클릭시 모달 모두 닫기
     $(document).on('click', '#admin__review__cancel_btn', function () {
         $('#admin__review__write').hide();
         $('.admin__review__cancel').hide();
     })
 
+    /**
+     * @author 황호준
+     * 계속작성, 리뷰 답글작성 버튼 클릭시 리뷰내용 및 답글쓰는 영역 보이는 Axios
+     */
     $(document).on('click', '.review__reply__write, #admin__review__continue_btn', function () {
         const REVIEW_ID = $(this).closest('tr').find('.review_REVIEW_ID').val();
         const ORDER_ID = $(this).closest('tr').find('.review_ORDER_ID').val();
@@ -332,7 +347,10 @@ $(document).ready(function () {
         });
     });
 
-
+    /**
+     * @author 황호준
+     * 리뷰답글 작성 완료 Axios
+     */
     $(document).on('click', '#review__reply__write__confirm', function () {
         const review_id = $('#review__reply__REVIEW_ID').val();
         const review_reply_cont = $('.review_reply_REVIEW_REPLY_CONT').val();
@@ -355,11 +373,16 @@ $(document).ready(function () {
         });
     })
 
+    // 리뷰작성완료 모달 확인클릭시 리뷰목록 페이지 이동
     $(document).on('click', '.admin__review__confirm__btn', function (){
         $('.admin__review__confirm').hide();
         location.href='review';
     })
 
+    /**
+     * @author 황호준
+     * 답변보기 클릭시 모달 오픈
+     */
     $(document).on('click', '.review__reply__view', function () {
         const REVIEW_ID = $(this).closest('tr').find('.review_REVIEW_ID').val();
 
@@ -414,6 +437,7 @@ $(document).ready(function () {
         });
     });
 
+    // 리뷰답변 확인 모달 닫기
     $(document).on('click', '#review__reply__view__confirm', function (){
         $('#admin__review__view').hide();
     })

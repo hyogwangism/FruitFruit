@@ -1,3 +1,7 @@
+/**
+ * @author 황호준
+ * 비밀번호 찾기 클릭시 이메일확인 Axios
+ */
 $(document).on('click', '#findPwBtn', () => {
 
         axios({
@@ -20,11 +24,10 @@ $(document).on('click', '#findPwBtn', () => {
         })
 }); //end ID Check
 
-function closeModal() {
-    $(".txt04").hide();
-    $(".txt05").hide();
-}
-
+/**
+ * @author 황호준
+ * 아이디가 일치하면 비밀번호 변경페이지에 아이디 전달
+ */
 function changePw() {
     const idValue = $("#id").val();
     if (idValue.trim() !== '') {
@@ -32,17 +35,27 @@ function changePw() {
     }
 }
 
+/**
+ * @author 황호준
+ * 비번 정상 변경시 로그인페이지로 이동
+ */
 function changedPw() {
         window.location.href = '/user/login';
 }
 
-
+/**
+ * @author 황호준
+ * URL에 담긴 ID값 가져오는 함수
+ */
 function getIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('id');
 }
 
-// 'changePwBtn' 버튼을 클릭했을 때의 처리
+/**
+ * @author 황호준
+ * 비밀번호 변경하기 버튼 클릭시 Axios
+ */
 $(document).on('click', '#changePwBtn', () => {
     let regexPassword = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+\\\|\[\]{};:'",.<>\/?])(?!.*\s).{8,20}$/;
     if(!regexPassword.test($("#newpw").val())) {
@@ -84,6 +97,10 @@ $(document).on('click', '#changePwBtn', () => {
     });
 });
 
+/**
+ * @author 황호준
+ * 비밀번호, 비밀번호 확인 입력필드에 입력된값 확인하고 일치여부
+ */
 $(document).ready(function() {
     // #pw2 입력박스에서 포커스를 벗어났을 때 이벤트 처리
     $("#newpw2").on("blur", function() {
@@ -101,6 +118,10 @@ $(document).ready(function() {
 });
 
 
+/**
+ * @author 황호준
+ * 비밀번호 필드에 적힌 값 눈 아이콘 클릭시 입력된 값 보이기/감추기
+ */
 $(document).ready(function() {
     // 눈표시 클릭 시 패스워드 보이기
     $('#togglePassword1').on('click', function() {
